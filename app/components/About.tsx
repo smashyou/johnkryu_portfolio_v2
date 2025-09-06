@@ -16,6 +16,11 @@ const About = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
 
+  // Calculate years of experience dynamically (started in 2015)
+  const startYear = 2015;
+  const currentYear = new Date().getFullYear();
+  const yearsOfExperience = currentYear - startYear;
+
   useEffect(() => {
     const handleScroll = () => {
       if (scrollRef.current) {
@@ -36,7 +41,7 @@ const About = () => {
     {
       icon: FaAward,
       title: "Experience",
-      subtitle: "7+ years as an engineering professional",
+      subtitle: `${yearsOfExperience}+ years as an engineering professional`,
     },
     {
       icon: FaChartLine,
