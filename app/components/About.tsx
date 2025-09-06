@@ -19,7 +19,7 @@ const About = () => {
   // Calculate years of experience dynamically (started in 2015)
   const startYear = 2015;
   const currentYear = new Date().getFullYear();
-  const yearsOfExperience = currentYear - startYear;
+  const yearsOfExperience = currentYear - startYear - 1;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -165,11 +165,14 @@ const About = () => {
             </div>
 
             {/* Bio Text */}
-            <motion.div variants={itemVariants} className="relative card rounded-xl overflow-hidden p-0">
+            <motion.div
+              variants={itemVariants}
+              className="relative card rounded-xl overflow-hidden p-0"
+            >
               <div
                 ref={scrollRef}
                 className="max-h-80 overflow-y-auto px-6 py-6 scrollbar-thin space-y-4"
-                style={{ scrollbarWidth: 'thin' }}
+                style={{ scrollbarWidth: "thin" }}
               >
                 {aboutParagraphs.map((paragraph, index) => (
                   <p key={index} className="text-dark-300 leading-relaxed">
@@ -187,7 +190,10 @@ const About = () => {
             </motion.div>
 
             {/* CTA Button */}
-            <motion.div variants={itemVariants} className="flex justify-center lg:justify-start">
+            <motion.div
+              variants={itemVariants}
+              className="flex justify-center lg:justify-start"
+            >
               <a
                 href="https://www.linkedin.com/in/johnminryu"
                 className="btn btn-primary"
