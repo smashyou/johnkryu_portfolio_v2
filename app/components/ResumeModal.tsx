@@ -129,7 +129,7 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
                 <div className="flex flex-wrap justify-center gap-x-1 md:gap-x-2">
                   <span><strong>GitHub:</strong> github.com/smashyou</span>
                   <span className="hidden md:inline">|</span>
-                  <span><strong>Website:</strong> johnminryu.vercel.app</span>
+                  <span><strong>Website:</strong> johnkryu.vercel.app</span>
                 </div>
               </div>
             </div>

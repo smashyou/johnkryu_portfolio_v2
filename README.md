@@ -159,7 +159,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - Email: johnminryu@gmail.com
 - GitHub: [@smashyou](https://github.com/smashyou)
-- Website: [johnminryu.vercel.app](https://johnminryu.vercel.app)
+- Website: [johnkryu.vercel.app](https://johnkryu.vercel.app)
 
 ## 🙏 Acknowledgments
 

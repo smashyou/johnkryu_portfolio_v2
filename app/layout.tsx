@@ -5,7 +5,7 @@ import { Metadata } from "next";
 // We'll use system fonts instead
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://johnminryu.vercel.app"),
+  metadataBase: new URL("https://johnkryu.vercel.app"),
   title: "John Min Ryu - Full Stack Developer & Entrepreneur",
   description:
     "Software engineer and entrepreneur with 7+ years of experience. Specializing in full-stack development, cloud technologies, and digital marketing.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "John Min Ryu - Full Stack Developer & Entrepreneur",
     description:
       "Software engineer and entrepreneur with 7+ years of experience",
-    url: "https://johnminryu.vercel.app",
+    url: "https://johnkryu.vercel.app",
     siteName: "John Min Ryu Portfolio",
     type: "website",
   },

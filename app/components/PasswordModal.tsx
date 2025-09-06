@@ -15,8 +15,8 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }: PasswordModalProps) => {
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
 
-  // Get password from environment variable
-  const CORRECT_PASSWORD = process.env.NEXT_PUBLIC_RESUME_PASSWORD || "";
+  // Get password from environment variable and trim any whitespace
+  const CORRECT_PASSWORD = (process.env.NEXT_PUBLIC_RESUME_PASSWORD || "").trim();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +25,8 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }: PasswordModalProps) => {
 
     // Simulate async check with slight delay for UX
     setTimeout(() => {
-      if (password === CORRECT_PASSWORD) {
+      // Trim the input password as well to avoid whitespace issues
+      if (password.trim() === CORRECT_PASSWORD) {
         onSuccess();
         setPassword("");
         setError("");
