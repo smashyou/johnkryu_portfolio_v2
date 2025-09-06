@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
-import { FiX, FiDownload } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import { FiX, FiDownload, FiLock } from "react-icons/fi";
+import PasswordModal from "./PasswordModal";
 
 interface ResumeModalProps {
   onClose: () => void;
@@ -10,6 +11,7 @@ interface ResumeModalProps {
 
 const ResumeModal = ({ onClose }: ResumeModalProps) => {
   const resumeRef = useRef<HTMLDivElement>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -28,13 +30,27 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
   }, [onClose]);
 
   const handleDownloadPDF = () => {
-    // Create a link element
+    // Download public version (sanitized)
     const link = document.createElement('a');
     link.href = '/John_K_Ryu_Resume.pdf';
-    link.download = 'John_K_Ryu_Resume.pdf';
+    link.download = 'John_K_Ryu_Resume_Public.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadFullPDF = () => {
+    // Get the private resume URL from environment variable
+    const privateResumeUrl = process.env.NEXT_PUBLIC_PRIVATE_RESUME_URL;
+    
+    if (privateResumeUrl && privateResumeUrl !== 'YOUR_FILE_ID_HERE' && !privateResumeUrl.includes('YOUR_FILE_ID_HERE')) {
+      // Open Google Drive link in new tab for download
+      window.open(privateResumeUrl, '_blank');
+    } else {
+      alert('Private resume link not configured. Please contact John directly for the full resume.');
+    }
+    
+    setShowPasswordModal(false);
   };
 
   const backdropVariants = {
@@ -65,6 +81,7 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
   };
 
   return (
+    <>
     <motion.div
       variants={backdropVariants}
       initial="hidden"
@@ -392,9 +409,9 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-3 border-t border-gray-300 bg-gray-50">
-          <p className="text-xs text-gray-600">Press ESC to close</p>
-          <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row items-center justify-between px-4 md:px-6 py-3 border-t border-gray-300 bg-gray-50 gap-3">
+          <p className="text-xs text-gray-600 hidden md:block">Press ESC to close</p>
+          <div className="flex flex-wrap gap-2 justify-center w-full md:w-auto">
             <button 
               onClick={onClose} 
               className="px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
@@ -403,15 +420,32 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
             </button>
             <button
               onClick={handleDownloadPDF}
-              className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors flex items-center"
+              className="px-3 py-1.5 text-sm bg-gray-600 text-white hover:bg-gray-700 rounded-md transition-colors flex items-center"
+              title="Download public version (contact info hidden)"
             >
               <FiDownload className="mr-1.5" size={14} />
-              Download PDF
+              Public Version
+            </button>
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors flex items-center"
+              title="Download with full contact information (password required)"
+            >
+              <FiLock className="mr-1.5" size={14} />
+              Full Version
             </button>
           </div>
         </div>
       </motion.div>
     </motion.div>
+
+    {/* Password Modal */}
+    <PasswordModal
+      isOpen={showPasswordModal}
+      onClose={() => setShowPasswordModal(false)}
+      onSuccess={handleDownloadFullPDF}
+    />
+  </>
   );
 };
 
