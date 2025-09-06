@@ -6,7 +6,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://johnkryu.vercel.app"),
-  title: "John Min Ryu - Full Stack Developer & Entrepreneur",
+  title: "John K. Ryu - Full Stack Developer & Entrepreneur",
   description:
     "Software engineer and entrepreneur with 7+ years of experience. Specializing in full-stack development, cloud technologies, and digital marketing.",
   keywords: [
@@ -18,19 +18,19 @@ export const metadata: Metadata = {
     "AWS",
     "Entrepreneur",
   ],
-  authors: [{ name: "John Min Ryu" }],
-  creator: "John Min Ryu",
+  authors: [{ name: "John K. Ryu" }],
+  creator: "John Keunmin Ryu",
   openGraph: {
-    title: "John Min Ryu - Full Stack Developer & Entrepreneur",
+    title: "John K. Ryu - Full Stack Developer & Entrepreneur",
     description:
       "Software engineer and entrepreneur with 7+ years of experience",
     url: "https://johnkryu.vercel.app",
-    siteName: "John Min Ryu Portfolio",
+    siteName: "John K. Ryu Portfolio",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "John Min Ryu - Full Stack Developer & Entrepreneur",
+    title: "John K. Ryu - Full Stack Developer & Entrepreneur",
     description:
       "Software engineer and entrepreneur with 7+ years of experience",
   },
