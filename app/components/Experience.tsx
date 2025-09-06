@@ -189,10 +189,10 @@ const Experience = () => {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="card group hover:scale-105 transform transition-all duration-300 overflow-hidden"
+              className="card group hover:scale-105 transform transition-all duration-300 overflow-hidden rounded-xl p-0"
             >
               {/* Header */}
-              <div className="bg-primary-600 p-6 -m-6 mb-6 rounded-t-xl">
+              <div className="bg-primary-600 p-6 rounded-t-xl">
                 <h3 className="text-white font-semibold text-lg text-center">
                   {category.title}
                 </h3>
@@ -204,7 +204,8 @@ const Experience = () => {
                   ref={(el) => {
                     if (el) scrollRefs.current[index] = el;
                   }}
-                  className="max-h-80 overflow-y-auto pr-2 scrollbar-thin space-y-4"
+                  className="max-h-80 overflow-y-auto px-6 py-6 scrollbar-thin space-y-4"
+                  style={{ scrollbarWidth: 'thin' }}
                 >
                   {category.skills.map((skill, skillIndex) => (
                     <div key={skillIndex} className="flex items-start gap-3">
@@ -230,7 +231,7 @@ const Experience = () => {
 
                 {/* Fade indicator */}
                 <div
-                  className={`absolute bottom-0 left-0 right-2 h-12 bg-gradient-to-t from-dark-800 to-transparent pointer-events-none transition-opacity duration-300 ${
+                  className={`absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-dark-800 via-dark-800/50 to-transparent pointer-events-none rounded-b-xl transition-opacity duration-300 ${
                     scrollStates[index] ? "opacity-0" : "opacity-100"
                   }`}
                 />
