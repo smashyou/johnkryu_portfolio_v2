@@ -163,8 +163,8 @@ const Header = () => {
         >
           <div className="relative py-8">
             <div className="absolute inset-2 h-96 bg-gradient-to-b from-primary-400 to-primary-600 rounded-t-full blur opacity-75 animate-pulse"></div>
-            <div className="relative w-80 h-96 mx-auto bg-gradient-to-b rounded-t-full overflow-hidden">
-              <div className="absolute inset-1 bg-transparent rounded-t-full overflow-hidden">
+            <div className="relative w-80 h-96 mx-auto">
+              <div className="relative w-full h-full rounded-t-full overflow-hidden">
                 <img
                   src="/images/profile/hero.png"
                   alt="John Ryu"
@@ -185,6 +185,8 @@ const Header = () => {
                 >
                   <div className="text-6xl text-primary-400">JR</div>
                 </div>
+                {/* Gradient fade at bottom of image only */}
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-dark-900 via-dark-900/60 to-transparent pointer-events-none"></div>
               </div>
             </div>
           </div>
