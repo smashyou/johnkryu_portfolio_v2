@@ -185,8 +185,6 @@ const Header = () => {
                 >
                   <div className="text-6xl text-primary-400">JR</div>
                 </div>
-                {/* Gradient fade at bottom of image only */}
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-dark-900 via-dark-900/60 to-transparent pointer-events-none"></div>
               </div>
             </div>
           </div>
