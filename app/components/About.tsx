@@ -81,7 +81,7 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="py-20 lg:py-32 relative bg-gradient-to-b from-dark-800/50 via-dark-900 to-dark-900">
+    <section id="about" className="py-20 lg:py-32 relative">
       <div className="container">
         <motion.div
           ref={ref}
