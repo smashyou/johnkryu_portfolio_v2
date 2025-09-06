@@ -160,7 +160,7 @@ const About = () => {
             </div>
 
             {/* Bio Text */}
-            <motion.div variants={itemVariants} className="relative">
+            <motion.div variants={itemVariants} className="relative card rounded-xl overflow-hidden">
               <div
                 ref={scrollRef}
                 className="max-h-80 overflow-y-auto pr-4 scrollbar-thin space-y-4"
@@ -174,7 +174,7 @@ const About = () => {
 
               {/* Fade indicator */}
               <div
-                className={`absolute bottom-0 left-0 right-4 h-16 bg-gradient-to-t from-dark-900 to-transparent pointer-events-none transition-opacity duration-300 ${
+                className={`absolute bottom-0 left-0 right-4 h-16 bg-gradient-to-t from-dark-900 to-transparent pointer-events-none rounded-b-xl transition-opacity duration-300 ${
                   isAtBottom ? "opacity-0" : "opacity-100"
                 }`}
               />
