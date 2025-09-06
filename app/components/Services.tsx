@@ -195,7 +195,7 @@ const Services = () => {
   };
 
   return (
-    <section id="services" className="py-20 lg:py-32 relative">
+    <section id="services" className="py-20 lg:py-32 relative bg-gradient-to-b from-dark-900 via-dark-900 to-dark-800/50">
       <div className="container">
         <motion.div
           ref={ref}

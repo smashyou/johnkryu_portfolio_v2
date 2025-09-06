@@ -49,7 +49,7 @@ const Header = () => {
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-b from-dark-900 via-dark-900 to-dark-800/50"
     >
       {/* Background Elements */}
       <div className="absolute inset-0">
@@ -163,12 +163,12 @@ const Header = () => {
         >
           <div className="relative py-8">
             <div className="absolute inset-2 h-96 bg-gradient-to-b from-primary-400 to-primary-600 rounded-t-full blur opacity-75 animate-pulse"></div>
-            <div className="relative w-80 h-96 mx-auto bg-gradient-to-b rounded-t-full overflow-hidden">
-              <div className="absolute inset-1 bg-transparent rounded-t-full overflow-hidden">
+            <div className="relative w-80 h-96 mx-auto">
+              <div className="relative w-full h-full rounded-t-full overflow-hidden">
                 <img
                   src="/images/profile/hero.png"
                   alt="John Ryu"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-t-full"
                   onError={(e) => {
                     // Fallback if image doesn't exist
                     e.currentTarget.style.display = "none";
@@ -180,11 +180,15 @@ const Header = () => {
                   }}
                 />
                 <div
-                  className="w-full h-full bg-gradient-to-b from-dark-700 to-dark-800 flex items-center justify-center"
+                  className="w-full h-full bg-gradient-to-b from-dark-700 to-dark-800 flex items-center justify-center rounded-t-full"
                   style={{ display: "none" }}
                 >
                   <div className="text-6xl text-primary-400">JR</div>
                 </div>
+                {/* Bottom gradient fade */}
+                <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-dark-900 via-dark-900/90 to-transparent pointer-events-none"></div>
+                {/* Side gradient fades for smoother blend */}
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-dark-900/80 to-transparent pointer-events-none"></div>
               </div>
             </div>
           </div>
