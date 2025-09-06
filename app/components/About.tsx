@@ -160,10 +160,11 @@ const About = () => {
             </div>
 
             {/* Bio Text */}
-            <motion.div variants={itemVariants} className="relative card rounded-xl overflow-hidden">
+            <motion.div variants={itemVariants} className="relative card rounded-xl overflow-hidden p-0">
               <div
                 ref={scrollRef}
-                className="max-h-80 overflow-y-auto pr-4 scrollbar-thin space-y-4"
+                className="max-h-80 overflow-y-auto px-6 py-6 scrollbar-thin space-y-4"
+                style={{ scrollbarWidth: 'thin' }}
               >
                 {aboutParagraphs.map((paragraph, index) => (
                   <p key={index} className="text-dark-300 leading-relaxed">
@@ -174,14 +175,14 @@ const About = () => {
 
               {/* Fade indicator */}
               <div
-                className={`absolute bottom-0 left-0 right-4 h-16 bg-gradient-to-t from-dark-900 to-transparent pointer-events-none rounded-b-xl transition-opacity duration-300 ${
+                className={`absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-dark-800 via-dark-800/50 to-transparent pointer-events-none rounded-b-xl transition-opacity duration-300 ${
                   isAtBottom ? "opacity-0" : "opacity-100"
                 }`}
               />
             </motion.div>
 
             {/* CTA Button */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="flex justify-center lg:justify-start">
               <a
                 href="https://www.linkedin.com/in/johnminryu"
                 className="btn btn-primary"
