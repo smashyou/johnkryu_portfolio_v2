@@ -70,7 +70,7 @@ const ResumeModal = ({ onClose }: ResumeModalProps) => {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
