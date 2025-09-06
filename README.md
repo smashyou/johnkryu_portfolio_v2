@@ -2,7 +2,7 @@
 
 A modern, responsive portfolio website built with Next.js 14, TypeScript, and Tailwind CSS. Features smooth animations, dark theme, and a contact form integration.
 
-**Live Demo**: [https://johnminryu.vercel.app](https://johnminryu.vercel.app)
+**Live Demo**: [https://johnkryu.vercel.app](https://johnkryu.vercel.app)
 
 ## ✨ Features
 
@@ -29,17 +29,20 @@ A modern, responsive portfolio website built with Next.js 14, TypeScript, and Ta
 ## 📦 Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/smashyou/johnkryu_portfolio_v2.git
 cd johnkryu_portfolio_v2
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create a `.env.local` file in the root directory and add your EmailJS credentials:
+
 ```env
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
@@ -47,6 +50,7 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
 ```
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -94,13 +98,17 @@ npm run lint      # Run ESLint
 ## 🎨 Customization
 
 ### Colors
+
 The color palette can be customized in `tailwind.config.js`:
+
 - Primary colors (blue theme)
 - Dark mode colors
 - Accent colors
 
 ### Content
+
 Update your personal information in the respective component files:
+
 - `Header.tsx` - Hero section content
 - `About.tsx` - About me information
 - `Experience.tsx` - Work experience
@@ -108,6 +116,7 @@ Update your personal information in the respective component files:
 - `Contact.tsx` - Contact information
 
 ### Resume
+
 Replace `public/John_K_Ryu_Resume.pdf` with your own resume file.
 
 ## 📧 EmailJS Setup
@@ -125,15 +134,19 @@ Replace `public/John_K_Ryu_Resume.pdf` with your own resume file.
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
+
 1. Import this repository on [Vercel](https://vercel.com)
 2. Add environment variables in Vercel dashboard
 3. Deploy
 
 ### Static Export
+
 The project is configured for static export:
+
 ```bash
 npm run build
 ```
+
 The static files will be in the `out` directory.
 
 ## 📄 License
@@ -143,6 +156,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 👤 Author
 
 **John K. Ryu**
+
 - Email: johnminryu@gmail.com
 - GitHub: [@smashyou](https://github.com/smashyou)
 - Website: [johnminryu.vercel.app](https://johnminryu.vercel.app)
