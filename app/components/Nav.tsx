@@ -15,7 +15,7 @@ const Nav = () => {
     { id: "about", icon: AiOutlineUser, label: "About" },
     { id: "experience", icon: BiBook, label: "Experience" },
     { id: "services", icon: RiServiceLine, label: "Services" },
-    { id: "portfolio", icon: PiDevicesLight, label: "Portfolio" },
+    // { id: "portfolio", icon: PiDevicesLight, label: "Portfolio" }, // Hidden for now - will implement with real projects
     { id: "contact", icon: BiMessageSquareDetail, label: "Contact" },
   ];
 

@@ -6,7 +6,7 @@ import Nav from "./components/Nav";
 import About from "./components/About";
 import Experience from "./components/Experience";
 import Services from "./components/Services";
-import Portfolio from "./components/Portfolio";
+// import Portfolio from "./components/Portfolio"; // Hidden for now - will implement with real projects
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 
@@ -32,7 +32,7 @@ export default function Home() {
       <About />
       <Experience />
       <Services />
-      <Portfolio />
+      {/* <Portfolio /> */} {/* Hidden for now - will implement with real projects */}
       <Contact />
       <Footer />
     </main>
