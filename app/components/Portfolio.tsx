@@ -32,13 +32,13 @@ const Portfolio = () => {
       id: 8,
       title: "TecAce AI Agent Studio",
       subtitle:
-        "Governance-first enterprise agentic-AI platform — build AI agents with roles and goals, orchestrate them into automated multi-agent workflows, and ground them in your knowledge with governed RAG. A dedicated conversation-memory layer (short & long-term) makes agents self-improving across sessions, with guardrails, evaluation, Slack/Teams integrations, and a public developer API built in. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
+        "Governance-first, privacy-first enterprise agentic-AI platform — build AI agents with roles and goals, orchestrate them into automated multi-agent workflows, and ground them in your knowledge with governed RAG. A dedicated conversation-memory layer (short & long-term) makes agents self-improving across sessions, with guardrails, evaluation, Slack/Teams integrations, and a public developer API built in. Runs on hybrid infrastructure — cloud (AWS) or fully on-prem — so regulated teams keep sensitive data inside their own perimeter, including self-hosted/on-prem model serving. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
       images: [
         "/images/projects/ai-studio-light.png",
         "/images/projects/ai-studio-dark.png",
       ],
       demo: "https://app.builder.aipoc.tecace.com",
-      tags: ["AI Agents", "RAG", "LangGraph", "Next.js", "FastAPI"],
+      tags: ["AI Agents", "RAG", "LangGraph", "Hybrid Cloud/On-Prem", "Governance"],
     },
     {
       id: 1,
