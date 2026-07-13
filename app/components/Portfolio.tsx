@@ -29,6 +29,18 @@ const Portfolio = () => {
 
   const projects: Project[] = [
     {
+      id: 8,
+      title: "TecAce AI Agent Studio",
+      subtitle:
+        "Enterprise agentic-AI platform — governed RAG chatbots, LangGraph flow builder, prompt & guardrail management, Slack/Teams integrations, and a public developer API. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
+      images: [
+        "/images/projects/ai-studio-light.png",
+        "/images/projects/ai-studio-dark.png",
+      ],
+      demo: "https://app.builder.aipoc.tecace.com",
+      tags: ["AI Agents", "RAG", "LangGraph", "Next.js", "FastAPI"],
+    },
+    {
       id: 1,
       title: "MarketScopeAI (Omnidora)",
       subtitle:
