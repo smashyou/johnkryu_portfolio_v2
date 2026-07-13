@@ -32,7 +32,7 @@ const Portfolio = () => {
       id: 8,
       title: "TecAce AI Agent Studio",
       subtitle:
-        "Enterprise agentic-AI platform — governed RAG chatbots, LangGraph flow builder, prompt & guardrail management, Slack/Teams integrations, and a public developer API. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
+        "Governance-first enterprise agentic-AI platform — build AI agents with roles and goals, orchestrate them into automated multi-agent workflows, and ground them in your knowledge with governed RAG. A dedicated conversation-memory layer (short & long-term) makes agents self-improving across sessions, with guardrails, evaluation, Slack/Teams integrations, and a public developer API built in. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
       images: [
         "/images/projects/ai-studio-light.png",
         "/images/projects/ai-studio-dark.png",
