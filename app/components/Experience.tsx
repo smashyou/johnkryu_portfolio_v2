@@ -16,6 +16,51 @@ const Experience = () => {
 
   const categories = [
     {
+      title: "Agentic & AI-Native Development",
+      skills: [
+        {
+          name: "Claude Code",
+          level: "Experienced",
+          extra: "Anthropic CCA-F certified — daily driver for production engineering",
+        },
+        {
+          name: "Coding Agent Toolchain",
+          level: "Experienced",
+          extra: "Claude Code, Codex-style agents, agent-assisted SDLC",
+        },
+        {
+          name: "Multi-Agent Orchestration",
+          level: "Experienced",
+          extra: "Lead/sub-agent fan-out, adversarial QA loops, phased plans & handoffs",
+        },
+        {
+          name: "MCP (Model Context Protocol)",
+          level: "Experienced",
+          extra: "MCP servers/tools, composed servers, tool-use integration",
+        },
+        {
+          name: "LangGraph Agent Workflows",
+          level: "Experienced",
+          extra: "Flow builders, routing nodes, node-level inference overrides",
+        },
+        {
+          name: "Prompt Engineering",
+          level: "Experienced",
+          extra: "Prompt versioning, system-instruction management, prompt caching",
+        },
+        {
+          name: "LLM Platform Integration",
+          level: "Experienced",
+          extra: "AWS Bedrock, OpenAI-compatible/vLLM on-prem serving, SSE streaming",
+        },
+        {
+          name: "AI Guardrails & Evaluation",
+          level: "Intermediate",
+          extra: "Guardrail pipelines, tracing/observability, LLM output QA",
+        },
+      ],
+    },
+    {
       title: "Frontend Engineering",
       skills: [
         { name: "React.js", level: "Experienced" },

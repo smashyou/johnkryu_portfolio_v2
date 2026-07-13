@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { FaAward, FaChartLine } from "react-icons/fa";
+import { FaAward, FaChartLine, FaCertificate } from "react-icons/fa";
 import { BsLinkedin } from "react-icons/bs";
 import { ImBooks } from "react-icons/im";
 import { useState, useRef, useEffect } from "react";
@@ -44,6 +44,12 @@ const About = () => {
       subtitle: `${yearsOfExperience}+ years as an engineering professional`,
     },
     {
+      icon: FaCertificate,
+      title: "Certified",
+      subtitle: "Anthropic CCA-F — Claude Certified Architect: Foundational",
+      href: "https://www.credly.com/users/john-ryu",
+    },
+    {
       icon: FaChartLine,
       title: "Entrepreneur",
       subtitle: "2 successful E-Commerce exits",
@@ -56,7 +62,7 @@ const About = () => {
   ];
 
   const aboutParagraphs = [
-    `John Ryu is a software engineer and aspiring Entrepreneur with a proven track record of turning innovative ideas into impactful products. After earning his Bachelor of Science in Computer Science from Temple University, he dove headfirst into roles at both startups and major tech companies, including Comcast, where he helped develop the Xfinity Flex streaming platform and enhance the cloud-based X1 Guide interface for millions of customers. Alongside these industry achievements, John has also launched his own e-commerce venture and led multiple cross-functional projects, consistently demonstrating a can-do attitude, grit, and a relentless drive for learning new technologies.`,
+    `John Ryu is a software engineer and aspiring Entrepreneur with a proven track record of turning innovative ideas into impactful products. After earning his Bachelor of Science in Computer Science from Temple University, he dove headfirst into roles at both startups and major tech companies, including Comcast, where he helped develop the Xfinity Flex streaming platform and enhance the cloud-based X1 Guide interface for millions of customers. Alongside these industry achievements, John has also launched his own e-commerce venture and led multiple cross-functional projects, consistently demonstrating a can-do attitude, grit, and a relentless drive for learning new technologies. Most recently, as an AI Engineer he has been building enterprise agentic-AI platforms — RAG pipelines, LangGraph agent workflows, and messaging-platform integrations — while practicing AI-native development with coding agents like Claude Code at the center of his workflow, and earning Anthropic's Claude Certified Architect: Foundational (CCA-F) certification.`,
 
     `Guided by the mindset of a "student of life," John embodies the principle of lifelong learning, taking joy in every opportunity to acquire new skills and tackle fresh challenges. He believes in "being the energy you want to attract," maintaining a positive, growth-oriented perspective to inspire collaboration and innovation within his teams. His personal mantra—"make sure the choices you make are worth the losses you will take"—reflects his commitment to thoughtful decision-making and resilience. By merging technical expertise with a genuine passion for continuous improvement, John strives to create solutions that positively impact businesses and end-users alike.`,
   ];
@@ -146,22 +152,41 @@ const About = () => {
             className="space-y-8"
           >
             {/* Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {aboutCards.map((card, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className="card text-center group hover:scale-105 transform transition-all duration-300"
-                >
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary-600 flex items-center justify-center">
-                    <card.icon className="text-white text-xl" />
-                  </div>
-                  <h5 className="font-semibold mb-2">{card.title}</h5>
-                  <small className="text-dark-300 text-sm">
-                    {card.subtitle}
-                  </small>
-                </motion.div>
-              ))}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {aboutCards.map((card, index) => {
+                const inner = (
+                  <>
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary-600 flex items-center justify-center">
+                      <card.icon className="text-white text-xl" />
+                    </div>
+                    <h5 className="font-semibold mb-2">{card.title}</h5>
+                    <small className="text-dark-300 text-sm">
+                      {card.subtitle}
+                    </small>
+                  </>
+                );
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    className="card text-center group hover:scale-105 transform transition-all duration-300"
+                  >
+                    {card.href ? (
+                      <a
+                        href={card.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                        title="View credential on Credly"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      inner
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Bio Text */}
