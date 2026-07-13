@@ -51,11 +51,11 @@ const Experience = () => {
         {
           name: "LLM Platform Integration",
           level: "Experienced",
-          extra: "AWS Bedrock, OpenAI-compatible/vLLM on-prem serving, SSE streaming",
+          extra: "AWS Bedrock, vLLM on-prem serving & quantization, SSE streaming",
         },
         {
           name: "AI Guardrails & Evaluation",
-          level: "Intermediate",
+          level: "Experienced",
           extra: "Guardrail pipelines, tracing/observability, LLM output QA",
         },
       ],
@@ -78,11 +78,16 @@ const Experience = () => {
       title: "Backend & AI Engineering",
       skills: [
         { name: "Java", level: "Experienced" },
-        { name: "Spring Boot", level: "Intermediate" },
-        { name: "Node.js/Express", level: "Intermediate" },
-        { name: "Python", level: "Intermediate" },
-        { name: "Flask/FastAPI", level: "Intermediate" },
+        { name: "Spring Boot", level: "Experienced" },
+        { name: "Node.js/Express", level: "Experienced" },
+        {
+          name: "Python",
+          level: "Experienced",
+          extra: "NumPy, Pandas, scikit-learn, Transformers",
+        },
+        { name: "Flask/FastAPI", level: "Experienced" },
         { name: "RESTful APIs", level: "Experienced" },
+        { name: "SSE Streaming", level: "Experienced" },
         { name: "GraphQL", level: "Intermediate" },
         {
           name: "RAG Pipeline Architecture",
@@ -99,8 +104,8 @@ const Experience = () => {
           level: "Experienced",
           extra: "Embeddings, Semantic search, Dense/Sparse retrieval",
         },
-        { name: "LangChain", level: "Intermediate" },
-        { name: "PyTorch", level: "Intermediate" },
+        { name: "LangChain", level: "Experienced" },
+        { name: "PyTorch", level: "Experienced" },
         {
           name: "AI Chatbot Builder",
           level: "Experienced",
@@ -108,8 +113,8 @@ const Experience = () => {
         },
         {
           name: "NoSQL Databases",
-          level: "Intermediate",
-          extra: "DynamoDB, MongoDB, Cassandra",
+          level: "Experienced",
+          extra: "DynamoDB, MongoDB, Cassandra, Redis/Valkey",
         },
         {
           name: "SQL Databases",
@@ -122,17 +127,17 @@ const Experience = () => {
       title: "Cloud & DevOps",
       skills: [
         { name: "Docker", level: "Experienced" },
-        { name: "Kubernetes (K8s)", level: "Intermediate" },
+        { name: "Kubernetes (K8s)", level: "Experienced" },
         {
           name: "AWS Services",
-          level: "Intermediate",
+          level: "Experienced",
           extra: "EC2, S3, Lambda, EKS, ECR, Route 53",
         },
-        { name: "CI/CD Pipelines", level: "Intermediate" },
-        { name: "GitHub Actions", level: "Intermediate" },
-        { name: "Infrastructure as Code", level: "Intermediate" },
-        { name: "Microservices", level: "Intermediate" },
-        { name: "Linux/Unix", level: "Intermediate" },
+        { name: "CI/CD Pipelines", level: "Experienced" },
+        { name: "GitHub Actions", level: "Experienced" },
+        { name: "Infrastructure as Code", level: "Experienced" },
+        { name: "Microservices", level: "Experienced" },
+        { name: "Linux/Unix", level: "Experienced" },
       ],
     },
   ];
@@ -220,7 +225,7 @@ const Experience = () => {
             My Tools
           </motion.h5>
           <motion.h2 variants={itemVariants} className="section-title">
-            My Experience
+            Technical Skills
           </motion.h2>
         </motion.div>
 
@@ -228,7 +233,7 @@ const Experience = () => {
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6"
         >
           {categories.map((category, index) => (
             <motion.div

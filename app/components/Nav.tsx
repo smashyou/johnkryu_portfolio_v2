@@ -13,7 +13,7 @@ const Nav = () => {
   const navItems = [
     { id: "home", icon: AiOutlineHome, label: "Home" },
     { id: "about", icon: AiOutlineUser, label: "About" },
-    { id: "experience", icon: BiBook, label: "Experience" },
+    { id: "experience", icon: BiBook, label: "Skills" },
     { id: "services", icon: RiServiceLine, label: "Services" },
     { id: "portfolio", icon: PiDevicesLight, label: "Portfolio" },
     { id: "contact", icon: BiMessageSquareDetail, label: "Contact" },
