@@ -60,9 +60,9 @@ const Portfolio = () => {
     },
     {
       id: 3,
-      title: "PlinthPrep — CCAF Study Hub",
+      title: "PlinthPrep — CCA-F Exam Prep",
       subtitle:
-        "Exam-prep platform for Anthropic's Claude Certified Architect: Foundational (CCA-F) — 100+ practice questions with AI-generated variations, concept checks, cheat sheets, and decision trees.",
+        "Exam-prep platform for Anthropic's Claude Certified Architect: Foundational (CCA-F) — 1,207+ practice questions, a full 60-question mock at official domain weighting, a weak-spot drill that learns from your answers, and 493+ Leitner flashcards. Built by people who passed.",
       images: ["/images/projects/plinthprep-ccaf.png"],
       demo: "https://www.plinthprep.com",
       tags: ["AI", "EdTech", "Claude API", "Next.js"],
