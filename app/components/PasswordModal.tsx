@@ -15,26 +15,43 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }: PasswordModalProps) => {
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
 
-  // Get password from environment variable and trim any whitespace
-  const CORRECT_PASSWORD = (process.env.NEXT_PUBLIC_RESUME_PASSWORD || "").trim();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsChecking(true);
 
-    // Simulate async check with slight delay for UX
-    setTimeout(() => {
-      // Trim the input password as well to avoid whitespace issues
-      if (password.trim() === CORRECT_PASSWORD) {
+    try {
+      // Password is verified server-side; the PDF is streamed back on success
+      // so neither the password nor the file location ever ships to the client.
+      const res = await fetch("/api/resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: password.trim() }),
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "John_K_Ryu_Resume.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
         onSuccess();
         setPassword("");
         setError("");
-      } else {
+      } else if (res.status === 401) {
         setError("Incorrect password. Please try again.");
+      } else {
+        setError("Download unavailable right now. Please contact John directly.");
       }
+    } catch {
+      setError("Download failed. Please check your connection and try again.");
+    } finally {
       setIsChecking(false);
-    }, 500);
+    }
   };
 
   const handleClose = () => {
