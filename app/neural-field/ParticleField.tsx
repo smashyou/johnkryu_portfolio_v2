@@ -31,7 +31,6 @@ export default function ParticleField() {
       H = canvas.height = window.innerHeight;
     };
     resize();
-    window.addEventListener("resize", resize);
 
     const N = Math.min(110, Math.floor((W * H) / 16000));
     for (let i = 0; i < N; i++) {
@@ -85,10 +84,19 @@ export default function ParticleField() {
 
     if (reducedMotion) {
       renderFrame({ x: -9999, y: -9999 }, false);
+      // No RAF loop is running to pick up the new size after a resize
+      // resets the canvas bitmap — redraw the static frame explicitly.
+      const onResize = () => {
+        resize();
+        renderFrame({ x: -9999, y: -9999 }, false);
+      };
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener("resize", resize);
+        window.removeEventListener("resize", onResize);
       };
     }
+
+    window.addEventListener("resize", resize);
 
     const mouse = { x: -9999, y: -9999 };
     const onMove = (e: MouseEvent) => {

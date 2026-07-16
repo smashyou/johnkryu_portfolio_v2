@@ -119,7 +119,7 @@ export default function GatewayPage() {
           <a
             href={profile.linkedin}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={styles.footerLink}
           >
             LinkedIn
@@ -127,7 +127,7 @@ export default function GatewayPage() {
           <a
             href={profile.github}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={styles.footerLink}
           >
             GitHub

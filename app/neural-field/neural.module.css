@@ -123,7 +123,7 @@ a.navLink:hover {
   color: #22d3ee;
 }
 
-.navCta {
+a.navCta {
   font-size: 14px;
   padding: 9px 20px;
   border: 1px solid rgba(34, 211, 238, 0.4);
@@ -133,7 +133,7 @@ a.navLink:hover {
   cursor: pointer;
   font-family: inherit;
 }
-.navCta:hover {
+a.navCta:hover {
   background: rgba(34, 211, 238, 0.1);
 }
 

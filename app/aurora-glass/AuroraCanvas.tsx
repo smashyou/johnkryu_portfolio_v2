@@ -53,7 +53,6 @@ export default function AuroraCanvas() {
       H = canvas.height = window.innerHeight;
     };
     resize();
-    window.addEventListener("resize", resize);
 
     // Renders one frame of the aurora at timestamp `t`. Does not schedule
     // anything itself — safe to call once for the reduced-motion static
@@ -77,10 +76,19 @@ export default function AuroraCanvas() {
 
     if (reducedMotion) {
       renderFrame(0);
+      // No RAF loop is running to pick up the new size after a resize
+      // resets the canvas bitmap — redraw the static frame explicitly.
+      const onResize = () => {
+        resize();
+        renderFrame(0);
+      };
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener("resize", resize);
+        window.removeEventListener("resize", onResize);
       };
     }
+
+    window.addEventListener("resize", resize);
 
     let raf = 0;
     const tick = (t: number) => {

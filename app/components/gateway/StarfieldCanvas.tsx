@@ -14,7 +14,6 @@ export default function StarfieldCanvas() {
     let stars: Star[] = [];
     const resize = () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; };
     resize();
-    window.addEventListener("resize", resize);
     const N = Math.min(160, Math.floor((W * H) / 11000));
     for (let i = 0; i < N; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.3 + 0.3, ph: Math.random() * Math.PI * 2, sp: 0.4 + Math.random() * 0.8, hue: [187, 160, 268][i % 3] });
     const draw = (t: number) => {
@@ -26,8 +25,17 @@ export default function StarfieldCanvas() {
       }
       if (!reduced) raf = requestAnimationFrame(draw);
     };
+    // Resizing resets the canvas bitmap (clearing it). The animated path
+    // picks the new size up on its next RAF frame automatically, but the
+    // reduced-motion path has no running loop, so redraw the static frame
+    // explicitly here.
+    const onResize = () => {
+      resize();
+      if (reduced) draw(performance.now());
+    };
+    window.addEventListener("resize", onResize);
     raf = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
   }, [reduced]);
   return <canvas ref={ref} className="fixed inset-0" aria-hidden />;
 }

@@ -246,7 +246,7 @@
   flex-wrap: wrap;
 }
 
-.ctaPrimary {
+a.ctaPrimary {
   padding: 14px 30px;
   background: #8ef7cd;
   color: #07060e;
@@ -255,12 +255,12 @@
   border-radius: 999px;
   display: inline-block;
 }
-.ctaPrimary:hover {
+a.ctaPrimary:hover {
   box-shadow: 0 0 40px rgba(142, 247, 205, 0.5);
   color: #07060e;
 }
 
-.ctaSecondary {
+a.ctaSecondary {
   padding: 14px 30px;
   border: 1px solid #38305e;
   color: #ece9f7;
@@ -268,7 +268,7 @@
   border-radius: 999px;
   display: inline-block;
 }
-.ctaSecondary:hover {
+a.ctaSecondary:hover {
   border-color: #8ef7cd;
   color: #8ef7cd;
 }
@@ -716,7 +716,7 @@
   border-top: 1px solid #241f3d;
 }
 
-.workLink {
+a.workLink {
   font-size: 13px;
   color: #9c94bd;
   background: none;
@@ -725,7 +725,7 @@
   cursor: pointer;
   font-family: inherit;
 }
-.workLink:hover {
+a.workLink:hover {
   color: #8ef7cd;
 }
 
@@ -766,7 +766,7 @@
   justify-content: center;
 }
 
-.mailBtn {
+a.mailBtn {
   display: inline-block;
   padding: 16px 40px;
   background: #8ef7cd;
@@ -775,7 +775,7 @@
   font-size: 16px;
   border-radius: 999px;
 }
-.mailBtn:hover {
+a.mailBtn:hover {
   box-shadow: 0 0 48px rgba(142, 247, 205, 0.5);
   color: #07060e;
 }
@@ -804,11 +804,11 @@
   margin-top: 44px;
 }
 
-.socialLink {
+a.socialLink {
   color: #9c94bd;
   font-size: 14px;
 }
-.socialLink:hover {
+a.socialLink:hover {
   color: #8ef7cd;
 }
 
