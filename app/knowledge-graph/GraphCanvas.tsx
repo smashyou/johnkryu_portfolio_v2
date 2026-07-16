@@ -69,7 +69,10 @@ type Projected = { sx: number; sy: number; scale: number; z: number };
  * with drag-controlled rotation on both axes (rotX clamped to ±1.2),
  * perspective projection `500/(500+z)`, nearest-first z-sort node draw with
  * hover enlarge + label. Reference used mousedown/mousemove/mouseup; ported
- * to pointer events per task brief for pointer/touch parity.
+ * to pointer events per task brief for pointer/touch parity. Reduced motion:
+ * no RAF loop at all (matches ParticleField.tsx) — one static frame on
+ * mount, then on-demand redraws only from resize/pointer handlers so drag
+ * and hover stay interactive.
  */
 export default function GraphCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -85,16 +88,6 @@ export default function GraphCanvas() {
     const DPR = window.devicePixelRatio || 1;
     let W = 0;
     let H = 0;
-
-    const resize = () => {
-      W = canvas.clientWidth;
-      H = canvas.clientHeight;
-      canvas.width = W * DPR;
-      canvas.height = H * DPR;
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    };
-    resize();
-    window.addEventListener("resize", resize);
 
     // nodes: core + categories + leaves
     const nodes: GraphNode[] = [
@@ -166,39 +159,13 @@ export default function GraphCanvas() {
       return { sx: W / 2 + x * persp, sy: H / 2 + y * persp, scale: persp, z };
     };
 
-    const onPointerDown = (e: PointerEvent) => {
-      dragging = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      canvas.style.cursor = "grabbing";
-    };
-    const onPointerUp = () => {
-      dragging = false;
-      canvas.style.cursor = "grab";
-    };
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mx = e.clientX - rect.left;
-      my = e.clientY - rect.top;
-      if (dragging) {
-        rotY += (e.clientX - lastX) * 0.006;
-        rotX += (e.clientY - lastY) * 0.006;
-        rotX = Math.max(-1.2, Math.min(1.2, rotX));
-        lastX = e.clientX;
-        lastY = e.clientY;
-      }
-    };
-    canvas.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointerup", onPointerUp);
-    window.addEventListener("pointermove", onPointerMove);
-
-    let raf = 0;
     let lastHoverLabel = "";
 
-    const draw = () => {
-      // Reduced motion: no autonomous rotation, but drag-driven rotY/rotX
-      // changes above still redraw here, so drag + hover stay fully live.
-      if (!dragging && !reducedMotion) rotY += autoSpeed;
+    // Renders exactly one frame at the current rotY/rotX/mx/my. Does not
+    // touch rotation itself — the auto-rotate increment lives only in the
+    // animated RAF loop below, so this is safe to call on-demand from
+    // resize/pointer handlers under reduced motion.
+    const render = () => {
       ctx.clearRect(0, 0, W, H);
       const proj = nodes.map(project);
 
@@ -249,12 +216,71 @@ export default function GraphCanvas() {
         lastHoverLabel = label;
         setHoverLabel(label);
       }
-      raf = requestAnimationFrame(draw);
     };
-    raf = requestAnimationFrame(draw);
+
+    const resize = () => {
+      W = canvas.clientWidth;
+      H = canvas.clientHeight;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      // On-demand path (reduced motion) has no RAF loop to pick up the new
+      // size on its own — force a redraw here.
+      if (reducedMotion) render();
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const onPointerDown = (e: PointerEvent) => {
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.style.cursor = "grabbing";
+      if (reducedMotion) render();
+    };
+    const onPointerUp = () => {
+      dragging = false;
+      canvas.style.cursor = "grab";
+      if (reducedMotion) render();
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mx = e.clientX - rect.left;
+      my = e.clientY - rect.top;
+      if (dragging) {
+        rotY += (e.clientX - lastX) * 0.006;
+        rotX += (e.clientY - lastY) * 0.006;
+        rotX = Math.max(-1.2, Math.min(1.2, rotX));
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+      // Reduced motion has no running RAF loop, so hover tracking and
+      // drag-driven rotation both need an explicit redraw here.
+      if (reducedMotion) render();
+    };
+    canvas.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointermove", onPointerMove);
+
+    let raf = 0;
+
+    // Reduced motion: the initial `resize()` call above already drew one
+    // static frame, and no RAF loop is started here — matches the
+    // ParticleField.tsx precedent of never animating when the user prefers
+    // reduced motion. All further redraws are on-demand, triggered only by
+    // the resize/pointer handlers above, so drag and hover stay fully
+    // interactive without any autonomous motion.
+    if (!reducedMotion) {
+      const animate = () => {
+        if (!dragging) rotY += autoSpeed;
+        render();
+        raf = requestAnimationFrame(animate);
+      };
+      raf = requestAnimationFrame(animate);
+    }
 
     return () => {
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointerup", onPointerUp);
