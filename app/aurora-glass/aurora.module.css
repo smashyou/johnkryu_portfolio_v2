@@ -408,6 +408,12 @@ a.ctaSecondary:hover {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
+}
+
+/* Services reuses .craftGrid's column/gap layout but needs its cards
+   top-aligned rather than stretched, since category card heights vary a lot
+   more than Craft's (Social Media & Digital Marketing has 7 items vs. 4). */
+.servicesGrid {
   align-items: start;
 }
 
@@ -954,5 +960,7 @@ a.socialLink:hover {
   }
   .reveal {
     transition: none;
+    opacity: 1;
+    transform: none;
   }
 }

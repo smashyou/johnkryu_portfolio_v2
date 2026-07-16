@@ -240,7 +240,7 @@ export default function AuroraGlassPage() {
               Three more orbits.
             </h2>
           </div>
-          <div className={styles.craftGrid}>
+          <div className={`${styles.craftGrid} ${styles.servicesGrid}`}>
             {services.map((category, i) => (
               <div key={category.title} className={styles.craftCard}>
                 <div className={`${styles.craftNum} ${styles.serif}`}>
