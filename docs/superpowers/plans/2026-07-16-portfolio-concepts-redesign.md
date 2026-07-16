@@ -103,7 +103,7 @@ export default function SwitchPill(props: { accent: string; className?: string }
 export function usePrefersReducedMotion(): boolean; // matchMedia("(prefers-reduced-motion: reduce)"), listens for changes
 ```
 
-- [ ] **Step 1: Create `ProjectLightbox.tsx`** by moving the lightbox JSX + `stepLightbox`/keyboard/scroll-lock logic out of `Portfolio.tsx` (lines 167–196 and 345–419) into the new component. Internal state: `const [index, setIndex] = useState(0)`. Keep framer-motion `AnimatePresence` inside the component (render `null` when closed is handled by parent conditional).
+- [ ] **Step 1: Create `ProjectLightbox.tsx`** by moving the lightbox JSX + `stepLightbox`/keyboard/scroll-lock logic out of `Portfolio.tsx` (lines 167–196 and 345–419) into the new component. Internal state: `const [index, setIndex] = useState(0)`. Keep framer-motion `AnimatePresence` inside the component as the outermost rendered element; the component is always mounted by its parent and renders nothing (via AnimatePresence's empty state) when `project` is null.
 - [ ] **Step 2: Create `useContactForm.ts`** by moving `Contact.tsx` lines 24–72 (react-hook-form setup + EmailJS `onSubmit` with `templateParams { name, email, to_email: "johnminryu@gmail.com", message }`, env vars `NEXT_PUBLIC_EMAILJS_SERVICE_ID/TEMPLATE_ID/PUBLIC_KEY`, success/error copy verbatim) into the hook. Return the interface above (`onSubmit` = `handleSubmit(submitFn)`).
 - [ ] **Step 3: Create `SwitchPill.tsx` and `usePrefersReducedMotion.ts`**:
 ```tsx
