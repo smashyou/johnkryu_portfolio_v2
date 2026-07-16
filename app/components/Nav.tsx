@@ -6,6 +6,7 @@ import { AiOutlineHome, AiOutlineUser } from "react-icons/ai";
 import { BiBook, BiMessageSquareDetail } from "react-icons/bi";
 import { RiServiceLine } from "react-icons/ri";
 import { PiDevicesLight } from "react-icons/pi";
+import SwitchPill from "./shared/SwitchPill";
 
 const Nav = () => {
   const [activeSection, setActiveSection] = useState("home");
@@ -100,6 +101,7 @@ const Nav = () => {
               </motion.button>
             );
           })}
+          <SwitchPill accent="#7dd6f5" className="ml-4" />
         </div>
       </div>
     </motion.nav>
