@@ -11,7 +11,10 @@ import styles from "./machine.module.css";
 // adapted here to the actual asset count/path while porting the rest of the
 // scrub engine verbatim (easing, thresholds, loading strategy, draw settings).
 const FRAME_COUNT = 110;
-const BG = "#c9ccce";
+// Matched to the frames' own studio-backdrop edge tone (sampled ~#a8abaf–#b0b4b7,
+// shifted slightly by the contrast(1.04) draw filter) so the sequence blends
+// into the page instead of reading as a rectangle.
+const BG = "#aeb1b5";
 const framePath = (i: number) =>
   `/images/teardown/frame_${String(i + 1).padStart(3, "0")}.jpg`;
 
@@ -81,10 +84,33 @@ export default function TeardownScrubber() {
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, W, H);
       ctx.filter = "contrast(1.04) saturate(1.05)";
-      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      const dx = (W - dw) / 2;
+      const dy = (H - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
       ctx.filter = "none";
+      featherEdges(dx, dy, dw, dh);
       lastDrawn = idx;
       dirty = false;
+    };
+
+    // Fade the drawn frame's borders into the page background so the image
+    // never reads as a hard rectangle over the backdrop.
+    const featherEdges = (dx: number, dy: number, dw: number, dh: number) => {
+      const f = Math.max(24, Math.min(dw, dh) * 0.1);
+      const sides: [number, number, number, number, number, number, number, number][] = [
+        // [gx0, gy0, gx1, gy1, rx, ry, rw, rh]
+        [dx, 0, dx + f, 0, dx, dy, f, dh], // left
+        [dx + dw, 0, dx + dw - f, 0, dx + dw - f, dy, f, dh], // right
+        [0, dy, 0, dy + f, dx, dy, dw, f], // top
+        [0, dy + dh, 0, dy + dh - f, dx, dy + dh - f, dw, f], // bottom
+      ];
+      for (const [gx0, gy0, gx1, gy1, rx, ry, rw, rh] of sides) {
+        const g = ctx.createLinearGradient(gx0, gy0, gx1, gy1);
+        g.addColorStop(0, BG);
+        g.addColorStop(1, "rgba(174, 177, 181, 0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(rx, ry, rw, rh);
+      }
     };
 
     // Nearest-loaded search ported verbatim from the reference script.

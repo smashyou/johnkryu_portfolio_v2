@@ -5,7 +5,7 @@
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  background: #c9ccce;
+  background: #aeb1b5;
   color: #191b1c;
   font-family: var(--font-space-grotesk), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -28,7 +28,7 @@
   width: 8px;
 }
 .page :global(::-webkit-scrollbar-track) {
-  background: #c9ccce;
+  background: #aeb1b5;
 }
 .page :global(::-webkit-scrollbar-thumb) {
   background: #a3a8ab;

@@ -402,6 +402,12 @@ export default function OperatorConsolePage() {
               >
                 <img
                   src={project.images[0]}
+                  alt=""
+                  aria-hidden
+                  className={styles.deployThumbBackdrop}
+                />
+                <img
+                  src={project.images[0]}
                   alt={project.title}
                   className={styles.deployThumbImg}
                 />

@@ -663,9 +663,21 @@ a.ctaSecondary:hover {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
   transition: transform 0.4s ease;
+}
+
+/* Blurred cover copy behind the contained screenshot fills the letterbox so
+   the full screenshot is visible without dead bands (same treatment as the
+   Neural Field work rows). */
+.deployThumbBackdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  filter: blur(14px) brightness(0.4) saturate(1.1);
 }
 .deployThumbBtn:hover .deployThumbImg {
   transform: scale(1.04);

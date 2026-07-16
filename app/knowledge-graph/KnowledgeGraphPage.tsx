@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { projects, services, timeline, profile, type Project } from "@/app/data/content";
 import ProjectLightbox from "@/app/components/shared/ProjectLightbox";
 import SwitchPill from "@/app/components/shared/SwitchPill";
@@ -12,11 +12,39 @@ import styles from "./graph.module.css";
 const ACCENT = "#8ef7cd";
 const VIOLET = "#a78bfa";
 
+const NAV_SECTIONS = [
+  { id: "home", title: "Home" },
+  { id: "universe", title: "Universe" },
+  { id: "path", title: "Path" },
+  { id: "services", title: "Services" },
+  { id: "work", title: "Work" },
+  { id: "contact", title: "Contact" },
+];
+
 export default function KnowledgeGraphPage() {
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const closeLightbox = useCallback(() => setLightboxProject(null), []);
+
+  // Scroll-spy: the dot whose section crosses the middle of the viewport
+  // becomes active.
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+    NAV_SECTIONS.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const { register, errors, onSubmit, isSubmitting, submitMessage } =
     useContactForm();
@@ -39,12 +67,14 @@ export default function KnowledgeGraphPage() {
 
       {/* side dot nav */}
       <nav className={styles.dotNav}>
-        <a href="#home" title="Home" className={`${styles.dot} ${styles.dotActive}`} />
-        <a href="#universe" title="Universe" className={styles.dot} />
-        <a href="#path" title="Path" className={styles.dot} />
-        <a href="#services" title="Services" className={styles.dot} />
-        <a href="#work" title="Work" className={styles.dot} />
-        <a href="#contact" title="Contact" className={styles.dot} />
+        {NAV_SECTIONS.map(({ id, title }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            title={title}
+            className={`${styles.dot} ${activeSection === id ? styles.dotActive : ""}`}
+          />
+        ))}
       </nav>
 
       {/* HERO with 3D graph */}

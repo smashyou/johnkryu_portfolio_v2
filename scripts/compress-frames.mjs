@@ -6,7 +6,7 @@ const SRC = "design_handoff_portfolio_redesign/uploads/ai-brain-frames";
 const OUT = "public/images/teardown";
 // Flatten color = The Machine page background. Verify against the canvas bg
 // constant in Concept 5's extracted script; default per spec:
-const BG = "#c9ccce";
+const BG = "#aeb1b5";
 
 await mkdir(OUT, { recursive: true });
 const files = (await readdir(SRC)).filter((f) => f.endsWith(".png")).sort();
