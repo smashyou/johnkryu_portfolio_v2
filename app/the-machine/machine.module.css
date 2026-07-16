@@ -628,6 +628,9 @@ a.navItemCta:hover {
 .workLink:hover {
   color: #9a6200;
 }
+a.workLink {
+  color: #5d594e;
+}
 a.workLink:hover {
   color: #9a6200;
 }

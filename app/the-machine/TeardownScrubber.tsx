@@ -132,7 +132,7 @@ export default function TeardownScrubber() {
       else if (s < 0.88) f = 1 - ease((s - 0.55) / 0.33);
       else f = 0;
       const pct = Math.round(f * 100);
-      if (pctRef.current) pctRef.current.textContent = String(pct);
+      if (pctRef.current) pctRef.current.textContent = `${pct}%`;
       const target = Math.round(f * (N - 1));
       const idx = nearestLoaded(target);
       if (idx >= 0 && (idx !== lastDrawn || dirty)) draw(idx);
@@ -199,7 +199,7 @@ export default function TeardownScrubber() {
       <canvas ref={canvasRef} className={styles.stageCanvas} />
       <div className={styles.stageVignette} />
       <div className={styles.badge}>
-        TEARDOWN: <span ref={pctRef} className={styles.badgeValue}>0</span>%
+        TEARDOWN: <span ref={pctRef} className={styles.badgeValue}>0%</span>
       </div>
     </div>
   );
