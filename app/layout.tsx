@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Metadata } from "next";
+import { fontVariables } from "./fonts";
 
 // Remove the Inter font import to avoid timeout issues
 // We'll use system fonts instead
@@ -42,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${fontVariables}`}>
       <body className="bg-dark-900 text-white antialiased font-sans">
         {children}
       </body>
