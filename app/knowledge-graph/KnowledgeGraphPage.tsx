@@ -63,7 +63,7 @@ export default function KnowledgeGraphPage() {
             to explore how.
           </p>
           <p className={styles.heroNote}>
-            // hover a node · drag to rotate · it never stops orbiting
+            {"// hover a node · drag to rotate · it never stops orbiting"}
           </p>
           <div className={styles.heroCtas}>
             <a href="#work" className={styles.ctaPrimary}>

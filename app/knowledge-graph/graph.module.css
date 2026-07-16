@@ -915,3 +915,15 @@
   color: #8ef7cd;
   text-align: center;
 }
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .heroCopy {
+    animation: none;
+  }
+  .portraitRing {
+    animation: none;
+  }
+}

@@ -223,7 +223,7 @@ const About = () => {
                 href="https://www.linkedin.com/in/johnminryu"
                 className="btn btn-primary"
               >
-                Let's Connect&nbsp;
+                Let&apos;s Connect&nbsp;
                 <BsLinkedin size={20} />
               </a>
             </motion.div>

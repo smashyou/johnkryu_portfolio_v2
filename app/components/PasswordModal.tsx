@@ -23,7 +23,10 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }: PasswordModalProps) => {
     try {
       // Password is verified server-side; the PDF is streamed back on success
       // so neither the password nor the file location ever ships to the client.
-      const res = await fetch("/api/resume", {
+      // Trailing slash avoids a 308 redirect round-trip: next.config.js sets
+      // trailingSlash: true (a holdover from the static-export era) and
+      // that setting still normalizes API route URLs too.
+      const res = await fetch("/api/resume/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: password.trim() }),

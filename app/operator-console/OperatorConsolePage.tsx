@@ -181,7 +181,7 @@ export default function OperatorConsolePage() {
       <div className={styles.statusBar}>
         <div className={styles.statusLeft}>
           <span className={styles.statusBrand}>RYU.OS v3.0</span>
-          <span className={styles.statusOperator}>// operator: john_k_ryu</span>
+          <span className={styles.statusOperator}>{"// operator: john_k_ryu"}</span>
           <SwitchPill accent={ACCENT} />
         </div>
         <nav className={styles.statusNav}>
@@ -265,7 +265,7 @@ export default function OperatorConsolePage() {
       {/* PROFILE */}
       <section id="profile" className={styles.section}>
         <div className={styles.sectionPrompt}>$ cat ~/profile/readme.md</div>
-        <h2 className={styles.sectionTitle}>// PROFILE</h2>
+        <h2 className={styles.sectionTitle}>{"// PROFILE"}</h2>
         <div className={styles.profileGrid}>
           <div className={styles.readmeCard}>
             <p className={styles.readmeText}>
@@ -337,7 +337,7 @@ export default function OperatorConsolePage() {
         <div className={styles.sectionPrompt}>
           $ git log --career --reverse=false
         </div>
-        <h2 className={styles.sectionTitle}>// COMMIT HISTORY</h2>
+        <h2 className={styles.sectionTitle}>{"// COMMIT HISTORY"}</h2>
         <div className={styles.commitLog}>
           {COMMITS.map((c) => (
             <div key={c.hash} className={styles.commitRow}>
@@ -355,19 +355,20 @@ export default function OperatorConsolePage() {
       {/* LOADED MODULES */}
       <section id="stack" className={styles.section}>
         <div className={styles.sectionPrompt}>$ htop --modules</div>
-        <h2 className={styles.sectionTitle}>// LOADED MODULES</h2>
+        <h2 className={styles.sectionTitle}>{"// LOADED MODULES"}</h2>
         <ModuleBars reducedMotion={reducedMotion} />
       </section>
 
       {/* SERVICES (added) */}
       <section id="services" className={styles.section}>
         <div className={styles.sectionPrompt}>$ services --list</div>
-        <h2 className={styles.sectionTitle}>// SERVICES</h2>
+        <h2 className={styles.sectionTitle}>{"// SERVICES"}</h2>
         <div className={styles.servicesCard}>
           {services.map((category) => (
             <div key={category.title} className={styles.serviceCategory}>
               <div className={styles.serviceCategoryTitle}>
-                // {category.title}
+                {"// "}
+                {category.title}
               </div>
               {category.items.map((item) => (
                 <div key={item.label} className={styles.serviceItemBlock}>
@@ -389,7 +390,7 @@ export default function OperatorConsolePage() {
         <div className={styles.sectionPrompt}>
           $ ls -la ~/deploys --sort=impact
         </div>
-        <h2 className={styles.sectionTitle}>// PRODUCTION DEPLOYS</h2>
+        <h2 className={styles.sectionTitle}>{"// PRODUCTION DEPLOYS"}</h2>
         <div className={styles.deployList}>
           {projects.map((project) => (
             <div key={project.id} className={styles.deployRow}>
@@ -459,7 +460,7 @@ export default function OperatorConsolePage() {
       {/* UPLINK */}
       <section id="uplink" className={styles.section}>
         <div className={styles.sectionPrompt}>$ ssh guest@johnkryu.dev</div>
-        <h2 className={styles.sectionTitle}>// OPEN UPLINK</h2>
+        <h2 className={styles.sectionTitle}>{"// OPEN UPLINK"}</h2>
         <div className={styles.uplinkCard}>
           <p className={styles.uplinkCopy}>
             Connection accepted. Open to AI engineering roles, consulting

@@ -32,7 +32,10 @@ export function useVotes(): UseVotesResult {
     async function fetchVotes() {
       const seen = castCountRef.current;
       try {
-        const r = await fetch("/api/votes");
+        // Trailing slash avoids a 308 redirect round-trip: next.config.js sets
+        // trailingSlash: true (a holdover from the static-export era) and
+        // that setting still normalizes API route URLs too.
+        const r = await fetch("/api/votes/");
         if (r.ok && castCountRef.current === seen) {
           setVotes(await r.json());
           setLive(true);
@@ -69,7 +72,7 @@ export function useVotes(): UseVotesResult {
 
       (async () => {
         try {
-          const r = await fetch("/api/votes", {
+          const r = await fetch("/api/votes/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ vote: id, unvote: prev || null }),

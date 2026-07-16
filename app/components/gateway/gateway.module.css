@@ -296,3 +296,22 @@
   font-size: 12px;
   color: #3a4356;
 }
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .avatarWrap,
+  .eyebrow,
+  .headline,
+  .intro,
+  .grid,
+  .poll,
+  .footerLinks {
+    animation: none;
+  }
+  .dot {
+    animation: none;
+    opacity: 1;
+  }
+}

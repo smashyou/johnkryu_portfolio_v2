@@ -122,7 +122,7 @@ const Header = () => {
         className="container text-center relative z-10"
       >
         <motion.div variants={itemVariants}>
-          <h5 className="text-lg text-dark-300 mb-2">Hello, I'm</h5>
+          <h5 className="text-lg text-dark-300 mb-2">Hello, I&apos;m</h5>
         </motion.div>
 
         <motion.h1
@@ -153,7 +153,7 @@ const Header = () => {
             href="#contact"
             className="btn btn-primary hover:scale-105 transform"
           >
-            Let's Talk
+            Let&apos;s Talk
           </a>
         </motion.div>
 

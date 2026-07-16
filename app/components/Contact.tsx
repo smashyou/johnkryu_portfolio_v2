@@ -92,7 +92,7 @@ const Contact = () => {
           {/* Contact Options */}
           <motion.div variants={itemVariants} className="space-y-6">
             <h3 className="text-2xl font-semibold mb-8 text-center lg:text-left">
-              Let's Connect
+              Let&apos;s Connect
             </h3>
 
             {contactOptions.map((option, index) => (
