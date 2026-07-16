@@ -1,0 +1,959 @@
+/* Transcribed from the <helmet> and body of
+   design_handoff_portfolio_redesign/Concept 3 - Operator Console.dc.html */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #020604;
+  color: #c9f7dd;
+  font-family: var(--font-jetbrains-mono), monospace;
+  -webkit-font-smoothing: antialiased;
+  animation: flicker 9s infinite;
+}
+
+.page :global(a) {
+  color: #00ff9c;
+  text-decoration: none;
+}
+
+.page :global(a:hover) {
+  color: #8affce;
+}
+
+.page :global(::selection) {
+  background: rgba(0, 255, 156, 0.25);
+}
+
+.page :global(::-webkit-scrollbar) {
+  width: 8px;
+}
+.page :global(::-webkit-scrollbar-track) {
+  background: #020604;
+}
+.page :global(::-webkit-scrollbar-thumb) {
+  background: #0d2b1c;
+  border-radius: 4px;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes scan {
+  from {
+    top: -10%;
+  }
+  to {
+    top: 110%;
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.6;
+  }
+  94% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.8;
+  }
+  98% {
+    opacity: 1;
+  }
+}
+
+/* ---------- CRT overlays ---------- */
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.14) 0px,
+    rgba(0, 0, 0, 0.14) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.scanBand {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 41;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 156, 0.045),
+    transparent
+  );
+  animation: scan 7s linear infinite;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55)
+  );
+}
+
+/* ---------- Status bar ---------- */
+
+.statusBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(2, 6, 4, 0.92);
+  border-bottom: 1px solid #0d2b1c;
+  font-size: 12px;
+}
+
+.statusLeft {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.statusBrand {
+  color: #00ff9c;
+  font-weight: 700;
+}
+
+.statusOperator {
+  color: #3f7a5c;
+}
+
+.statusNav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* `a.` prefix bumps specificity above the global `.page :global(a)` color
+   rule (specificity 0,1,1) — otherwise the link color declared here would
+   lose the cascade despite appearing later in the file. */
+a.statusLink {
+  color: #3f7a5c;
+  font-size: 12px;
+}
+a.statusLink:hover {
+  color: #00ff9c;
+}
+
+.statusResumeBtn {
+  color: #3f7a5c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 0;
+  letter-spacing: 0.05em;
+}
+.statusResumeBtn:hover {
+  color: #00ff9c;
+}
+
+.statusRight {
+  color: #3f7a5c;
+}
+
+.statusOnline {
+  color: #00ff9c;
+}
+
+@media (max-width: 1100px) {
+  .statusBar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .statusNav {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .statusOperator,
+  .statusRight {
+    display: none;
+  }
+}
+
+/* ---------- Boot / hero ---------- */
+
+.bootSection {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 110px 32px 60px;
+}
+
+.bootWindow {
+  width: 100%;
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  box-shadow: 0 0 60px rgba(0, 255, 156, 0.06);
+}
+
+.bootWindowHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #0d2b1c;
+}
+
+.bootDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+.bootDotRed {
+  background: #ff5f57;
+}
+.bootDotYellow {
+  background: #febc2e;
+}
+.bootDotGreen {
+  background: #28c840;
+}
+
+.bootWindowTitle {
+  margin-left: 12px;
+  font-size: 12px;
+  color: #3f7a5c;
+}
+
+.bootBody {
+  padding: 28px 30px;
+  min-height: 340px;
+}
+
+.bootLine {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #7ce8b3;
+  white-space: pre-wrap;
+}
+
+.bootReveal {
+  margin-top: 22px;
+}
+
+.heroTitle {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #eafff4;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 24px rgba(0, 255, 156, 0.35);
+  text-transform: uppercase;
+}
+
+.heroTagline {
+  font-size: 16px;
+  color: #00ff9c;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+
+.caret {
+  animation: blink 1s infinite;
+}
+
+.heroCtas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+a.ctaPrimary {
+  padding: 12px 26px;
+  background: #00ff9c;
+  color: #020604;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 6px;
+  display: inline-block;
+}
+a.ctaPrimary:hover {
+  box-shadow: 0 0 36px rgba(0, 255, 156, 0.55);
+  color: #020604;
+}
+
+a.ctaSecondary {
+  padding: 12px 26px;
+  border: 1px solid #1d4d33;
+  color: #c9f7dd;
+  font-size: 14px;
+  border-radius: 6px;
+  display: inline-block;
+}
+a.ctaSecondary:hover {
+  border-color: #00ff9c;
+  color: #00ff9c;
+}
+
+/* ---------- Section shell ---------- */
+
+.section {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 90px 32px;
+}
+
+.sectionPrompt {
+  font-size: 13px;
+  color: #3f7a5c;
+  margin-bottom: 6px;
+}
+
+.sectionTitle {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: #eafff4;
+  margin: 0 0 30px;
+}
+
+/* ---------- Profile ---------- */
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 28px;
+  align-items: start;
+}
+
+.readmeCard {
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  padding: 28px 30px;
+}
+
+.readmeText {
+  font-size: 14.5px;
+  line-height: 2;
+  color: #9adbb8;
+  margin: 0 0 18px;
+}
+
+.readmeHash {
+  color: #00ff9c;
+}
+
+.readmeMeta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 20px;
+  font-size: 13.5px;
+  line-height: 2;
+}
+
+.readmeMetaLabel {
+  color: #3f7a5c;
+}
+
+.readmeMetaValue {
+  color: #c9f7dd;
+}
+
+.idCard {
+  border: 1px solid #1d4d33;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.9);
+  overflow: hidden;
+  align-self: center;
+}
+
+.idCardHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #0d2b1c;
+  font-size: 11px;
+  color: #3f7a5c;
+}
+
+.idCardClearance {
+  color: #00ff9c;
+}
+
+.idCardPhotoWrap {
+  padding: 16px 16px 0;
+  background: radial-gradient(
+    circle at 50% 20%,
+    rgba(0, 255, 156, 0.1),
+    transparent
+  );
+}
+
+.idCardPhoto {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 0 24px rgba(0, 255, 156, 0.25));
+}
+
+.idCardFooter {
+  padding: 12px 14px;
+  border-top: 1px solid #0d2b1c;
+  font-size: 11px;
+  line-height: 1.9;
+  color: #3f7a5c;
+}
+
+.fieldStrip {
+  margin-top: 22px;
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.fieldPhoto {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  object-position: center 35%;
+  display: block;
+  filter: sepia(0.4) hue-rotate(90deg) saturate(1.2) brightness(0.9);
+}
+
+.fieldCaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(2, 6, 4, 0.85);
+  font-size: 11px;
+  color: #3f7a5c;
+}
+
+@media (max-width: 860px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Commit history ---------- */
+
+.commitLog {
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  padding: 10px 0;
+}
+
+.commitRow {
+  display: grid;
+  grid-template-columns: 90px 130px 1fr;
+  gap: 16px;
+  padding: 16px 26px;
+  border-bottom: 1px solid rgba(13, 43, 28, 0.6);
+  align-items: baseline;
+}
+.commitRow:last-child {
+  border-bottom: none;
+}
+
+.commitHash {
+  font-size: 12.5px;
+  color: #febc2e;
+}
+
+.commitYears {
+  font-size: 12.5px;
+  color: #3f7a5c;
+}
+
+.commitTitle {
+  font-size: 14px;
+  color: #c9f7dd;
+  font-weight: 500;
+}
+
+.commitDesc {
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: #5f9e7d;
+  margin-top: 3px;
+}
+
+@media (max-width: 700px) {
+  .commitRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ---------- Loaded modules ---------- */
+
+.modulesCard {
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.moduleRow {
+  display: grid;
+  grid-template-columns: 220px 1fr 90px;
+  gap: 16px;
+  align-items: center;
+}
+
+.moduleName {
+  font-size: 13.5px;
+  color: #c9f7dd;
+}
+
+.moduleBarTrack {
+  height: 14px;
+  background: #04150c;
+  border: 1px solid #0d2b1c;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.moduleBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0a7a4d, #00ff9c);
+  box-shadow: 0 0 12px rgba(0, 255, 156, 0.5);
+}
+
+.moduleMeta {
+  font-size: 12px;
+  color: #3f7a5c;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .moduleRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .moduleMeta {
+    text-align: left;
+  }
+}
+
+/* ---------- Services (added) ---------- */
+
+.servicesCard {
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.serviceCategory {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.serviceCategoryTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #00ff9c;
+}
+
+.serviceItemBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 14px;
+}
+
+.serviceItemLine {
+  font-size: 13.5px;
+  color: #c9f7dd;
+  margin-top: 8px;
+}
+
+.serviceSubitemLine {
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: #5f9e7d;
+  margin-left: 18px;
+}
+
+/* ---------- Deploys ---------- */
+
+.deployList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.deployRow {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  overflow: hidden;
+}
+.deployRow:hover {
+  border-color: rgba(0, 255, 156, 0.5);
+  box-shadow: 0 0 40px rgba(0, 255, 156, 0.12);
+}
+
+.deployThumbBtn {
+  position: relative;
+  overflow: hidden;
+  min-height: 170px;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.deployThumbImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.4s ease;
+}
+.deployThumbBtn:hover .deployThumbImg {
+  transform: scale(1.04);
+}
+
+.deployThumbOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 14px;
+  background: linear-gradient(90deg, transparent, rgba(3, 12, 7, 0.7));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.deployThumbBtn:hover .deployThumbOverlay {
+  opacity: 1;
+}
+
+.deployThumbOverlayText {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #eafff4;
+}
+
+.deployContent {
+  padding: 22px 26px;
+}
+
+.deployHead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.deployTag {
+  font-size: 11px;
+  color: #00ff9c;
+}
+
+.deployTitle {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 19px;
+  font-weight: 700;
+  color: #eafff4;
+  margin: 0;
+}
+
+.deployDesc {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #9adbb8;
+}
+
+.deployTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.deployTagPill {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(0, 255, 156, 0.07);
+  border-radius: 999px;
+  color: #6fd9b8;
+}
+
+.deployFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+a.deployLiveLink {
+  font-size: 13px;
+  color: #00ff9c;
+}
+
+.deployScreenshotsBtn {
+  font-size: 13px;
+  color: #3f7a5c;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.deployScreenshotsBtn:hover {
+  color: #00ff9c;
+}
+
+@media (max-width: 860px) {
+  .deployRow {
+    grid-template-columns: 1fr;
+  }
+  .deployThumbBtn {
+    min-height: 180px;
+  }
+}
+
+/* ---------- Uplink ---------- */
+
+.uplinkCard {
+  border: 1px solid #0d2b1c;
+  border-radius: 10px;
+  background: rgba(3, 12, 7, 0.85);
+  padding: 30px;
+  text-align: center;
+}
+
+.uplinkCopy {
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: #9adbb8;
+  margin: 0 0 26px;
+}
+
+.uplinkCtas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+a.uplinkMailBtn {
+  display: inline-block;
+  padding: 14px 34px;
+  background: #00ff9c;
+  color: #020604;
+  font-weight: 700;
+  font-size: 15px;
+  border-radius: 6px;
+}
+a.uplinkMailBtn:hover {
+  box-shadow: 0 0 44px rgba(0, 255, 156, 0.55);
+  color: #020604;
+}
+
+.uplinkResumeBtn {
+  display: inline-block;
+  padding: 14px 34px;
+  border: 1px solid #1d4d33;
+  color: #c9f7dd;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.uplinkResumeBtn:hover {
+  border-color: #00ff9c;
+  color: #00ff9c;
+}
+
+.uplinkSocialRow {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 30px;
+  font-size: 13px;
+}
+
+a.uplinkSocialLink {
+  color: #3f7a5c;
+}
+a.uplinkSocialLink:hover {
+  color: #00ff9c;
+}
+
+/* ---------- Uplink form (added) ---------- */
+
+.uplinkFormWrap {
+  margin-top: 50px;
+  padding-top: 40px;
+  border-top: 1px solid #0d2b1c;
+  text-align: left;
+}
+
+.uplinkFormTitle {
+  font-size: 13px;
+  color: #3f7a5c;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.uplinkForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.uplinkField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.uplinkFieldLabel {
+  font-size: 12.5px;
+  color: #00ff9c;
+}
+
+.uplinkInput,
+.uplinkTextarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: #04150c;
+  border: 1px solid #0d2b1c;
+  border-radius: 6px;
+  color: #c9f7dd;
+  font-family: inherit;
+  font-size: 13.5px;
+  transition: border-color 0.2s ease;
+}
+.uplinkInput::placeholder,
+.uplinkTextarea::placeholder {
+  color: #24503a;
+}
+.uplinkInput:focus,
+.uplinkTextarea:focus {
+  outline: none;
+  border-color: #00ff9c;
+}
+
+.uplinkTextarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.uplinkFieldError {
+  font-size: 12px;
+  color: #ff6b6b;
+  margin: 0;
+}
+
+.uplinkSubmitBtn {
+  padding: 13px 30px;
+  background: #00ff9c;
+  color: #020604;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.uplinkSubmitBtn:hover:not(:disabled) {
+  box-shadow: 0 0 36px rgba(0, 255, 156, 0.55);
+}
+.uplinkSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.uplinkSubmitMsg {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #00ff9c;
+  text-align: center;
+}
+
+.copyright {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 12px;
+  color: #1d4d33;
+}
+
+/* ---------- Reduced motion ----------
+   Placed last so these overrides win the cascade against the unconditional
+   `.page`/`.scanBand`/`.caret` rules above (equal specificity — source order
+   decides), regardless of where each class happens to be declared. */
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    animation: none;
+  }
+  .scanBand {
+    animation: none;
+  }
+  .caret {
+    animation: none;
+  }
+}
