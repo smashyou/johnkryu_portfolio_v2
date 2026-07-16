@@ -47,7 +47,7 @@ const SERVICE_TAGS: Record<string, string> = {
 
 export default function NeuralFieldPage() {
   const reducedMotion = usePrefersReducedMotion();
-  const [typed, setTyped] = useState(TYPED_PHRASES[0]);
+  const [typed, setTyped] = useState("");
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
 
@@ -90,8 +90,7 @@ export default function NeuralFieldPage() {
       timer = setTimeout(tick, deleting ? 26 : 55);
     };
 
-    setTyped("");
-    timer = setTimeout(tick, 0);
+    tick();
 
     return () => clearTimeout(timer);
   }, [reducedMotion]);
@@ -187,8 +186,8 @@ export default function NeuralFieldPage() {
         <div className={styles.aboutGrid}>
           <div className={styles.aboutPhotoWrap}>
             <img
-              src="/images/profile/about.jpg"
-              alt="John K. Ryu"
+              src="/images/profile/hiking.jpg"
+              alt="John hiking"
               className={styles.aboutPhoto}
             />
             <div className={styles.aboutPhotoOverlay} />

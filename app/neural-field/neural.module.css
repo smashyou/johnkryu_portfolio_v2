@@ -16,6 +16,10 @@
   text-decoration: none;
 }
 
+.page :global(a:hover) {
+  color: #7deefc;
+}
+
 .page :global(::selection) {
   background: rgba(34, 211, 238, 0.3);
 }
