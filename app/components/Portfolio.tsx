@@ -1,10 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { FiExternalLink, FiGithub, FiX, FiChevronLeft, FiChevronRight, FiMaximize2 } from "react-icons/fi";
-import { useCallback, useEffect, useState } from "react";
+import { FiExternalLink, FiGithub, FiMaximize2 } from "react-icons/fi";
+import { useState } from "react";
 import { projects, type Project } from "@/app/data/content";
+import ProjectLightbox from "@/app/components/shared/ProjectLightbox";
 
 const Portfolio = () => {
   const [ref, inView] = useInView({
@@ -13,41 +14,7 @@ const Portfolio = () => {
   });
 
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
-  const [lightbox, setLightbox] = useState<{
-    project: Project;
-    index: number;
-  } | null>(null);
-
-  const closeLightbox = useCallback(() => setLightbox(null), []);
-
-  const stepLightbox = useCallback(
-    (delta: number) => {
-      setLightbox((current) => {
-        if (!current) return current;
-        const count = current.project.images.length;
-        return {
-          project: current.project,
-          index: (current.index + delta + count) % count,
-        };
-      });
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (!lightbox) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowLeft") stepLightbox(-1);
-      if (e.key === "ArrowRight") stepLightbox(1);
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [lightbox, closeLightbox, stepLightbox]);
+  const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -112,7 +79,7 @@ const Portfolio = () => {
                 {/* Project Image/Preview — click to view full screenshots */}
                 <button
                   type="button"
-                  onClick={() => setLightbox({ project, index: 0 })}
+                  onClick={() => setLightboxProject(project)}
                   className="relative h-48 bg-primary-600 rounded-lg mb-6 flex items-center justify-center overflow-hidden w-full cursor-zoom-in"
                   aria-label={`View ${project.title} screenshots`}
                 >
@@ -196,81 +163,12 @@ const Portfolio = () => {
         </motion.div>
       </div>
 
-      {/* Screenshot lightbox */}
-      <AnimatePresence>
-        {lightbox && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 md:p-10"
-            onClick={closeLightbox}
-          >
-            <button
-              type="button"
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 p-3 bg-dark-800 rounded-full text-white hover:bg-primary-600 transition-colors duration-300 z-10"
-              aria-label="Close screenshots"
-            >
-              <FiX size={22} />
-            </button>
-
-            {lightbox.project.images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    stepLightbox(-1);
-                  }}
-                  className="absolute left-4 md:left-8 p-3 bg-dark-800 rounded-full text-white hover:bg-primary-600 transition-colors duration-300 z-10"
-                  aria-label="Previous screenshot"
-                >
-                  <FiChevronLeft size={22} />
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    stepLightbox(1);
-                  }}
-                  className="absolute right-4 md:right-8 p-3 bg-dark-800 rounded-full text-white hover:bg-primary-600 transition-colors duration-300 z-10"
-                  aria-label="Next screenshot"
-                >
-                  <FiChevronRight size={22} />
-                </button>
-              </>
-            )}
-
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              className="max-w-6xl w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={lightbox.project.images[lightbox.index]}
-                alt={`${lightbox.project.title} screenshot ${
-                  lightbox.index + 1
-                }`}
-                className="w-full max-h-[80vh] object-contain rounded-xl border border-dark-600 shadow-2xl"
-              />
-              <div className="mt-4 flex items-center justify-between text-sm text-dark-300">
-                <span className="font-medium text-white">
-                  {lightbox.project.title}
-                </span>
-                {lightbox.project.images.length > 1 && (
-                  <span>
-                    {lightbox.index + 1} / {lightbox.project.images.length}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {lightboxProject && (
+        <ProjectLightbox
+          project={lightboxProject}
+          onClose={() => setLightboxProject(null)}
+        />
+      )}
     </section>
   );
 };
