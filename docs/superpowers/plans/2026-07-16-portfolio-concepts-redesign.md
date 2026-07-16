@@ -83,8 +83,8 @@ design_handoff_portfolio_redesign/
 - Produces:
 ```ts
 // ProjectLightbox.tsx ("use client")
-export default function ProjectLightbox(props: { project: Project; onClose: () => void }): JSX.Element;
-// manages its own index state; Escape/←/→ keys; body scroll lock; counter "n / total"
+export default function ProjectLightbox(props: { project: Project | null; onClose: () => void }): JSX.Element;
+// always mounted; AnimatePresence inside; renders nothing when project is null; manages its own index state; Escape/←/→ keys; body scroll lock; counter "n / total"
 
 // useContactForm.ts
 export function useContactForm(): {
@@ -135,7 +135,7 @@ export function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 ```
-- [ ] **Step 4: Refactor `Portfolio.tsx`** — lightbox state becomes `useState<Project | null>(null)`; render `{lightboxProject && <ProjectLightbox project={lightboxProject} onClose={() => setLightboxProject(null)} />}`. Refactor `Contact.tsx` to consume `useContactForm` (identical rendered markup).
+- [ ] **Step 4: Refactor `Portfolio.tsx`** — lightbox state becomes `useState<Project | null>(null)`; render `<ProjectLightbox project={lightboxProject} onClose={closeLightbox} />` (unconditional, with `closeLightbox = useCallback(() => setLightboxProject(null), [])`). Refactor `Contact.tsx` to consume `useContactForm` (identical rendered markup).
 - [ ] **Step 5: Verify.** `npx tsc --noEmit` clean. In the browser: open a gallery on `/` (arrows, Escape, counter work), submit the contact form empty (validation errors appear).
 - [ ] **Step 6: Commit** — `"Extract shared ProjectLightbox, useContactForm, SwitchPill, reduced-motion hook"`.
 
@@ -367,7 +367,7 @@ Add `"compress-frames": "node scripts/compress-frames.mjs"` to package.json scri
   2. **Canvas effect pattern:** each effect = its own client component, `useRef` canvas, all reference script math verbatim inside one `useEffect`, cleanup returns, reduced-motion = static single frame.
   3. **Added-sections pattern (identical composition on every concept, restyled):**
      - *Services:* full `services` data (3 categories, every item + subitem) rendered in concept-native card/row markup.
-     - *Work:* `projects.map(...)` — all 7 — in the concept's work layout; clicking a card's image/screenshots control sets `lightboxProject`; render `{lightboxProject && <ProjectLightbox project={lightboxProject} onClose={() => setLightboxProject(null)} />}` at page root.
+     - *Work:* `projects.map(...)` — all 7 — in the concept's work layout; clicking a card's image/screenshots control sets `lightboxProject`; render `<ProjectLightbox project={lightboxProject} onClose={closeLightbox} />` (always mounted, `closeLightbox` memoized with useCallback) at page root.
      - *Contact:* reference contact section markup kept (headline, copy, mailto button) + a form (`name`, `email`, `message` inputs + submit) wired to `useContactForm`, styled with the concept's borders/accent; render `submitMessage` below; disable submit while `isSubmitting`.
      - *Resume:* nav gets a `RESUME` item and contact section a resume button, both `onClick={() => setResumeOpen(true)}`; `{resumeOpen && <ResumeModal onClose={() => setResumeOpen(false)} />}` at page root.
      - *Switch:* `<SwitchPill accent={<concept accent>} />` in the fixed nav.

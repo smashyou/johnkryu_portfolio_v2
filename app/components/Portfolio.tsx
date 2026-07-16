@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { FiExternalLink, FiGithub, FiMaximize2 } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { projects, type Project } from "@/app/data/content";
 import ProjectLightbox from "@/app/components/shared/ProjectLightbox";
 
@@ -15,6 +15,8 @@ const Portfolio = () => {
 
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [lightboxProject, setLightboxProject] = useState<Project | null>(null);
+
+  const closeLightbox = useCallback(() => setLightboxProject(null), []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -163,12 +165,10 @@ const Portfolio = () => {
         </motion.div>
       </div>
 
-      {lightboxProject && (
-        <ProjectLightbox
-          project={lightboxProject}
-          onClose={() => setLightboxProject(null)}
-        />
-      )}
+      <ProjectLightbox
+        project={lightboxProject}
+        onClose={closeLightbox}
+      />
     </section>
   );
 };
