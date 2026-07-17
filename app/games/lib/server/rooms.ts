@@ -143,7 +143,17 @@ export async function checkCreateRateLimit(ip: string): Promise<boolean> {
   return count <= RATE_LIMIT_MAX_CREATES;
 }
 
-export async function createRoom(type: GameType): Promise<{ roomId: string; playerToken: string }> {
+/**
+ * `options` is additive and game-specific (currently only battleship reads
+ * it, for `{ difficulty }`) — threaded straight into the reducer's `init`.
+ * Baseball's `init()` ignores the extra argument, so passing `undefined`
+ * (the default, when callers don't pass options) is exactly today's
+ * behavior.
+ */
+export async function createRoom(
+  type: GameType,
+  options?: unknown
+): Promise<{ roomId: string; playerToken: string }> {
   const redis = getRedis();
   if (!redis) throw new Error("redis not configured");
 
@@ -169,7 +179,7 @@ export async function createRoom(type: GameType): Promise<{ roomId: string; play
     createdAt: now,
     lastMoveAt: now,
     tokens: [playerToken, null],
-    game: entry.reducer.init(),
+    game: entry.reducer.init(options),
   };
   await redis.set(roomKey(type, roomId), state, { ex: ROOM_TTL_SECONDS });
 

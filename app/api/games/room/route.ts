@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 
-  const type = (body as { type?: unknown })?.type;
+  const { type, options } = (body as { type?: unknown; options?: unknown }) ?? {};
   if (!isGameType(type)) {
     return NextResponse.json({ error: "bad type" }, { status: 400 });
   }
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { roomId, playerToken } = await createRoom(type);
+    const { roomId, playerToken } = await createRoom(type, options);
     return NextResponse.json({ roomId, playerToken, seat: 1 });
   } catch {
     return NextResponse.json({ error: "failed to create room" }, { status: 500 });
