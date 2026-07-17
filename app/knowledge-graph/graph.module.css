@@ -143,6 +143,15 @@
   }
 }
 
+@media (max-width: 600px) {
+  /* Sections read linearly on a phone-width screen, and the shrunk dots
+     sit only a couple px from body copy at narrow widths (e.g. the hero
+     lede) — hide rather than risk touching text. */
+  .dotNav {
+    display: none;
+  }
+}
+
 /* ---------- Shared eyebrow / section shell ---------- */
 
 .eyebrow {
@@ -880,6 +889,18 @@ a.socialLink:hover {
 .textarea {
   resize: vertical;
   min-height: 120px;
+}
+
+@media (max-width: 700px) {
+  /* iOS Safari zooms the viewport on focus for inputs under 16px — bump
+     just the mobile font-size so tapping a field doesn't jolt the layout.
+     Desktop keeps the original 14.5px. Placed after the base .input/
+     .textarea rule so it wins the cascade (equal specificity, source
+     order). */
+  .input,
+  .textarea {
+    font-size: 16px;
+  }
 }
 
 .fieldError {
