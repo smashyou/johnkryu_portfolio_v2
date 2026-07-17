@@ -204,3 +204,27 @@ Rules (user-specified; classic Bulls & Cows):
 - Accounts, leaderboards, spectating, chat, matchmaking (random opponent),
   Sudoku multiplayer/race mode, Battleship per-ship special abilities,
   push/email notifications, og-image generation for invite links.
+
+---
+
+# v2 Refinements (2026-07-17, user-requested)
+
+## R1. Baseball wording
+All scoring UI spells out terms: chips/history read "STRIKE"/"BALL"/"OUT" (e.g. "2 Strikes · 1 Ball"), never bare S/B/O.
+
+## R2. How-to-play on all games
+Each game page gets a "How to play" button opening an arcade-styled rules overlay, auto-opened on first visit (localStorage `jkr_howto_<game>`), dismissible. Content: full rules with a worked example (Baseball uses the 357 truth-table example). Pattern implemented per-game (consistent UX, per-module styling like arcade tokens).
+
+## R3. Battleship revamp
+- Placement is DRAG & DROP: ship tray with to-scale draggable pieces → snap to grid; click/tap placed ship or R rotates; re-drag moves; invalid drop bounces with shake; pointer-events for touch. Random/Clear remain.
+- Difficulties (chosen at room create; invite carries it; server validates fleets):
+  - Easy — Classic: both players identical standard fleet (5/4/3/3/2). (vs-computer default)
+  - Medium — Fleet Builder: secret fleet from catalog under 17-cell budget, min 3 / max 7 ships. Catalog: Sub 1, Patrol 2, Frigate 3, Cruiser 3, Battleship 4, Carrier 5, Leviathan 6. Opponent's total cells known; composition hidden.
+  - Hard — Fog of War: Fleet Builder rules + opponent's remaining-ship tray hidden and sunk announcements anonymized ("sunk a ship", no name).
+- Server: room create accepts options { difficulty }; reducer init parameterized; fleet validation per difficulty; viewFor respects fog rules. vs-computer supports all three (AI builds a legal random fleet).
+
+## R4. Sudoku leaderboard (Upstash-persisted; no new database)
+- Boards: Daily (per-day ZSET, ~35-day TTL) + All-time top-100 per difficulty.
+- Entry on completion: name (≤20 chars, sanitized). Identity for dedupe: salted SHA-256 of client IP (raw IP never stored). Opt-out path: visitor declines IP tracking → provides city/state/zip (≤40 chars) and identity = hash(name+location).
+- One entry per identity per board; better time updates it (ZADD LT). Server sanity-checks times (reject implausibly fast/slow). Display top 10 (daily) / top 100 (all-time) + "your rank".
+- API: app/api/sudoku/leaderboard/ GET (scope=daily|alltime) / POST (submit). 503 degradation like other Redis routes.
