@@ -644,12 +644,25 @@ a.ctaSecondary:hover {
 }
 
 .dealImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+/* Blurred cover copy fills the letterbox behind the contained screenshot so
+   the full image is visible at every card shape (site-wide treatment). */
+.dealImageBackdrop {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top;
-  display: block;
-  transition: transform 0.4s ease;
+  transform: scale(1.12);
+  filter: blur(14px) brightness(0.45) saturate(1.1);
 }
 .dealImageBtn:hover .dealImage {
   transform: scale(1.04);

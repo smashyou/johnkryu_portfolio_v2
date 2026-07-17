@@ -658,9 +658,21 @@ a.navItemCta:hover {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
   transition: transform 0.4s ease;
+}
+
+/* Blurred cover copy fills the letterbox behind the contained screenshot so
+   the full image is visible at every card shape. Lighter dim than the dark
+   concepts — this page is a light theme. */
+.workImageBackdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  filter: blur(14px) brightness(0.85) saturate(1.05);
 }
 .workImageBtn:hover .workImage {
   transform: scale(1.04);

@@ -331,6 +331,12 @@ export default function TheExchangePage() {
                 >
                   <img
                     src={project.images[0]}
+                    alt=""
+                    aria-hidden
+                    className={styles.dealImageBackdrop}
+                  />
+                  <img
+                    src={project.images[0]}
                     alt={project.title}
                     className={styles.dealImage}
                   />

@@ -87,8 +87,14 @@ const Portfolio = () => {
                 >
                   <img
                     src={project.images[0]}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover scale-110 blur-lg brightness-50 saturate-[1.1]"
+                  />
+                  <img
+                    src={project.images[0]}
                     alt={project.title}
-                    className="w-full h-full object-cover object-top"
+                    className="relative w-full h-full object-contain"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
