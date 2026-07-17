@@ -247,40 +247,42 @@ export default function TheExchangePage() {
         <div className={styles.sectionEyebrow}>03 · PORTFOLIO HOLDINGS</div>
         <h2 className={styles.sectionTitle}>Skill allocation.</h2>
         <div className={styles.tableWrap}>
-          <div className={`${styles.tableHeadRow} ${styles.holdingsHeadRow}`}>
-            <span>SECTOR</span>
-            <span>POSITIONS</span>
-            <span style={{ textAlign: "right" }}>ALLOCATION</span>
-            <span style={{ textAlign: "right" }}>TREND</span>
-          </div>
-          {skills.map((group) => {
-            const meta = HOLDINGS_META[group.title] ?? {
-              alloc: 0,
-              allocW: "0%",
-              trend: "—",
-            };
-            return (
-              <div
-                key={group.title}
-                className={`${styles.tableRow} ${styles.holdingsRow}`}
-              >
-                <span className={styles.holdingSector}>{group.title}</span>
-                <span className={styles.holdingPositions}>
-                  {group.skills.join(" · ")}
-                </span>
-                <div className={styles.holdingAllocCol}>
-                  <span className={styles.holdingAllocValue}>{meta.alloc}%</span>
-                  <div className={styles.allocBarTrack}>
-                    <div
-                      className={styles.allocBarFill}
-                      style={{ width: meta.allocW }}
-                    />
+          <div className={styles.tableScroll}>
+            <div className={`${styles.tableHeadRow} ${styles.holdingsHeadRow}`}>
+              <span>SECTOR</span>
+              <span>POSITIONS</span>
+              <span style={{ textAlign: "right" }}>ALLOCATION</span>
+              <span style={{ textAlign: "right" }}>TREND</span>
+            </div>
+            {skills.map((group) => {
+              const meta = HOLDINGS_META[group.title] ?? {
+                alloc: 0,
+                allocW: "0%",
+                trend: "—",
+              };
+              return (
+                <div
+                  key={group.title}
+                  className={`${styles.tableRow} ${styles.holdingsRow}`}
+                >
+                  <span className={styles.holdingSector}>{group.title}</span>
+                  <span className={styles.holdingPositions}>
+                    {group.skills.join(" · ")}
+                  </span>
+                  <div className={styles.holdingAllocCol}>
+                    <span className={styles.holdingAllocValue}>{meta.alloc}%</span>
+                    <div className={styles.allocBarTrack}>
+                      <div
+                        className={styles.allocBarFill}
+                        style={{ width: meta.allocW }}
+                      />
+                    </div>
                   </div>
+                  <span className={styles.holdingTrend}>{meta.trend}</span>
                 </div>
-                <span className={styles.holdingTrend}>{meta.trend}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -289,21 +291,23 @@ export default function TheExchangePage() {
         <div className={styles.sectionEyebrow}>04 · DESK SERVICES</div>
         <h2 className={styles.sectionTitle}>What the desk covers.</h2>
         <div className={styles.tableWrap}>
-          <div className={`${styles.tableHeadRow} ${styles.servicesHeadRow}`}>
-            <span>DESK</span>
-            <span>OFFERING</span>
-            <span>DETAIL</span>
-          </div>
-          {SERVICE_ROWS.map((row, i) => (
-            <div
-              key={`${row.desk}-${row.offering}-${i}`}
-              className={`${styles.tableRow} ${styles.servicesRow}`}
-            >
-              <span className={styles.serviceDesk}>{row.desk}</span>
-              <span className={styles.serviceOffering}>{row.offering}</span>
-              <span className={styles.serviceDetail}>{row.detail}</span>
+          <div className={styles.tableScroll}>
+            <div className={`${styles.tableHeadRow} ${styles.servicesHeadRow}`}>
+              <span>DESK</span>
+              <span>OFFERING</span>
+              <span>DETAIL</span>
             </div>
-          ))}
+            {SERVICE_ROWS.map((row, i) => (
+              <div
+                key={`${row.desk}-${row.offering}-${i}`}
+                className={`${styles.tableRow} ${styles.servicesRow}`}
+              >
+                <span className={styles.serviceDesk}>{row.desk}</span>
+                <span className={styles.serviceOffering}>{row.offering}</span>
+                <span className={styles.serviceDetail}>{row.detail}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

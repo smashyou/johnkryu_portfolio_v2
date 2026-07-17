@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import styles from "./exchange.module.css";
 
 type Candle = { label: string; o: number; c: number; l: number; h: number };
 
@@ -149,11 +150,5 @@ export default function CandlestickChart() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: "100%", height: "340px", display: "block" }}
-      aria-hidden
-    />
-  );
+  return <canvas ref={canvasRef} className={styles.chartCanvas} aria-hidden />;
 }
