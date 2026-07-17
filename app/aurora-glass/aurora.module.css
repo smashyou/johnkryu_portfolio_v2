@@ -156,6 +156,56 @@ a.navItemCta:hover {
   }
 }
 
+/* Below ~935px the centered nav pill grows wide enough to sit underneath
+   the fixed top-left switch pill (same z-index, nav painted later in the
+   DOM), making the switch pill invisible and unclickable. Drop the switch
+   pill below the nav row instead of beside it. */
+@media (max-width: 940px) {
+  .switchPill {
+    top: 84px;
+    left: 14px;
+  }
+}
+
+/* Below ~548px the nav's natural one-row width (~524px) no longer fits
+   within max-width: calc(100vw - 24px), so it falls back to a hidden
+   horizontal scroll that clips Work/Resume/Contact off-screen. Wrap into
+   two centered rows instead so every item stays visible and tappable. */
+@media (max-width: 600px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 4px;
+    border-radius: 22px;
+    overflow-x: visible;
+    /* Without an explicit width the shrink-to-fit flex box wraps to a
+       narrower-than-necessary line (as few as 2 items/row), leaving the
+       card taller than it needs to be. Force it to use the full available
+       width so items pack tighter, e.g. 3-4 per row. */
+    width: calc(100vw - 24px);
+  }
+  .switchPill {
+    top: 152px;
+  }
+  .hero {
+    padding-top: 220px;
+  }
+  /* The wrapped two-row nav + switch pill stack now reaches ~186px tall,
+     taller than each section's built-in 130px top padding. Anchor-scrolling
+     to a section (the nav links call scrollIntoView) would otherwise land
+     its eyebrow/heading directly under the fixed pills. scroll-margin-top
+     adds clearance to the scroll target without changing the section's own
+     padding/visual rhythm at rest. */
+  .storySection,
+  .craftSection,
+  .servicesSection,
+  .journeySection,
+  .workSection,
+  .contactSection {
+    scroll-margin-top: 210px;
+  }
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
