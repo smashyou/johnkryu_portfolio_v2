@@ -1,0 +1,510 @@
+/* Baseball (Bulls & Cows) — follows the ARCADE TOKENS documented at the top
+   of app/games/games.module.css:
+   bg #0a0612 · panel rgba(20,12,32,.75) · border #2a1b3d
+   magenta #ff4fd8 · cyan #4fd8ff · text #efe7fa · dim #9a8bb0 */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0612;
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 12% -10%, rgba(255, 79, 216, 0.14), transparent),
+    radial-gradient(ellipse 55% 40% at 88% 0%, rgba(79, 216, 255, 0.12), transparent);
+}
+
+.page :global(::selection) {
+  background: rgba(255, 79, 216, 0.28);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+a.backLink {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #9a8bb0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a.backLink:hover {
+  color: #ff4fd8;
+}
+
+.brand {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #ff4fd8;
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.55);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero {
+  animation: fadeUp 0.6s ease-out both;
+}
+
+.heading {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: clamp(18px, 3.2vw, 24px);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  color: #efe7fa;
+  text-shadow: 0 0 18px rgba(255, 79, 216, 0.35);
+}
+
+.subheading {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: clamp(14px, 2.4vw, 17px);
+  letter-spacing: 0.02em;
+  margin: 0 0 14px;
+  color: #efe7fa;
+}
+
+.lead {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #9a8bb0;
+  max-width: 520px;
+  margin: 0 0 24px;
+}
+
+.modeButtons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.modeButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #efe7fa;
+  background: rgba(255, 79, 216, 0.12);
+  border: 1px solid #ff4fd8;
+  border-radius: 10px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, opacity 0.2s;
+}
+
+.modeButton:hover:not(:disabled) {
+  background: rgba(255, 79, 216, 0.24);
+  transform: translateY(-2px);
+}
+
+.modeButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.gameArea {
+  animation: fadeUp 0.5s ease-out both;
+}
+
+.changeModeLink {
+  display: inline-block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #9a8bb0;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.changeModeLink:hover {
+  color: #4fd8ff;
+}
+
+.panel {
+  background: rgba(20, 12, 32, 0.75);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+}
+
+.difficultyButtons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.difficultyButtons .modeButton {
+  text-transform: capitalize;
+}
+
+/* ---------- Digit pad ---------- */
+
+.digitPadWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 18px 0;
+  max-width: 340px;
+}
+
+.entryDisplay {
+  display: flex;
+  gap: 10px;
+}
+
+.entrySlot {
+  width: 44px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 22px;
+  color: #efe7fa;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+}
+
+.digitGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.digitButton {
+  min-height: 48px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 16px;
+  color: #efe7fa;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.digitButton:hover:not(:disabled) {
+  border-color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.12);
+}
+
+.digitButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.padActions {
+  display: flex;
+  gap: 10px;
+}
+
+.padActionButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #9a8bb0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.padActionButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ---------- Game play ---------- */
+
+.turnIndicator {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: #4fd8ff;
+  margin: 0 0 16px;
+}
+
+.guessEntry {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tablesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.guessTable {
+  min-width: 0;
+}
+
+.guessTableTitle {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #9a8bb0;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  font-size: 12.5px;
+  color: #5c5270;
+  margin: 0;
+}
+
+.guessList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.guessRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.guessCode {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #efe7fa;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+}
+
+.chip {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.chipStrike {
+  color: #ff4fd8;
+  background: rgba(255, 79, 216, 0.14);
+  border-color: rgba(255, 79, 216, 0.4);
+}
+
+.chipBall {
+  color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.14);
+  border-color: rgba(79, 216, 255, 0.4);
+}
+
+.chipOut {
+  color: #9a8bb0;
+  background: rgba(154, 139, 176, 0.12);
+  border-color: rgba(154, 139, 176, 0.35);
+}
+
+.revealText {
+  font-size: 13.5px;
+  color: #9a8bb0;
+  margin: 0 0 18px;
+}
+
+.resultActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Online room ---------- */
+
+.statusText {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  color: #9a8bb0;
+  margin: 0 0 16px;
+}
+
+.secretEntry {
+  display: flex;
+  flex-direction: column;
+}
+
+.roomInfoBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(79, 216, 255, 0.08);
+  border: 1px solid rgba(79, 216, 255, 0.35);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.roomCode {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #4fd8ff;
+}
+
+.copyButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: #efe7fa;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.joinRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.joinInput {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #efe7fa;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 140px;
+}
+
+.joinInput::placeholder {
+  color: #5c5270;
+  letter-spacing: 0.06em;
+}
+
+.claimButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: #ff4fd8;
+  background: rgba(255, 79, 216, 0.1);
+  border: 1px solid #ff4fd8;
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* ---------- Responsive (tablet) ---------- */
+@media (max-width: 768px) {
+  .content {
+    padding: 32px 24px 80px;
+  }
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 480px) {
+  .content {
+    padding: 24px 16px 64px;
+  }
+
+  .heading {
+    font-size: clamp(15px, 5vw, 19px);
+  }
+
+  .panel {
+    padding: 20px 16px;
+  }
+
+  .tablesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .digitPadWrap {
+    max-width: 100%;
+  }
+
+  .entrySlot {
+    width: 40px;
+    height: 48px;
+  }
+
+  .digitButton {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .modeButtons {
+    flex-direction: column;
+  }
+
+  .modeButton {
+    text-align: center;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .gameArea {
+    animation: none;
+  }
+}
