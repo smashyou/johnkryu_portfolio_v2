@@ -6,6 +6,7 @@ import {
   Instrument_Serif,
   Outfit,
   Archivo,
+  Press_Start_2P,
 } from "next/font/google";
 
 export const spaceGrotesk = Space_Grotesk({
@@ -58,6 +59,13 @@ export const archivo = Archivo({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+export const pressStart2P = Press_Start_2P({
+  subsets: ["latin"],
+  variable: "--font-arcade",
+  display: "swap",
+  weight: "400",
+});
+
 export const fontVariables = [
   spaceGrotesk.variable,
   jetbrainsMono.variable,
@@ -66,4 +74,5 @@ export const fontVariables = [
   instrumentSerif.variable,
   outfit.variable,
   archivo.variable,
+  pressStart2P.variable,
 ].join(" ");

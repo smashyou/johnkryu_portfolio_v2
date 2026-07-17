@@ -514,3 +514,39 @@ export const concepts: ConceptMeta[] = [
     notes: "original · complete",
   },
 ];
+
+// Gateway card for the Arcade, appended to the concepts grid outside the
+// c1–c7 vote ids (poll code untouched). See spec §"Gateway card".
+export type ArcadeMeta = {
+  slug: "games";
+  tag: string;
+  accent: string;
+  glow: string;
+  title: string;
+  desc: string;
+  notes: string;
+};
+export const arcade: ArcadeMeta = {
+  slug: "games",
+  tag: "08 · THE ARCADE",
+  accent: "#ff4fd8",
+  glow: "rgba(255,79,216,.12)",
+  title: "The Arcade",
+  desc: "Three games, zero downloads. Challenge the computer — or send a friend an invite link and settle it head-to-head.",
+  notes: "play · multiplayer",
+};
+
+// Copy for the Jarvis gateway banner, verbatim from spec §"Gateway banner".
+export const jarvis: {
+  eyebrow: string;
+  title: string;
+  line: string;
+  hqUrl: "https://ryuco.tech";
+  storyPath: "/jarvis";
+} = {
+  eyebrow: "PERSONAL PROJECT · ALWAYS ON",
+  title: "JARVIS — my personal AI chief of staff",
+  line: "A multi-agent AI company that runs my holding company's operations — agents, vaults, and businesses orbiting one core.",
+  hqUrl: "https://ryuco.tech",
+  storyPath: "/jarvis",
+};
