@@ -297,6 +297,10 @@ export function useGameRoom<TView>(type: GameType): UseGameRoomResult<TView> {
         }
         setError(null);
         lastChangeAtRef.current = Date.now();
+        // Intentional: sendMove doesn't set `status` itself — the
+        // immediately-following poll() re-derives it from the fresh view
+        // (e.g. "playing" vs "waiting"), which is the single source of
+        // truth for status everywhere else in this hook.
         await poll();
         return true;
       } catch {

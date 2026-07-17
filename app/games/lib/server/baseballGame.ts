@@ -118,6 +118,7 @@ function applyMove(
       return { next: { ...g, phase: "done", winner: seat } };
     }
     case "rematch": {
+      if (g.phase !== "done") return { next: g, error: "game in progress" };
       return { next: init() };
     }
     default:
@@ -142,4 +143,5 @@ export const baseballGame: GameReducer<BaseballGame, BaseballMove> = {
   init,
   applyMove,
   viewFor: (g, seat) => viewFor(g, seat),
+  validateMove: isBaseballMove,
 };

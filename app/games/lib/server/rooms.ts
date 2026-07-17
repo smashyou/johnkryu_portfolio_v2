@@ -11,6 +11,20 @@ const RATE_LIMIT_MAX_CREATES = 20;
 const ROOM_CODE_ALLOCATION_ATTEMPTS = 10;
 const CAS_ATTEMPTS = 2; // one initial write attempt + one retry on version conflict
 
+// Atomic compare-and-swap: only writes when the stored state's `version`
+// still matches what we read. Runs as a single Lua EVAL on Upstash so there
+// is no read-check-then-SET window for a concurrent writer to land in
+// (e.g. both players submitting their secret at the same moment).
+// Returns: 1 = written, 0 = version mismatch (someone else wrote first),
+// -1 = room missing entirely.
+const CAS_EVAL_SCRIPT = `
+local cur = redis.call('GET', KEYS[1])
+if not cur then return -1 end
+if cjson.decode(cur).version ~= tonumber(ARGV[1]) then return 0 end
+redis.call('SET', KEYS[1], ARGV[2], 'EX', tonumber(ARGV[3]))
+return 1
+`;
+
 type RegistryEntry = {
   reducer: GameReducer<unknown, unknown>;
   /** Battleship's reducer is a Task 7 stub — moves against it always 501. */
@@ -67,6 +81,50 @@ function seatForToken(state: RoomState<unknown>, token: string): Seat | null {
   if (state.tokens[0] === token) return 1;
   if (state.tokens[1] === token) return 2;
   return null;
+}
+
+/**
+ * Atomically write `updated` under `key` iff the currently stored state's
+ * version still equals `expectedVersion`. See CAS_EVAL_SCRIPT above.
+ */
+async function casWrite(
+  redis: Redis,
+  key: string,
+  expectedVersion: number,
+  updated: RoomState<unknown>
+): Promise<1 | 0 | -1> {
+  const result = await redis.eval<[number, unknown, number], number>(
+    CAS_EVAL_SCRIPT,
+    [key],
+    [expectedVersion, updated, ROOM_TTL_SECONDS]
+  );
+  return result as 1 | 0 | -1;
+}
+
+/**
+ * Extract a best-effort client IP from a Request for rate-limiting. Lives
+ * here (not in the room route) so it can be imported by both the route and
+ * verification scripts without violating Next's route-module export
+ * allowlist (route.ts files may only export GET/POST/etc.).
+ *
+ * x-real-ip (when the proxy sets it) is the most trustworthy single value.
+ * Otherwise fall back to x-forwarded-for — but take the LAST entry, not the
+ * first: intermediate proxies (Vercel included) APPEND the real client IP
+ * to the end of the chain, while the first entry is whatever the client
+ * itself sent and is trivially spoofable.
+ */
+export function clientIp(req: Request): string {
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) {
+    const parts = forwarded
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+  return "unknown";
 }
 
 /**
@@ -155,6 +213,13 @@ export async function applyMove(
   const entry = registry[type];
   if (!entry.implemented) return { error: "not implemented", status: 501 };
 
+  // Reject a missing/malformed move payload before it ever reaches the
+  // reducer — this is what stops e.g. `payload.kind` on `undefined` from
+  // throwing an unhandled 500 out of the route handler.
+  if (entry.reducer.validateMove && !entry.reducer.validateMove(payload)) {
+    return { error: "bad move", status: 400 };
+  }
+
   const key = roomKey(type, roomId);
 
   for (let attempt = 0; attempt < CAS_ATTEMPTS; attempt++) {
@@ -174,7 +239,16 @@ export async function applyMove(
         ? { ...payload, now, lastMoveAt: state.lastMoveAt }
         : payload;
 
-    const { next, error } = entry.reducer.applyMove(state.game, seat, augmentedPayload);
+    // Reducers are documented as pure and non-throwing, but we don't trust
+    // that contract blindly from the caller side — any unexpected throw
+    // (e.g. a validateMove gap) becomes a 400, never an unhandled 500.
+    let result: { next: unknown; error?: string };
+    try {
+      result = entry.reducer.applyMove(state.game, seat, augmentedPayload);
+    } catch {
+      return { error: "bad move", status: 400 };
+    }
+    const { next, error } = result;
     if (error) return { error, status: 400 };
 
     const updated: RoomState<unknown> = {
@@ -184,18 +258,16 @@ export async function applyMove(
       lastMoveAt: now,
     };
 
-    // WATCH-free optimistic concurrency: re-read immediately before writing
-    // to detect a concurrent writer. If the version moved since our initial
-    // read, someone else wrote first — retry once against fresh state,
-    // otherwise report a conflict for the client to retry.
-    const current = await redis.get<RoomState<unknown>>(key);
-    if (!current || current.version !== state.version) {
-      if (attempt < CAS_ATTEMPTS - 1) continue;
-      return { error: "version conflict", status: 409 };
-    }
-
-    await redis.set(key, updated, { ex: ROOM_TTL_SECONDS });
-    return { ok: true };
+    // Atomic compare-and-swap (single Lua EVAL — see CAS_EVAL_SCRIPT) closes
+    // the lost-update window a plain read-check-then-SET would leave open
+    // (e.g. both players submitting secrets in the same instant): the write
+    // only lands if the stored version still matches what we read.
+    const casResult = await casWrite(redis, key, state.version, updated);
+    if (casResult === 1) return { ok: true };
+    if (casResult === -1) return { error: "room not found", status: 404 };
+    // casResult === 0: someone else wrote first — retry once against fresh state.
+    if (attempt < CAS_ATTEMPTS - 1) continue;
+    return { error: "version conflict", status: 409 };
   }
 
   return { error: "version conflict", status: 409 };

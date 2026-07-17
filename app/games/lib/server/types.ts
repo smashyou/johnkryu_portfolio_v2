@@ -32,4 +32,12 @@ export type GameReducer<G, M> = {
   /** Player-scoped public view — must hide information the given seat
    * should not see (e.g. opponent's secret before the game ends). */
   viewFor(g: G, seat: Seat): unknown;
+  /**
+   * Optional shape guard for the raw `unknown` payload coming off the wire.
+   * When present, rooms.ts calls this BEFORE invoking applyMove and rejects
+   * a false result with 400 `{ error: "bad move" }` — this is what keeps a
+   * missing/malformed move payload (e.g. `payload.kind` on `undefined`)
+   * from ever reaching the reducer and throwing an unhandled 500.
+   */
+  validateMove?(payload: unknown): payload is M;
 };

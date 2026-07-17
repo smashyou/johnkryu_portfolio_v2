@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkCreateRateLimit, createRoom, getRedis } from "@/app/games/lib/server/rooms";
+import { checkCreateRateLimit, clientIp, createRoom, getRedis } from "@/app/games/lib/server/rooms";
 import type { GameType } from "@/app/games/lib/server/types";
 
 export const runtime = "nodejs";
@@ -9,12 +9,6 @@ const GAME_TYPES: readonly GameType[] = ["baseball", "battleship"];
 
 function isGameType(value: unknown): value is GameType {
   return typeof value === "string" && (GAME_TYPES as readonly string[]).includes(value);
-}
-
-function clientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return req.headers.get("x-real-ip") || "unknown";
 }
 
 // POST /api/games/room { type } -> { roomId, playerToken, seat: 1 }

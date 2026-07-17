@@ -27,8 +27,15 @@ function viewFor(g: BattleshipGame, _seat: Seat): unknown {
   return g;
 }
 
+// Nothing is a valid battleship move yet (Task 7 lands the real payloads) —
+// always reject in rooms.ts before applyMove is even reached.
+function validateMove(_payload: unknown): _payload is BattleshipMove {
+  return false;
+}
+
 export const battleshipGame: GameReducer<BattleshipGame, BattleshipMove> = {
   init,
   applyMove,
   viewFor,
+  validateMove,
 };
