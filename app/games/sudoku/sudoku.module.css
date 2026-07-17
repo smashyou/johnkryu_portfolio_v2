@@ -52,6 +52,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 10px;
   margin-bottom: 40px;
 }
 
@@ -465,6 +467,345 @@ a.backLink:hover {
   border-color: #ff4fd8;
 }
 
+/* ---------- Nav actions (how-to / leaderboard) ---------- */
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.navActionButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.navActionButton:hover {
+  color: #4fd8ff;
+  border-color: #4fd8ff;
+}
+
+/* ---------- Leaderboard submit form (completion overlay) ---------- */
+
+.lbSubmit {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.submitForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.submitKicker {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #4fd8ff;
+  margin: 0;
+  text-align: center;
+}
+
+.submitLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #9a8bb0;
+  letter-spacing: 0.03em;
+}
+
+.submitInput {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid #2a1b3d;
+  background: rgba(10, 6, 18, 0.6);
+  color: #efe7fa;
+}
+
+.submitInput:focus {
+  outline: none;
+  border-color: #ff4fd8;
+}
+
+.submitCheckboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #efe7fa;
+}
+
+.submitPrivacyNote {
+  margin: -4px 0 0;
+  font-size: 10.5px;
+  color: #9a8bb0;
+}
+
+.submitError {
+  margin: 0;
+  font-size: 11.5px;
+  color: #ff4fd8;
+}
+
+.submitButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #ff4fd8;
+  background: rgba(255, 79, 216, 0.12);
+  color: #ff4fd8;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitButton:hover {
+  background: rgba(255, 79, 216, 0.24);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lbSubmitSuccess {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lbSubmitRank {
+  margin: 0;
+  font-size: 13px;
+  color: #4fd8ff;
+  text-align: center;
+}
+
+.lbViewFullButton {
+  align-self: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  background: transparent;
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.lbViewFullButton:hover {
+  color: #4fd8ff;
+  border-color: #4fd8ff;
+}
+
+.lbWarming {
+  font-size: 12.5px;
+  color: #9a8bb0;
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+/* ---------- Leaderboard panel ---------- */
+
+.lbCard {
+  width: min(420px, 100%);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: rgba(20, 12, 32, 0.95);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255, 79, 216, 0.25);
+}
+
+.lbTabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.lbTab {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.lbTabActive {
+  color: #0a0612;
+  background: #4fd8ff;
+  border-color: #4fd8ff;
+}
+
+.lbDifficultyRow {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.lbDifficultyButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  background: transparent;
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.lbDifficultyActive {
+  color: #0a0612;
+  background: #ff4fd8;
+  border-color: #ff4fd8;
+}
+
+.lbBody {
+  min-height: 60px;
+  margin-bottom: 16px;
+}
+
+.lbLoading,
+.lbEmpty {
+  font-size: 12.5px;
+  color: #9a8bb0;
+  padding: 16px 0;
+}
+
+.lbList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.lbRow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.lbRow:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.lbRowMe {
+  border-color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.08);
+}
+
+.lbRank {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  color: #ff4fd8;
+}
+
+.lbName {
+  font-size: 12.5px;
+  color: #efe7fa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lbLocation {
+  font-size: 11px;
+  color: #9a8bb0;
+}
+
+.lbTime {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: #4fd8ff;
+}
+
+.lbMeRow {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #4fd8ff;
+  text-align: center;
+}
+
+/* ---------- How-to-play overlay ---------- */
+
+.howtoCard {
+  width: min(480px, 100%);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: rgba(20, 12, 32, 0.95);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 28px 26px;
+  text-align: left;
+  box-shadow: 0 0 40px rgba(255, 79, 216, 0.25);
+}
+
+.howtoCard .overlayKicker {
+  text-align: center;
+}
+
+.howtoBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.howtoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.howtoTitle {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: #4fd8ff;
+  margin: 0;
+}
+
+.howtoText {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #9a8bb0;
+  margin: 0;
+}
+
 /* ---------- Responsive (tablet) ---------- */
 @media (max-width: 768px) {
   .content {
@@ -500,6 +841,25 @@ a.backLink:hover {
     height: 34px;
     font-size: 14px;
   }
+
+  .navActions {
+    gap: 6px;
+  }
+
+  .navActionButton {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+
+  .lbCard,
+  .howtoCard {
+    padding: 22px 16px;
+  }
+
+  .lbRow {
+    grid-template-columns: 28px 1fr auto;
+    font-size: 11px;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -522,7 +882,12 @@ a.backLink:hover {
   .eraseButton,
   .shareButton,
   .newGameButton,
-  .closeButton {
+  .closeButton,
+  .navActionButton,
+  .submitButton,
+  .lbViewFullButton,
+  .lbTab,
+  .lbDifficultyButton {
     transition: none;
   }
 }
