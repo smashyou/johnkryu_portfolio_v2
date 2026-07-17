@@ -202,6 +202,44 @@ a.navItemCta:hover {
   }
 }
 
+/* ---------- Phone fixed-element rearrangement ----------
+   Below ~600px the switch pill, nav pill, and teardown badge no longer fit
+   on one row (verified: they overlap at 360/390px). Stack them instead —
+   switch pill top-left and badge top-right stay a compact row, the nav pill
+   drops to a second row spanning almost the full width (still horizontally
+   scrollable, matching the 700px rule above) so nothing is clipped or
+   unreachable. */
+@media (max-width: 600px) {
+  .switchPill {
+    top: 10px;
+    left: 10px;
+    transform: scale(0.82);
+    transform-origin: top left;
+  }
+
+  .badge {
+    top: 10px;
+    right: 10px;
+    font-size: 9px;
+    padding: 4px 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .nav {
+    top: 54px;
+    max-width: calc(100vw - 20px);
+    padding: 5px 6px;
+    gap: 1px;
+  }
+  a.navItem,
+  a.navItemActive,
+  .navResumeBtn,
+  a.navItemCta {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+}
+
 /* ---------- Scroll story wrapper ---------- */
 
 .story {
@@ -266,6 +304,42 @@ a.navItemCta:hover {
   animation: pulse 2.4s infinite;
 }
 
+/* ---------- Phone hero: keep the skull dominant ----------
+   The canvas behind is the star — shrink and lighten the card (tighter
+   padding, smaller type, more transparency) so it reads as a caption
+   rather than a cover, and keep it low so the skull owns the upper frame. */
+@media (max-width: 600px) {
+  .heroSection {
+    padding: 0 18px 3vh;
+  }
+
+  .heroCard {
+    padding: 20px 22px 18px;
+    border-radius: 16px;
+    background: rgba(249, 248, 246, 0.68);
+    max-width: 100%;
+  }
+
+  .heroEyebrow {
+    font-size: 9.5px;
+    margin-bottom: 10px;
+  }
+
+  .heroTitle {
+    font-size: clamp(26px, 8vw, 34px);
+    margin-bottom: 8px;
+  }
+
+  .heroLede {
+    font-size: 13.5px;
+  }
+
+  .heroScrollHint {
+    margin-top: 16px;
+    font-size: 10px;
+  }
+}
+
 /* ---------- Chapters ---------- */
 
 .chapterSection {
@@ -326,6 +400,46 @@ a.navItemCta:hover {
   .chapterCard {
     max-width: 100%;
     margin-left: 0 !important;
+  }
+}
+
+/* ---------- Phone chapters: don't bury the skull ----------
+   At align-items:center the card sweeps through the vertical middle of the
+   viewport for most of each 120vh section, covering the exact area the
+   scrubbed canvas is trying to show. Pin it toward the bottom of the section
+   box instead (so it spends the scroll low in the viewport) and shrink type
+   + padding + opacity so what's left on screen reads as a caption, not a
+   cover. No max-height/scroll — copy stays fully visible, just smaller. */
+@media (max-width: 600px) {
+  .chapterSection {
+    align-items: flex-end;
+    padding: 0 5vw 6vh;
+  }
+
+  .chapterCard {
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: rgba(249, 248, 246, 0.66);
+  }
+
+  .chapterEyebrow {
+    font-size: 9.5px;
+    margin-bottom: 8px;
+  }
+
+  .chapterTitle {
+    font-size: 21px;
+    margin-bottom: 6px;
+  }
+
+  .chapterYears {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+
+  .chapterDesc {
+    font-size: 12.5px;
+    line-height: 1.5;
   }
 }
 
@@ -682,6 +796,33 @@ a.workLink:hover {
   line-height: 1.7;
   color: #4a463c;
   margin: 0;
+}
+
+/* ---------- Phone finale: same treatment as the chapter cards ---------- */
+@media (max-width: 600px) {
+  .finaleSection {
+    align-items: flex-end;
+    padding: 0 18px 6vh;
+  }
+
+  .finaleCard {
+    padding: 24px 22px;
+    border-radius: 16px;
+    background: rgba(249, 248, 246, 0.7);
+  }
+
+  .finaleEyebrow {
+    font-size: 9.5px;
+  }
+
+  .finaleTitle {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  .finaleDesc {
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
 }
 
 /* ---------- Contact ---------- */

@@ -74,7 +74,15 @@ export default function TeardownScrubber() {
         dh = H;
         dw = H * ir;
       }
-      const maxW = img.naturalWidth * 1.2;
+      // Compact portrait viewports (phones/tablets held upright) always land
+      // in the fit-by-height branch above, since these frames are landscape
+      // (1280x720). The default 1.2x cap was tuned for landscape/desktop
+      // viewports and can clip a portrait fit well short of full height —
+      // e.g. at 768x1024 it holds the frame to ~84% of viewport height.
+      // Widen the cap on narrow portrait viewports only so the frame fills
+      // the available height; desktop (cr > ir, or W > 900) is unaffected.
+      const isCompactPortrait = W > 0 && H > W && W <= 900;
+      const maxW = img.naturalWidth * (isCompactPortrait ? 1.8 : 1.2);
       if (dw > maxW) {
         dh *= maxW / dw;
         dw = maxW;
