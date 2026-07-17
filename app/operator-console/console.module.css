@@ -157,6 +157,18 @@
   display: flex;
   gap: 20px;
   align-items: center;
+  min-width: 0;
+}
+
+/* Wrapper around just the tilde links (RESUME is a `.statusNav` sibling,
+   outside this element) so it — not the whole nav row — becomes the
+   horizontally-scrollable region on phones. Base rule reproduces the
+   flex/gap the links used to get directly from `.statusNav` before this
+   wrapper existed, so desktop layout is unchanged. */
+.statusNavScroll {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
 /* `a.` prefix bumps specificity above the global `.page :global(a)` color
@@ -201,12 +213,58 @@ a.statusLink:hover {
     gap: 12px;
     flex-wrap: wrap;
   }
+  .statusNavScroll {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 700px) {
-  .statusOperator,
-  .statusRight {
+  .statusOperator {
     display: none;
+  }
+}
+
+/* Phones: the status bar becomes 3 stacked rows — (1) brand + SWITCH,
+   (2) the tilde links as a single-line horizontally-scrollable strip with
+   RESUME pinned at the end (not part of the scroll region), (3) STATUS.
+   This keeps RYU.OS, SWITCH, RESUME and STATUS all visible without
+   scrolling, per the design brief, while the ~7 tilde links — the least
+   critical items — scroll instead of wrapping into a tall block. */
+@media (max-width: 600px) {
+  .statusBar {
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 10px;
+    padding: 10px 16px;
+  }
+  .statusNav {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+  .statusNavScroll {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+  }
+  .statusNavScroll::-webkit-scrollbar {
+    height: 3px;
+  }
+  .statusNavScroll::-webkit-scrollbar-thumb {
+    background: #0d2b1c;
+    border-radius: 2px;
+  }
+  a.statusLink {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .statusResumeBtn {
+    flex-shrink: 0;
   }
 }
 
@@ -300,6 +358,26 @@ a.statusLink:hover {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .bootSection {
+    padding: 100px 18px 40px;
+  }
+  .bootBody {
+    padding: 20px 18px;
+    min-height: 0;
+  }
+  .bootLine {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .heroTitle {
+    font-size: clamp(30px, 9vw, 44px);
+  }
+  .heroTagline {
+    font-size: 14px;
+  }
 }
 
 a.ctaPrimary {
@@ -476,6 +554,25 @@ a.ctaSecondary:hover {
   }
 }
 
+@media (max-width: 600px) {
+  .section {
+    padding: 60px 18px;
+  }
+  .sectionTitle {
+    font-size: 26px;
+  }
+  .readmeCard {
+    padding: 20px 20px;
+  }
+  .readmeText {
+    font-size: 13.5px;
+    overflow-wrap: break-word;
+  }
+  .fieldPhoto {
+    height: 180px;
+  }
+}
+
 /* ---------- Commit history ---------- */
 
 .commitLog {
@@ -524,6 +621,24 @@ a.ctaSecondary:hover {
   .commitRow {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .commitRow {
+    padding: 14px 18px;
+  }
+  .commitHash,
+  .commitYears {
+    font-size: 11px;
+  }
+  .commitTitle {
+    font-size: 13px;
+    overflow-wrap: break-word;
+  }
+  .commitDesc {
+    font-size: 11px;
+    overflow-wrap: break-word;
   }
 }
 
@@ -623,6 +738,25 @@ a.ctaSecondary:hover {
   line-height: 1.8;
   color: #5f9e7d;
   margin-left: 18px;
+}
+
+@media (max-width: 600px) {
+  .servicesCard {
+    padding: 20px 18px;
+  }
+  .serviceCategoryTitle {
+    font-size: 13.5px;
+    overflow-wrap: break-word;
+  }
+  .serviceItemLine {
+    font-size: 12.5px;
+    overflow-wrap: break-word;
+  }
+  .serviceSubitemLine {
+    font-size: 11.5px;
+    margin-left: 14px;
+    overflow-wrap: break-word;
+  }
 }
 
 /* ---------- Deploys ---------- */
@@ -781,7 +915,20 @@ a.deployLiveLink {
     grid-template-columns: 1fr;
   }
   .deployThumbBtn {
-    min-height: 180px;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 600px) {
+  .deployContent {
+    padding: 18px 20px;
+  }
+  .deployTitle {
+    font-size: 17px;
+  }
+  .deployDesc {
+    overflow-wrap: break-word;
   }
 }
 
@@ -952,6 +1099,30 @@ a.uplinkSocialLink:hover {
   text-align: center;
   font-size: 12px;
   color: #1d4d33;
+}
+
+@media (max-width: 600px) {
+  .uplinkCard {
+    padding: 22px 18px;
+  }
+  .uplinkCopy {
+    font-size: 13.5px;
+    overflow-wrap: break-word;
+  }
+  a.uplinkMailBtn,
+  .uplinkResumeBtn {
+    padding: 13px 22px;
+    font-size: 13.5px;
+    width: 100%;
+    text-align: center;
+  }
+  .uplinkFormWrap {
+    margin-top: 36px;
+    padding-top: 28px;
+  }
+  .uplinkFormTitle {
+    overflow-wrap: break-word;
+  }
 }
 
 /* ---------- Reduced motion ----------
