@@ -297,6 +297,89 @@
   color: #3a4356;
 }
 
+/* ---------- Responsive (tablet) ---------- */
+@media (max-width: 900px) {
+  .content {
+    padding: 64px 28px 72px;
+  }
+
+  .grid {
+    gap: 18px;
+  }
+
+  .card {
+    padding: 26px 26px;
+  }
+
+  .cardTitle {
+    font-size: 24px;
+  }
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 600px) {
+  .content {
+    padding: 48px 20px 56px;
+  }
+
+  .avatarWrap,
+  .avatarFrame {
+    width: 84px;
+    height: 84px;
+  }
+
+  .headline {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+
+  .intro {
+    font-size: 15px;
+    margin-bottom: 36px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    padding: 22px 20px;
+  }
+
+  .cardTitle {
+    font-size: 22px;
+  }
+
+  .cardDesc {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .cardFooter {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .cardActions {
+    gap: 10px;
+  }
+
+  .voteBtn {
+    padding: 6px 12px;
+  }
+
+  .poll {
+    margin-top: 30px;
+    padding: 18px 20px;
+  }
+
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    margin-top: 48px;
+  }
+}
+
 /* ---------- Reduced motion ---------- */
 /* Placed last so it wins the cascade over the unconditional animation
    declarations above (equal-specificity rules resolve by source order). */
