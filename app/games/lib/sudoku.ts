@@ -161,9 +161,18 @@ function digHoles(solution: readonly number[], rng: () => number, targetClues: n
 
 /**
  * Generates a puzzle/solution pair for `difficulty` using `rng`.
- * `puzzle` is an 81-length array (row-major, 0 = empty cell) guaranteed to
- * have exactly one solution; `solution` is the fully solved 81-length grid.
- * Retries with a fresh fill on the rare occasion digging stalls badly.
+ * `puzzle` is an 81-length array (row-major, 0 = empty cell); `solution` is
+ * the fully solved 81-length grid. `digHoles` already only accepts a dig
+ * when the result still has a unique solution (see its cap=2 check above),
+ * so every `puzzle` this function can return is unique-solution by
+ * construction — there is nothing left to re-verify here.
+ *
+ * What digging does NOT guarantee is *hitting* the clue-count target: a
+ * particular fill order can stall well above `target` (some cells simply
+ * can't be removed without introducing a second solution). So the retry
+ * here is real: it re-fills and re-digs (a fresh `fillGrid` gives a
+ * different removal order) until a puzzle lands within 2 clues of the
+ * target, keeping the closest attempt seen if none do.
  */
 export function generate(
   difficulty: Difficulty,
@@ -171,20 +180,25 @@ export function generate(
 ): { puzzle: number[]; solution: number[] } {
   const target = CLUE_TARGETS[difficulty];
   const maxAttempts = 5;
-  let last: { puzzle: number[]; solution: number[] } | null = null;
+  let best: { puzzle: number[]; solution: number[] } | null = null;
+  let bestClueCount = Infinity;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const solution = fillGrid(rng);
     const puzzle = digHoles(solution, rng, target);
-    last = { puzzle, solution };
-    if (countSolutions(puzzle, 2) === 1) {
-      return last;
+    const clueCount = puzzle.filter((v) => v !== 0).length;
+    if (clueCount <= target + 2) {
+      return { puzzle, solution };
+    }
+    if (clueCount < bestClueCount) {
+      bestClueCount = clueCount;
+      best = { puzzle, solution };
     }
   }
 
   // Should be unreachable in practice, but never throw from a pure fn —
-  // return the last attempt even if digging under-shot the clue target.
-  return last as { puzzle: number[]; solution: number[] };
+  // return the closest-to-target attempt seen even if none landed in-band.
+  return best as { puzzle: number[]; solution: number[] };
 }
 
 /** YYYYMMDD integer seed for the UTC calendar date of `dateUtc`. */

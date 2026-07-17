@@ -377,6 +377,13 @@ a.backLink:hover {
   margin: 0 0 16px;
 }
 
+.errorText {
+  color: #ff4fd8;
+  font-size: 13px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  margin: 8px 0 0;
+}
+
 .secretEntry {
   display: flex;
   flex-direction: column;

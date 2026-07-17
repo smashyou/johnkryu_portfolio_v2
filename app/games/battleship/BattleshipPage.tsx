@@ -607,6 +607,7 @@ function OnlineGame() {
             onReady={() => void room.sendMove({ kind: "placement", placements })}
             readyLabel="Submit fleet"
           />
+          {room.error && <p className={styles.errorText}>{room.error}</p>}
         </div>
       );
     }
@@ -641,6 +642,7 @@ function OnlineGame() {
         claimWinAvailable={!isMyTurn}
         claimWinError={claimWinError}
       />
+      {room.error && !claimWinError && <p className={styles.errorText}>{room.error}</p>}
     </div>
   );
 }

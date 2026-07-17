@@ -539,6 +539,8 @@ export default function BaseballPage() {
                   </p>
                 )}
 
+                {room.error && <p className={styles.errorText}>{room.error}</p>}
+
                 {room.view.phase === "setup" &&
                   (!room.view.mySecretSet ? (
                     <div className={styles.secretEntry}>
