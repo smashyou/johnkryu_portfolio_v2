@@ -146,6 +146,45 @@ a.navCta:hover {
   }
 }
 
+@media (max-width: 600px) {
+  .nav {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    row-gap: 10px;
+  }
+  .navLeft {
+    gap: 10px;
+    flex: none;
+  }
+  a.navBrand {
+    font-size: 13px;
+  }
+  .navLinks {
+    order: 3;
+    flex-basis: 100%;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: flex-start;
+    padding-bottom: 2px;
+  }
+  .navLinks::-webkit-scrollbar {
+    display: none;
+  }
+  a.navLink {
+    font-size: 13px;
+    white-space: nowrap;
+    flex: none;
+  }
+  a.navCta {
+    font-size: 13px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    flex: none;
+  }
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
@@ -302,6 +341,39 @@ a.ctaSecondary:hover {
   letter-spacing: 0.2em;
 }
 
+@media (max-width: 600px) {
+  .hero {
+    padding: 110px 20px 64px;
+  }
+  .heroTitle {
+    font-size: clamp(38px, 12vw, 56px);
+  }
+  .heroLede {
+    font-size: 16px;
+  }
+  .heroCtas {
+    width: 100%;
+  }
+  a.ctaPrimary,
+  a.ctaSecondary {
+    padding: 13px 24px;
+    font-size: 14px;
+  }
+  .heroImg {
+    width: 200px;
+  }
+  .heroGlow {
+    width: 220px;
+    height: 220px;
+  }
+  .heroLine {
+    width: 240px;
+  }
+  .scrollHint {
+    bottom: 20px;
+  }
+}
+
 /* ---------- Section shell ---------- */
 
 .section {
@@ -331,6 +403,19 @@ a.ctaSecondary:hover {
   color: #8b98ad;
   font-size: 16px;
   margin: 0 0 44px;
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 72px 20px;
+  }
+  .sectionTitle {
+    font-size: 32px;
+    margin: 0 0 32px;
+  }
+  .sectionLede {
+    margin: 0 0 32px;
+  }
 }
 
 /* ---------- About ---------- */
@@ -417,6 +502,22 @@ a.ctaSecondary:hover {
 @media (max-width: 860px) {
   .aboutGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .aboutText {
+    font-size: 15.5px;
+  }
+  .statGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .statCard {
+    padding: 16px;
+  }
+  .statValue {
+    font-size: 22px;
   }
 }
 
@@ -825,7 +926,17 @@ a.workLink:hover {
     grid-template-columns: 1fr;
   }
   .workImageBtn {
-    min-height: 180px;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 600px) {
+  .workContent {
+    padding: 22px 20px;
+  }
+  .workTitle {
+    font-size: 19px;
   }
 }
 
@@ -888,6 +999,31 @@ a.mailBtn:hover {
 .resumeBtn:hover {
   border-color: #22d3ee;
   color: #22d3ee;
+}
+
+@media (max-width: 600px) {
+  .contactSection {
+    padding: 72px 20px 100px;
+  }
+  .contactCopy {
+    font-size: 15.5px;
+  }
+  .contactCtas {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  a.mailBtn,
+  .resumeBtn {
+    padding: 15px 24px;
+    font-size: 14.5px;
+    text-align: center;
+    word-break: break-word;
+  }
+  .socialRow {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 }
 
 .socialRow {
