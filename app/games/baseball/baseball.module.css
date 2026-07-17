@@ -40,7 +40,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 40px;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.howToButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.1);
+  border: 1px solid rgba(79, 216, 255, 0.4);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.howToButton:hover {
+  background: rgba(79, 216, 255, 0.2);
+  border-color: #4fd8ff;
 }
 
 a.backLink {
@@ -72,6 +100,15 @@ a.backLink:hover {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -174,6 +211,89 @@ a.backLink:hover {
 
 .difficultyButtons .modeButton {
   text-transform: capitalize;
+}
+
+/* ---------- How to play modal ---------- */
+
+.howToBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 3, 10, 0.72);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out both;
+}
+
+.howToModal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(20, 12, 32, 0.97);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 32px 28px 28px;
+  box-shadow: 0 0 40px rgba(255, 79, 216, 0.18);
+  animation: fadeUp 0.3s ease-out both;
+}
+
+.howToClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #9a8bb0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.howToClose:hover {
+  color: #ff4fd8;
+  border-color: #ff4fd8;
+}
+
+.howToBody {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #c9bfdd;
+}
+
+.howToBody p {
+  margin: 0 0 14px;
+}
+
+.howToBody ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+
+.howToBody li {
+  margin-bottom: 6px;
+}
+
+.howToBody strong {
+  color: #efe7fa;
+}
+
+.howToExample {
+  background: rgba(255, 79, 216, 0.08);
+  border: 1px solid rgba(255, 79, 216, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #efe7fa;
 }
 
 /* ---------- Digit pad ---------- */
@@ -409,15 +529,62 @@ a.backLink:hover {
   color: #4fd8ff;
 }
 
+.inviteRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* .copyButton / .invitePrimaryButton are applied by InviteShare to both
+   <a> (mailto/sms) and <button> (share/copy) elements, so anchor color +
+   text-decoration are set via the compound `a.className` form — matching
+   `a.backLink` above — to win specificity over any inherited anchor styles. */
 .copyButton {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 12px;
-  color: #efe7fa;
+  letter-spacing: 0.02em;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid #2a1b3d;
   border-radius: 8px;
   padding: 7px 14px;
   cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+a.copyButton {
+  color: #efe7fa;
+  text-decoration: none;
+}
+
+.copyButton:hover {
+  border-color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.1);
+}
+
+.invitePrimaryButton {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  background: rgba(255, 79, 216, 0.16);
+  border: 1px solid #ff4fd8;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+a.invitePrimaryButton {
+  color: #efe7fa;
+  text-decoration: none;
+}
+
+.invitePrimaryButton:hover {
+  background: rgba(255, 79, 216, 0.28);
 }
 
 .joinRow {
@@ -479,6 +646,11 @@ a.backLink:hover {
     padding: 20px 16px;
   }
 
+  .howToModal {
+    padding: 26px 18px 20px;
+    max-height: 90vh;
+  }
+
   .tablesGrid {
     grid-template-columns: 1fr;
   }
@@ -511,7 +683,9 @@ a.backLink:hover {
    declarations above (equal-specificity rules resolve by source order). */
 @media (prefers-reduced-motion: reduce) {
   .hero,
-  .gameArea {
+  .gameArea,
+  .howToBackdrop,
+  .howToModal {
     animation: none;
   }
 }

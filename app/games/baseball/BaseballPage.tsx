@@ -7,7 +7,10 @@ import { useGameRoom } from "@/app/games/lib/useGameRoom";
 import { isValidCode, scoreGuess } from "@/app/games/lib/baseball";
 import { allCodes, filterCandidates, nextGuess, type Difficulty } from "@/app/games/lib/baseballAi";
 import type { BaseballView } from "@/app/games/lib/server/baseballGame";
+import InviteShare from "@/app/games/lib/InviteShare";
 import styles from "./baseball.module.css";
+
+const HOWTO_STORAGE_KEY = "jkr_howto_baseball";
 
 type Mode = "select" | "computer" | "online";
 type ComputerPhase = "difficulty" | "secret" | "playing" | "done";
@@ -84,12 +87,21 @@ function DigitPad({
   );
 }
 
+/** "1 Strike" / "2 Strikes" — full word, correctly pluralized. */
+function pluralize(count: number, word: string) {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+
 function chipsFor(g: ScoredGuess) {
   if (g.out) return <span className={`${styles.chip} ${styles.chipOut}`}>OUT</span>;
   return (
     <>
-      <span className={`${styles.chip} ${styles.chipStrike}`}>{g.strikes}S</span>
-      <span className={`${styles.chip} ${styles.chipBall}`}>{g.balls}B</span>
+      {g.strikes > 0 && (
+        <span className={`${styles.chip} ${styles.chipStrike}`}>{pluralize(g.strikes, "Strike")}</span>
+      )}
+      {g.balls > 0 && (
+        <span className={`${styles.chip} ${styles.chipBall}`}>{pluralize(g.balls, "Ball")}</span>
+      )}
     </>
   );
 }
@@ -117,6 +129,77 @@ function GuessTable({ title, guesses }: { title: string; guesses: ScoredGuess[] 
   );
 }
 
+function HowToPlayModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className={styles.howToBackdrop} onClick={onClose}>
+      <div
+        className={styles.howToModal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="baseball-howto-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className={styles.howToClose}
+          aria-label="Close how to play"
+          onClick={onClose}
+        >
+          ✕
+        </button>
+        <h2 id="baseball-howto-title" className={styles.subheading}>
+          How to play Baseball
+        </h2>
+        <div className={styles.howToBody}>
+          <p>
+            Set a secret 3-digit code using <strong>3 different digits</strong> (0–9,
+            no repeats) — your opponent never sees it. Then take turns guessing each
+            other&apos;s secret, one guess per turn.
+          </p>
+          <p>Every guess gets scored against the opponent&apos;s secret:</p>
+          <ul>
+            <li>
+              <strong>Strike</strong> — a digit in your guess is the right digit in the
+              right position.
+            </li>
+            <li>
+              <strong>Ball</strong> — a digit in your guess is in the secret, but in the
+              wrong position.
+            </li>
+            <li>
+              <strong>Out</strong> — none of your guessed digits appear in the secret at
+              all.
+            </li>
+          </ul>
+          <p className={styles.howToExample}>
+            If the secret is <strong>357</strong>: guessing <strong>735</strong> → 3
+            Balls · guessing <strong>153</strong> → 1 Strike, 1 Ball · guessing{" "}
+            <strong>210</strong> → OUT. First to 3 Strikes wins.
+          </p>
+          <p>
+            <strong>vs Computer</strong> offers three difficulties — Easy guesses at
+            random, Normal narrows candidates down using your feedback, and Hard plays
+            a tighter, minimax-style strategy.
+          </p>
+          <p>
+            <strong>Online Room</strong> gives you a 5-character room code and invite
+            link so a friend can join and play head-to-head — turns alternate, and both
+            secrets stay hidden on the server until the game ends.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
@@ -125,6 +208,21 @@ export default function BaseballPage() {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>("select");
   const [entry, setEntry] = useState("");
+  const [showHowTo, setShowHowTo] = useState(false);
+
+  // Auto-open the rules on a visitor's first-ever visit to this game, then
+  // never again — tracked via a localStorage flag. Wrapped in try/catch
+  // since localStorage can throw in privacy-locked-down browsers.
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem(HOWTO_STORAGE_KEY)) {
+        window.localStorage.setItem(HOWTO_STORAGE_KEY, "1");
+        setShowHowTo(true);
+      }
+    } catch {
+      /* localStorage unavailable — skip auto-open, button still works */
+    }
+  }, []);
 
   // ---- vs Computer state ----
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
@@ -141,7 +239,6 @@ export default function BaseballPage() {
   // ---- Online room state ----
   const room = useGameRoom<BaseballView>("baseball");
   const [joinCode, setJoinCode] = useState("");
-  const [copied, setCopied] = useState(false);
   const autoJoinedRef = useRef(false);
   const lastViewJsonRef = useRef<string | null>(null);
   const lastViewChangeAtRef = useRef<number>(Date.now());
@@ -328,18 +425,6 @@ export default function BaseballPage() {
     await room.sendMove({ kind: "rematch" });
   }
 
-  async function copyInvite() {
-    if (!room.inviteUrl) return;
-    const url = `${window.location.origin}${room.inviteUrl}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* clipboard unavailable — invite link is still visible for manual copy */
-    }
-  }
-
   const showOnlineGameArea =
     (room.status === "waiting" || room.status === "playing") && room.view !== null;
 
@@ -350,8 +435,19 @@ export default function BaseballPage() {
           <Link href="/games" className={styles.backLink}>
             ← ARCADE
           </Link>
-          <span className={styles.brand}>⚾ BASEBALL</span>
+          <div className={styles.navRight}>
+            <span className={styles.brand}>⚾ BASEBALL</span>
+            <button
+              type="button"
+              className={styles.howToButton}
+              onClick={() => setShowHowTo(true)}
+            >
+              How to play
+            </button>
+          </div>
         </nav>
+
+        {showHowTo && <HowToPlayModal onClose={() => setShowHowTo(false)} />}
 
         {mode === "select" && (
           <div className={styles.hero}>
@@ -518,9 +614,14 @@ export default function BaseballPage() {
               <div className={styles.roomInfoBar}>
                 <span className={styles.roomCode}>ROOM {room.roomId}</span>
                 {room.inviteUrl && (
-                  <button type="button" className={styles.copyButton} onClick={copyInvite}>
-                    {copied ? "Copied!" : "Copy invite link"}
-                  </button>
+                  <div className={styles.inviteRow}>
+                    <InviteShare
+                      url={`${typeof window !== "undefined" ? window.location.origin : ""}${room.inviteUrl}`}
+                      gameName="⚾ Baseball"
+                      buttonClassName={styles.copyButton}
+                      primaryButtonClassName={styles.invitePrimaryButton}
+                    />
+                  </div>
                 )}
               </div>
             )}
