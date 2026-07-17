@@ -124,6 +124,124 @@
   animation: fadeUp 0.7s 0.18s ease-out both;
 }
 
+/* ---------- Jarvis banner ---------- */
+/* Distinct from the concept cards below: dimmed RyuCo HQ screenshot as a
+   backdrop, cyan-violet gradient hairline border (the 1px padding + inner
+   frame is the border, so the backdrop image can bleed to the edge). */
+.jarvisBanner {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(120deg, #22d3ee, #7dd6f5 45%, #c9a6ff);
+  margin: 0 0 32px;
+  animation: fadeUp 0.7s 0.22s ease-out both;
+}
+
+.jarvisFrame {
+  position: relative;
+  border-radius: 19px;
+  overflow: hidden;
+  background: #0c0f18;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+}
+
+.jarvisBackdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+}
+
+.jarvisOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    #05060c 0%,
+    rgba(5, 6, 12, 0.93) 32%,
+    rgba(5, 6, 12, 0.55) 68%,
+    rgba(5, 6, 12, 0.78) 100%
+  );
+}
+
+.jarvisContent {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  padding: 40px 44px;
+}
+
+.jarvisEyebrow {
+  display: block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.28em;
+  color: #7dd6f5;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.jarvisTitle {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+
+.jarvisLine {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #b7bfd1;
+  margin: 0 0 28px;
+  max-width: 520px;
+}
+
+.jarvisActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.jarvisHqBtn {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #05060c;
+  background: linear-gradient(120deg, #22d3ee, #c9a6ff);
+  border-radius: 999px;
+  padding: 11px 22px;
+  text-decoration: none;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.jarvisHqBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25);
+}
+
+.jarvisStoryBtn {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #eef1f8;
+  border: 1px solid #2a3350;
+  border-radius: 999px;
+  padding: 10px 22px;
+  text-decoration: none;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.jarvisStoryBtn:hover {
+  border-color: #7dd6f5;
+  color: #7dd6f5;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -303,6 +421,15 @@
     padding: 64px 28px 72px;
   }
 
+  .jarvisContent {
+    max-width: 100%;
+    padding: 32px 32px;
+  }
+
+  .jarvisTitle {
+    font-size: 26px;
+  }
+
   .grid {
     gap: 18px;
   }
@@ -335,6 +462,49 @@
   .intro {
     font-size: 15px;
     margin-bottom: 36px;
+  }
+
+  /* Stacked banner: backdrop stays legible under a heavier bottom-weighted
+     overlay, content gets edge-to-edge padding, actions become full-width
+     tappable buttons instead of an inline row. */
+  .jarvisBanner {
+    margin-bottom: 20px;
+  }
+
+  .jarvisFrame {
+    min-height: 0;
+  }
+
+  .jarvisOverlay {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 6, 12, 0.72) 0%,
+      #05060c 82%
+    );
+  }
+
+  .jarvisContent {
+    padding: 26px 22px;
+  }
+
+  .jarvisTitle {
+    font-size: 22px;
+  }
+
+  .jarvisLine {
+    font-size: 14.5px;
+    margin-bottom: 22px;
+  }
+
+  .jarvisActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .jarvisHqBtn,
+  .jarvisStoryBtn {
+    text-align: center;
   }
 
   .grid {
@@ -435,6 +605,7 @@
   .eyebrow,
   .headline,
   .intro,
+  .jarvisBanner,
   .grid,
   .poll,
   .footerLinks {

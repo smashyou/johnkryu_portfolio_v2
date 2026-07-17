@@ -4,6 +4,7 @@ import Link from "next/link";
 import { concepts, profile } from "@/app/data/content";
 import { useVotes } from "@/app/components/shared/useVotes";
 import StarfieldCanvas from "./StarfieldCanvas";
+import JarvisBanner from "./JarvisBanner";
 import styles from "./gateway.module.css";
 
 // CSS custom property used to drive the per-card accent color in :hover
@@ -62,6 +63,8 @@ export default function GatewayPage() {
           One portfolio, six ways in. Each is a fully different world — same
           engineer underneath. Pick whichever matches your energy.
         </p>
+
+        <JarvisBanner />
 
         <div className={styles.grid}>
           {concepts.map((c) => {

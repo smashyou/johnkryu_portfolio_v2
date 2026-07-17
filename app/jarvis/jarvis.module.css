@@ -1,0 +1,384 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #05060c;
+  color: #eef1f8;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Static subtle background — deliberately not the gateway starfield
+   (that motif stays on the gateway itself). */
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% -10%, rgba(34, 211, 238, 0.12), transparent),
+    radial-gradient(ellipse 55% 40% at 85% 10%, rgba(201, 166, 255, 0.1), transparent);
+}
+
+.page :global(::selection) {
+  background: rgba(125, 214, 245, 0.25);
+}
+
+.page :global(a) {
+  color: #7dd6f5;
+  text-decoration: none;
+}
+
+.page :global(a:hover) {
+  color: #a8e6fb;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 32px 90px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 56px;
+}
+
+.brand {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  color: #7dd6f5;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  padding-bottom: 64px;
+  border-bottom: 1px solid #1c2233;
+  margin-bottom: 56px;
+  animation: fadeUp 0.7s ease-out both;
+}
+
+.eyebrow {
+  display: block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: #7dd6f5;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 18px;
+  max-width: 720px;
+}
+
+.lead {
+  font-size: 17px;
+  line-height: 1.65;
+  color: #8d97ab;
+  max-width: 620px;
+  margin: 0 0 28px;
+}
+
+/* `a.` prefix bumps specificity above the global `.page :global(a)` color
+   rule (specificity 0,1,1) — otherwise the pill/link colors declared here
+   would lose the cascade despite appearing later in the file. */
+a.hqBtn {
+  display: inline-block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #05060c;
+  background: linear-gradient(120deg, #22d3ee, #c9a6ff);
+  border-radius: 999px;
+  padding: 12px 24px;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+a.hqBtn:hover {
+  color: #05060c;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25);
+}
+
+a.backLink {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  color: #8d97ab;
+}
+
+a.backLink:hover {
+  color: #7dd6f5;
+}
+
+.shot {
+  margin-top: 40px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #1c2233;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.shotImg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Sections ---------- */
+.section {
+  padding-bottom: 56px;
+  border-bottom: 1px solid #1c2233;
+  margin-bottom: 56px;
+}
+
+.sectionTitle {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 20px;
+}
+
+.sectionText {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: #8d97ab;
+  max-width: 680px;
+  margin: 0 0 16px;
+}
+
+.sectionText:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Diagram (HTML/CSS only, no canvas) ---------- */
+.diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 36px;
+}
+
+.diagRow {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.diagConnector {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 15px;
+  line-height: 1;
+  color: #3a4356;
+  padding: 6px 0;
+}
+
+.diagBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  background: #0c0f18;
+  border: 1px solid #1c2233;
+  border-radius: 14px;
+  padding: 18px 20px;
+  min-width: 170px;
+  flex: 1 1 200px;
+  max-width: 280px;
+}
+
+.diagYou,
+.diagJarvis {
+  border-color: #2a3350;
+  box-shadow: 0 0 0 1px rgba(125, 214, 245, 0.12);
+}
+
+.diagSpine {
+  max-width: 460px;
+  flex: 1 1 100%;
+  border-style: dashed;
+}
+
+.diagLabel {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #eef1f8;
+}
+
+.diagSub {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #8d97ab;
+}
+
+/* ---------- A day with Jarvis ---------- */
+.dayList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dayItem {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #8d97ab;
+  max-width: 680px;
+}
+
+.dayItem::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #7dd6f5;
+}
+
+.dayLabel {
+  color: #eef1f8;
+  font-weight: 600;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.footerTitle {
+  font-size: clamp(24px, 3.5vw, 32px);
+  font-weight: 700;
+  margin: 0 0 24px;
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Responsive (tablet) ---------- */
+@media (max-width: 900px) {
+  .content {
+    padding: 32px 24px 72px;
+  }
+
+  .hero {
+    padding-bottom: 48px;
+    margin-bottom: 48px;
+  }
+
+  .section {
+    padding-bottom: 44px;
+    margin-bottom: 44px;
+  }
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 600px) {
+  .content {
+    padding: 24px 18px 56px;
+  }
+
+  .nav {
+    margin-bottom: 40px;
+  }
+
+  .brand {
+    font-size: 12px;
+    letter-spacing: 0.24em;
+  }
+
+  .hero {
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+  }
+
+  .lead {
+    font-size: 15px;
+  }
+
+  a.hqBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .shot {
+    margin-top: 28px;
+  }
+
+  .section {
+    padding-bottom: 36px;
+    margin-bottom: 36px;
+  }
+
+  .sectionText {
+    font-size: 14.5px;
+  }
+
+  .diagRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .diagBox {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .diagSpine {
+    max-width: 100%;
+  }
+
+  .footerActions {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    animation: none;
+  }
+  a.hqBtn:hover {
+    transform: none;
+  }
+}
