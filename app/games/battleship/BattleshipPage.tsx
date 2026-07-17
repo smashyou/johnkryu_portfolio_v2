@@ -21,6 +21,8 @@ import styles from "./battleship.module.css";
 type Mode = "computer" | "online" | null;
 type CellState = "empty" | "ship" | "hit" | "miss";
 
+const CLAIM_WIN_IDLE_MS = 180000;
+
 function emptyGrid(): CellState[][] {
   return Array.from({ length: BOARD_SIZE }, () => Array<CellState>(BOARD_SIZE).fill("empty"));
 }
@@ -253,7 +255,6 @@ type BattleUIProps = {
   onRematch: () => void;
   onClaimWin?: () => void;
   claimWinAvailable: boolean;
-  claimWinError?: string | null;
 };
 
 function BattleUI({
@@ -269,7 +270,6 @@ function BattleUI({
   onRematch,
   onClaimWin,
   claimWinAvailable,
-  claimWinError,
 }: BattleUIProps) {
   const [log, setLog] = useState<string[]>([]);
   const myShotsLenRef = useRef(0);
@@ -359,7 +359,6 @@ function BattleUI({
           </button>
         )}
       </div>
-      {claimWinError && <p className={styles.errorText}>{claimWinError}</p>}
     </div>
   );
 }
@@ -501,7 +500,9 @@ function OnlineGame() {
   const [joinCode, setJoinCode] = useState("");
   const [copied, setCopied] = useState(false);
   const [placements, setPlacements] = useState<Placement[]>([]);
-  const [claimWinError, setClaimWinError] = useState<string | null>(null);
+  const lastViewJsonRef = useRef<string | null>(null);
+  const lastViewChangeAtRef = useRef<number>(Date.now());
+  const [, forceClaimRecheck] = useState(0);
 
   useEffect(() => {
     const roomParam = searchParams.get("room");
@@ -521,13 +522,54 @@ function OnlineGame() {
     });
   }, [room.inviteUrl]);
 
-  async function handleClaimWin() {
-    setClaimWinError(null);
-    const ok = await room.sendMove({ kind: "claimWin" });
-    if (!ok && room.error) setClaimWinError(room.error);
-  }
+  // Track the last time the room's game-relevant state actually changed
+  // (deep-compared, not just a new poll response object) so "claim win"
+  // can be offered once the opponent has gone quiet for 3 minutes — the
+  // hook itself doesn't expose this, so this component tracks it locally.
+  useEffect(() => {
+    if (!room.view) return;
+    const json = JSON.stringify(room.view);
+    if (json !== lastViewJsonRef.current) {
+      lastViewJsonRef.current = json;
+      lastViewChangeAtRef.current = Date.now();
+    }
+  }, [room.view]);
 
-  if (room.status === "offline") {
+  // Re-render every few seconds so the 3-minute idle threshold above gets
+  // re-evaluated even when nothing else changes (opponent gone silent).
+  useEffect(() => {
+    const id = setInterval(() => forceClaimRecheck((t) => t + 1), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Proactive backend-availability probe: useGameRoom only learns "offline"
+  // once an actual create/join/move is attempted, but the spec wants the
+  // "warming up" message (and hidden room controls) as soon as the player
+  // enters online mode — before they've clicked anything. `/api/games/state/`
+  // checks Redis configuration before it even looks at query params, so an
+  // empty-param GET is a side-effect-free 503 probe when unconfigured (and a
+  // harmless 400 "bad request" when configured, still with no state written).
+  const [backendProbe, setBackendProbe] = useState<"unknown" | "offline" | "available">("unknown");
+  useEffect(() => {
+    if (room.status !== "idle") return;
+    let cancelled = false;
+    fetch("/api/games/state/")
+      .then((r) => {
+        if (cancelled) return;
+        setBackendProbe(r.status === 503 ? "offline" : "available");
+      })
+      .catch(() => {
+        if (!cancelled) setBackendProbe("available"); // network hiccup — let real actions surface errors
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [room.status]);
+
+  const showOfflineNotice = room.status === "offline" || (room.status === "idle" && backendProbe === "offline");
+  const showIdleRoomControls = room.status === "idle" && backendProbe === "available";
+
+  if (showOfflineNotice) {
     return (
       <div className={styles.panel}>
         <p className={styles.offlineNotice}>
@@ -538,7 +580,15 @@ function OnlineGame() {
     );
   }
 
-  if (room.status === "idle" || room.status === "creating" || room.status === "error") {
+  if (room.status === "idle" && !showIdleRoomControls) {
+    return (
+      <div className={styles.panel}>
+        <p className={styles.statusLine}>Checking connection…</p>
+      </div>
+    );
+  }
+
+  if (showIdleRoomControls || room.status === "creating" || room.status === "error") {
     return (
       <div className={styles.panel}>
         <p className={styles.statusLine}>Create a room and send a friend the invite link, or join theirs.</p>
@@ -625,6 +675,12 @@ function OnlineGame() {
   const isMyTurn = view.turn === mySeat;
   const winner: "me" | "opponent" | null = view.winner === null ? null : view.winner === mySeat ? "me" : "opponent";
 
+  const canClaimWin =
+    view.phase === "playing" &&
+    mySeat !== null &&
+    !isMyTurn &&
+    Date.now() - lastViewChangeAtRef.current > CLAIM_WIN_IDLE_MS;
+
   return (
     <div className={styles.panel}>
       <BattleUI
@@ -638,11 +694,10 @@ function OnlineGame() {
         waitingLabel="Waiting for opponent's move…"
         onFire={(cell) => void room.sendMove({ kind: "shot", cell })}
         onRematch={() => void room.sendMove({ kind: "rematch" })}
-        onClaimWin={handleClaimWin}
-        claimWinAvailable={!isMyTurn}
-        claimWinError={claimWinError}
+        onClaimWin={() => void room.sendMove({ kind: "claimWin" })}
+        claimWinAvailable={canClaimWin}
       />
-      {room.error && !claimWinError && <p className={styles.errorText}>{room.error}</p>}
+      {room.error && <p className={styles.errorText}>{room.error}</p>}
     </div>
   );
 }
