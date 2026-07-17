@@ -1,0 +1,213 @@
+/* ARCADE TOKENS — copy into each game's module:
+   bg #0a0612 · panel rgba(20,12,32,.75) · border #2a1b3d
+   magenta #ff4fd8 · cyan #4fd8ff · text #efe7fa · dim #9a8bb0
+   headings: var(--font-arcade) (small sizes, letter-spacing) */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0612;
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 12% -10%, rgba(255, 79, 216, 0.14), transparent),
+    radial-gradient(ellipse 55% 40% at 88% 0%, rgba(79, 216, 255, 0.12), transparent);
+}
+
+.page :global(::selection) {
+  background: rgba(255, 79, 216, 0.28);
+}
+
+/* Global anchor color for the hub — cabinet cards below use the `a.`
+   compound prefix to bump specificity above this rule so their own
+   colors win the cascade despite appearing later in source order. */
+.page :global(a) {
+  color: #efe7fa;
+  text-decoration: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 56px;
+}
+
+.brand {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #ff4fd8;
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.55);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero {
+  margin-bottom: 48px;
+  animation: fadeUp 0.7s ease-out both;
+}
+
+.heading {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: clamp(18px, 3.4vw, 26px);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  color: #efe7fa;
+  text-shadow: 0 0 18px rgba(255, 79, 216, 0.35);
+}
+
+.lead {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #9a8bb0;
+  max-width: 560px;
+  margin: 0;
+}
+
+.cabinets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  animation: fadeUp 0.7s 0.12s ease-out both;
+}
+
+/* Neon glow keyframe — ambient pulse on the cabinet border/shadow.
+   Disabled entirely under prefers-reduced-motion (see RM block, last). */
+@keyframes cabinetPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 18px 0 var(--accent-glow), inset 0 0 0 1px #2a1b3d;
+  }
+  50% {
+    box-shadow: 0 0 34px 4px var(--accent-glow), inset 0 0 0 1px #2a1b3d;
+  }
+}
+
+a.cabinetCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  background: rgba(20, 12, 32, 0.75);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 36px 22px 28px;
+  color: #efe7fa;
+  animation: cabinetPulse 3.2s ease-in-out infinite;
+  transition: transform 0.25s, border-color 0.25s;
+}
+
+a.cabinetCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  color: #efe7fa;
+}
+
+.cabinetEmoji {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px var(--accent-glow));
+}
+
+.cabinetTitle {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  margin: 4px 0 0;
+  color: var(--accent);
+}
+
+.cabinetMode {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: #9a8bb0;
+}
+
+/* ---------- Responsive (tablet) ---------- */
+@media (max-width: 768px) {
+  .content {
+    padding: 32px 24px 80px;
+  }
+
+  .nav {
+    margin-bottom: 40px;
+  }
+
+  .cabinets {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 480px) {
+  .content {
+    padding: 28px 18px 64px;
+  }
+
+  .heading {
+    font-size: clamp(15px, 5vw, 19px);
+  }
+
+  .lead {
+    font-size: 14.5px;
+  }
+
+  .cabinets {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  a.cabinetCard {
+    padding: 28px 20px 22px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .cabinets {
+    animation: none;
+  }
+  a.cabinetCard {
+    animation: none;
+    box-shadow: 0 0 0 0 transparent, inset 0 0 0 1px #2a1b3d;
+  }
+  a.cabinetCard:hover {
+    transform: none;
+  }
+}

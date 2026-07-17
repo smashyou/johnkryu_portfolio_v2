@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { concepts, profile } from "@/app/data/content";
+import { arcade, concepts, profile } from "@/app/data/content";
 import { useVotes } from "@/app/components/shared/useVotes";
 import StarfieldCanvas from "./StarfieldCanvas";
 import JarvisBanner from "./JarvisBanner";
@@ -127,6 +127,49 @@ export default function GatewayPage() {
               </Link>
             );
           })}
+
+          {/* The Arcade — 8th gateway card, outside the c1–c7 vote poll.
+              Same card anatomy as the concept cards above (hairline, glow,
+              tag, title, desc, notes) but the footer shows PLAY → instead
+              of a vote button; the whole card links to /games. */}
+          <Link
+            href={`/${arcade.slug}`}
+            className={styles.card}
+            style={{ "--accent": arcade.accent } as AccentVars}
+          >
+            <div
+              className={styles.cardHairline}
+              style={{
+                background: `linear-gradient(90deg,transparent,${arcade.accent},transparent)`,
+              }}
+            />
+            <div
+              className={styles.cardGlow}
+              style={{
+                background: `radial-gradient(circle,${arcade.glow},transparent 70%)`,
+              }}
+            />
+            <div className={styles.cardHead}>
+              <span className={styles.cardTag} style={{ color: arcade.accent }}>
+                {arcade.tag}
+              </span>
+              <span
+                className={styles.cardDot}
+                style={{
+                  background: arcade.accent,
+                  boxShadow: `0 0 14px ${arcade.accent}`,
+                }}
+              />
+            </div>
+            <h2 className={styles.cardTitle}>{arcade.title}</h2>
+            <p className={styles.cardDesc}>{arcade.desc}</p>
+            <div className={styles.cardFooter}>
+              <span className={styles.cardNotes}>{arcade.notes}</span>
+              <span className={styles.enter} style={{ color: arcade.accent }}>
+                PLAY →
+              </span>
+            </div>
+          </Link>
         </div>
 
         <div className={styles.poll}>
