@@ -1,0 +1,528 @@
+/* ARCADE TOKENS — copy into each game's module:
+   bg #0a0612 · panel rgba(20,12,32,.75) · border #2a1b3d
+   magenta #ff4fd8 · cyan #4fd8ff · text #efe7fa · dim #9a8bb0
+   headings: var(--font-arcade) (small sizes, letter-spacing) */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0612;
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 12% -10%, rgba(255, 79, 216, 0.14), transparent),
+    radial-gradient(ellipse 55% 40% at 88% 0%, rgba(79, 216, 255, 0.12), transparent);
+}
+
+.page :global(::selection) {
+  background: rgba(255, 79, 216, 0.28);
+}
+
+.page :global(a) {
+  color: #efe7fa;
+  text-decoration: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.brand {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #ff4fd8;
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.55);
+}
+
+a.backLink {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #9a8bb0;
+  padding: 7px 14px;
+  border: 1px solid #2a1b3d;
+  border-radius: 999px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+a.backLink:hover {
+  color: #4fd8ff;
+  border-color: #4fd8ff;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero {
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease-out both;
+}
+
+.heading {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: clamp(16px, 3.6vw, 22px);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin: 0 0 10px;
+  color: #efe7fa;
+  text-shadow: 0 0 18px rgba(255, 79, 216, 0.35);
+}
+
+.lead {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #9a8bb0;
+  max-width: 520px;
+  margin: 0;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s 0.08s ease-out both;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.tab:hover {
+  color: #efe7fa;
+  border-color: #4fd8ff;
+}
+
+.tabActive {
+  color: #0a0612;
+  background: #ff4fd8;
+  border-color: #ff4fd8;
+  font-weight: 600;
+}
+
+.tabActive:hover {
+  color: #0a0612;
+  border-color: #ff4fd8;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toggleButton,
+.iconButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #9a8bb0;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.toggleButton:hover,
+.iconButton:hover {
+  color: #efe7fa;
+  border-color: #4fd8ff;
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.iconButton:disabled:hover {
+  color: #9a8bb0;
+  border-color: #2a1b3d;
+}
+
+.toggleActive {
+  color: #0a0612;
+  background: #4fd8ff;
+  border-color: #4fd8ff;
+}
+
+.toggleActive:hover {
+  color: #0a0612;
+  border-color: #4fd8ff;
+}
+
+.timer {
+  margin-left: auto;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: #efe7fa;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+}
+
+/* ---------- Board ---------- */
+
+.boardWrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 20px;
+  animation: fadeUp 0.6s 0.14s ease-out both;
+}
+
+.loading {
+  padding: 60px 0;
+  text-align: center;
+  color: #9a8bb0;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  width: min(420px, 100%);
+  aspect-ratio: 1;
+  background: rgba(20, 12, 32, 0.75);
+  border: 2px solid #ff4fd8;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 24px rgba(255, 79, 216, 0.2);
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-right: 1px solid rgba(239, 231, 250, 0.08);
+  border-bottom: 1px solid rgba(239, 231, 250, 0.08);
+  background: transparent;
+  color: #4fd8ff;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: clamp(13px, 4vw, 19px);
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.thickRight {
+  border-right: 2px solid #ff4fd8;
+}
+
+.thickBottom {
+  border-bottom: 2px solid #ff4fd8;
+}
+
+.cellClue {
+  color: #efe7fa;
+  font-weight: 700;
+}
+
+.cellPeer {
+  background: rgba(79, 216, 255, 0.07);
+}
+
+.cellSameValue {
+  background: rgba(255, 79, 216, 0.14);
+}
+
+.cellSelected {
+  background: rgba(255, 79, 216, 0.26);
+  box-shadow: inset 0 0 0 2px #ff4fd8;
+}
+
+.cellWrong {
+  color: #ff5470;
+  text-shadow: 0 0 8px rgba(255, 84, 112, 0.6);
+}
+
+.pencilGrid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 2px;
+}
+
+.pencilDigit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(6px, 1.6vw, 9px);
+  color: transparent;
+}
+
+.pencilDigitActive {
+  color: #9a8bb0;
+}
+
+/* ---------- Number pad ---------- */
+
+.numberPad {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  animation: fadeUp 0.6s 0.18s ease-out both;
+}
+
+.numberButton,
+.eraseButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.numberButton:hover,
+.eraseButton:hover {
+  color: #ff4fd8;
+  border-color: #ff4fd8;
+}
+
+.eraseButton {
+  font-size: 13px;
+  font-family: var(--font-jetbrains-mono), monospace;
+}
+
+/* ---------- Completion overlay ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 6, 18, 0.82);
+  padding: 24px;
+  animation: fadeUp 0.3s ease-out both;
+}
+
+.overlayCard {
+  width: min(360px, 100%);
+  background: rgba(20, 12, 32, 0.95);
+  border: 1px solid #2a1b3d;
+  border-radius: 18px;
+  padding: 32px 28px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255, 79, 216, 0.25);
+}
+
+.overlayKicker {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: #ff4fd8;
+  margin: 0 0 14px;
+}
+
+.overlayTime {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 34px;
+  color: #efe7fa;
+  margin: 0 0 8px;
+}
+
+.overlayBest {
+  font-size: 13px;
+  color: #9a8bb0;
+  margin: 0 0 18px;
+}
+
+.shareBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.shareSnippet {
+  display: block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  color: #4fd8ff;
+  background: rgba(79, 216, 255, 0.08);
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+  padding: 10px;
+  word-break: break-all;
+}
+
+.shareButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #4fd8ff;
+  background: rgba(79, 216, 255, 0.12);
+  color: #4fd8ff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.shareButton:hover {
+  background: rgba(79, 216, 255, 0.24);
+}
+
+.overlayActions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.newGameButton,
+.closeButton {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #2a1b3d;
+  background: rgba(20, 12, 32, 0.75);
+  color: #efe7fa;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.newGameButton:hover,
+.closeButton:hover {
+  color: #ff4fd8;
+  border-color: #ff4fd8;
+}
+
+/* ---------- Responsive (tablet) ---------- */
+@media (max-width: 768px) {
+  .content {
+    padding: 32px 24px 80px;
+  }
+
+  .nav {
+    margin-bottom: 32px;
+  }
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 480px) {
+  .content {
+    padding: 24px 14px 56px;
+  }
+
+  .heading {
+    font-size: clamp(14px, 5vw, 18px);
+  }
+
+  .lead {
+    font-size: 13.5px;
+  }
+
+  .timer {
+    margin-left: 0;
+  }
+
+  .numberButton,
+  .eraseButton {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional animation
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .controls,
+  .boardWrap,
+  .numberPad,
+  .overlay {
+    animation: none;
+  }
+
+  a.backLink,
+  .tab,
+  .toggleButton,
+  .iconButton,
+  .numberButton,
+  .eraseButton,
+  .shareButton,
+  .newGameButton,
+  .closeButton {
+    transition: none;
+  }
+}
