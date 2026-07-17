@@ -1,10 +1,11 @@
-import { shoot, validatePlacement, type Placement } from "@/app/games/lib/battleship";
+import { shoot, validatePlacement, type Difficulty, type Placement } from "@/app/games/lib/battleship";
 import type { GameReducer, Seat } from "./types";
 
 export type ShotRecord = { cell: string; result: "hit" | "miss"; sunk: string | null };
 
 export type BattleshipGame = {
   phase: "setup" | "playing" | "done";
+  difficulty: Difficulty;
   /** boards[i] = seat (i+1)'s own fleet placements, set once during setup. */
   boards: [Placement[] | null, Placement[] | null];
   /** shotHistory[i] = every shot seat (i+1) has FIRED, in order, with result. */
@@ -27,14 +28,19 @@ export type BattleshipMove =
 
 export type BattleshipView = {
   phase: BattleshipGame["phase"];
+  difficulty: Difficulty;
   turn: Seat;
   myPlacementSet: boolean;
   opponentPlacementSet: boolean;
   /** Own fleet — always visible to the seat that placed it. */
   myBoard: Placement[] | null;
-  /** Shots I've fired at the opponent, with results (hit/miss/sunk name). */
+  /** Shots I've fired at the opponent, with results (hit/miss/sunk name).
+   * On "hard" difficulty the sunk ship's real name is replaced with a
+   * generic "ship" placeholder — Fog of War hides opponent fleet identity
+   * even from the player who did the sinking. */
   myShots: ShotRecord[];
-  /** Shots the opponent has fired at me, with results against MY board. */
+  /** Shots the opponent has fired at me, with results against MY board.
+   * Never anonymized — it's my own fleet, I always know what I lost. */
   opponentShots: ShotRecord[];
   winner: Seat | null;
   /** Only populated once phase === "done" — the opponent's fleet reveal. */
@@ -43,9 +49,14 @@ export type BattleshipView = {
 
 const CLAIM_WIN_IDLE_MS = 180000;
 const CELL_PATTERN = /^[0-9],[0-9]$/;
+const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
 
 function opponentOf(seat: Seat): Seat {
   return seat === 1 ? 2 : 1;
+}
+
+function isDifficulty(value: unknown): value is Difficulty {
+  return typeof value === "string" && (DIFFICULTIES as readonly string[]).includes(value);
 }
 
 export function isBattleshipMove(value: unknown): value is BattleshipMove {
@@ -57,9 +68,12 @@ export function isBattleshipMove(value: unknown): value is BattleshipMove {
   return false;
 }
 
-function init(): BattleshipGame {
+function init(options?: unknown): BattleshipGame {
+  const requested = (options as { difficulty?: unknown } | undefined)?.difficulty;
+  const difficulty: Difficulty = isDifficulty(requested) ? requested : "easy";
   return {
     phase: "setup",
+    difficulty,
     boards: [null, null],
     shotHistory: [[], []],
     turn: 1,
@@ -76,7 +90,7 @@ function applyMove(
     case "placement": {
       if (g.phase !== "setup") return { next: g, error: "not in setup phase" };
       if (g.boards[seat - 1] !== null) return { next: g, error: "placement already submitted" };
-      if (!validatePlacement(payload.placements)) {
+      if (!validatePlacement(payload.placements, g.difficulty)) {
         return { next: g, error: "invalid fleet placement" };
       }
       const boards: [Placement[] | null, Placement[] | null] = [...g.boards];
@@ -130,7 +144,7 @@ function applyMove(
     }
     case "rematch": {
       if (g.phase !== "done") return { next: g, error: "game in progress" };
-      return { next: init() };
+      return { next: init({ difficulty: g.difficulty }) };
     }
     default:
       return { next: g, error: "unknown move" };
@@ -139,13 +153,22 @@ function applyMove(
 
 function viewFor(g: BattleshipGame, seat: Seat): BattleshipView {
   const opponent = opponentOf(seat);
+  const myShots = g.shotHistory[seat - 1];
+  // Fog of War (hard): the player who does the sinking never learns the
+  // sunk ship's real name — only that "a ship" went down. Their own losses
+  // (opponentShots, below) are NEVER anonymized: you always know what you
+  // lost, regardless of difficulty.
+  const visibleMyShots: ShotRecord[] =
+    g.difficulty === "hard" ? myShots.map((s) => (s.sunk ? { ...s, sunk: "ship" } : s)) : myShots;
+
   return {
     phase: g.phase,
+    difficulty: g.difficulty,
     turn: g.turn,
     myPlacementSet: g.boards[seat - 1] !== null,
     opponentPlacementSet: g.boards[opponent - 1] !== null,
     myBoard: g.boards[seat - 1],
-    myShots: g.shotHistory[seat - 1],
+    myShots: visibleMyShots,
     opponentShots: g.shotHistory[opponent - 1],
     winner: g.winner,
     opponentBoard: g.phase === "done" ? g.boards[opponent - 1] : null,

@@ -27,7 +27,12 @@ export type RoomState<G> = {
  * returned object, leaving `next` unchanged (or a copy of `g`).
  */
 export type GameReducer<G, M> = {
-  init(): G;
+  /**
+   * `options` is additive (game-specific, e.g. battleship's
+   * `{ difficulty: "easy" | "medium" | "hard" }`) and optional — reducers
+   * that don't need init-time configuration (baseball) simply ignore it.
+   */
+  init(options?: unknown): G;
   applyMove(g: G, seat: Seat, payload: M): { next: G; error?: string };
   /** Player-scoped public view — must hide information the given seat
    * should not see (e.g. opponent's secret before the game ends). */

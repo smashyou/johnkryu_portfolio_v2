@@ -34,7 +34,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 32px;
+}
+
+button.howToButton {
+  background: transparent;
+  border: 1px solid #2a1b3d;
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: #9a8bb0;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+button.howToButton:hover {
+  border-color: #4fd8ff;
+  color: #4fd8ff;
+}
+
+button.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #4fd8ff;
+  text-decoration: underline;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button.linkButton:hover {
+  opacity: 0.85;
 }
 
 a.backLink {
@@ -145,7 +180,9 @@ button.modeCard:hover {
   align-items: center;
 }
 
-button.primaryButton {
+button.primaryButton,
+a.primaryButton {
+  display: inline-block;
   background: #4fd8ff;
   color: #0a0612;
   border: none;
@@ -154,11 +191,13 @@ button.primaryButton {
   font-family: var(--font-space-grotesk), sans-serif;
   font-weight: 600;
   font-size: 13.5px;
+  text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
-button.primaryButton:hover {
+button.primaryButton:hover,
+a.primaryButton:hover {
   opacity: 0.88;
 }
 
@@ -167,7 +206,9 @@ button.primaryButton:disabled {
   cursor: not-allowed;
 }
 
-button.secondaryButton {
+button.secondaryButton,
+a.secondaryButton {
+  display: inline-block;
   background: transparent;
   color: #efe7fa;
   border: 1px solid #2a1b3d;
@@ -175,11 +216,13 @@ button.secondaryButton {
   padding: 10px 18px;
   font-family: var(--font-space-grotesk), sans-serif;
   font-size: 13.5px;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 0.2s;
 }
 
-button.secondaryButton:hover {
+button.secondaryButton:hover,
+a.secondaryButton:hover {
   border-color: #4fd8ff;
 }
 
@@ -229,16 +272,90 @@ button.secondaryButton:disabled {
   word-break: break-all;
 }
 
-/* ---------- Placement editor ---------- */
+.inviteShareRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
 
-.shipChips {
+/* ---------- Difficulty (fleet rules) picker ---------- */
+
+.difficultyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 10px 0 8px;
+}
+
+button.difficultyCard {
+  background: rgba(20, 12, 32, 0.6);
+  border: 1px solid #2a1b3d;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: left;
+  color: #efe7fa;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+button.difficultyCard:hover {
+  border-color: #4fd8ff;
+  transform: translateY(-2px);
+}
+
+.difficultyCardSelected {
+  border-color: #ff4fd8 !important;
+  box-shadow: 0 0 10px rgba(255, 79, 216, 0.35);
+}
+
+.difficultyTitle {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #4fd8ff;
+}
+
+.difficultyDesc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9a8bb0;
+}
+
+.difficultyNote {
+  font-size: 11.5px;
+  color: #9a8bb0;
+  font-style: italic;
+  margin: 4px 0 16px;
+}
+
+/* ---------- Fleet Builder (Medium/Hard) ---------- */
+
+.budgetMeter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: #9a8bb0;
+  margin-bottom: 10px;
+}
+
+.budgetOver {
+  color: #ff4f4f;
+}
+
+.catalogGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-button.shipChip {
+button.catalogButton {
   background: rgba(79, 216, 255, 0.08);
   border: 1px solid #2a1b3d;
   border-radius: 999px;
@@ -246,23 +363,313 @@ button.shipChip {
   color: #efe7fa;
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 12px;
-  letter-spacing: 0.04em;
   cursor: pointer;
   transition: border-color 0.2s;
 }
 
-button.shipChip:hover {
+button.catalogButton:hover:not(:disabled) {
   border-color: #4fd8ff;
 }
 
-.shipChipSelected {
-  border-color: #4fd8ff !important;
-  box-shadow: 0 0 10px rgba(79, 216, 255, 0.4);
+button.catalogButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
-.shipChipPlaced {
+.fleetList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  min-height: 28px;
+}
+
+.fleetListItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 79, 216, 0.08);
+  border: 1px solid #2a1b3d;
+  border-radius: 999px;
+  padding: 6px 6px 6px 12px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: #efe7fa;
+}
+
+button.removeShipButton {
+  background: none;
+  border: none;
   color: #9a8bb0;
-  text-decoration: line-through;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px;
+}
+
+button.removeShipButton:hover {
+  color: #ff4fd8;
+}
+
+.fleetTrayHint {
+  font-size: 11px;
+  color: #9a8bb0;
+  font-style: italic;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid #2a1b3d;
+  border-radius: 4px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  color: #4fd8ff;
+}
+
+/* ---------- Placement editor — drag & drop ---------- */
+
+.placementLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.trayColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.boardColumn {
+  flex: 1;
+  min-width: 0;
+}
+
+.tray {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trayPiece {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  background: rgba(20, 12, 32, 0.6);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  width: fit-content;
+  transition: border-color 0.2s;
+}
+
+.trayPieceSelected {
+  border-color: #4fd8ff;
+  box-shadow: 0 0 10px rgba(79, 216, 255, 0.35);
+}
+
+.trayPieceCells {
+  display: flex;
+  gap: 2px;
+}
+
+.trayPieceCell {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background: rgba(79, 216, 255, 0.4);
+  border: 1px solid rgba(79, 216, 255, 0.6);
+}
+
+.trayPieceLabel {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 10.5px;
+  color: #9a8bb0;
+}
+
+.boardStage {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+}
+
+.placedShipOverlay {
+  position: absolute;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.dragGhost {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.ghostCells {
+  display: flex;
+  gap: 2px;
+}
+
+.ghostCell {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: rgba(154, 139, 176, 0.35);
+  border: 1px solid rgba(154, 139, 176, 0.6);
+}
+
+.ghostCellValid {
+  background: rgba(79, 216, 255, 0.55);
+  border-color: #4fd8ff;
+  box-shadow: 0 0 10px rgba(79, 216, 255, 0.6);
+}
+
+.ghostCellInvalid {
+  background: rgba(255, 79, 79, 0.4);
+  border-color: #ff4f4f;
+  box-shadow: 0 0 10px rgba(255, 79, 79, 0.5);
+}
+
+.cell_highlightValid {
+  box-shadow: inset 0 0 0 2px #4fd8ff;
+}
+
+.cell_highlightInvalid {
+  box-shadow: inset 0 0 0 2px #ff4f4f;
+}
+
+@keyframes shipShake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+.shake {
+  animation: shipShake 0.4s ease-in-out;
+}
+
+/* ---------- How-to-play modal ---------- */
+
+@keyframes battleshipModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(5, 3, 10, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: battleshipModalFadeIn 0.2s ease-out both;
+}
+
+.modalCard {
+  background: #120a1e;
+  border: 1px solid #2a1b3d;
+  border-radius: 16px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 84vh;
+  overflow-y: auto;
+  padding: 22px;
+  box-shadow: 0 0 40px rgba(79, 216, 255, 0.12);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modalTitle {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #ff4fd8;
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.4);
+}
+
+button.modalClose {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid #2a1b3d;
+  border-radius: 8px;
+  color: #efe7fa;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+button.modalClose:hover {
+  border-color: #ff4fd8;
+  color: #ff4fd8;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalSection h3 {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #4fd8ff;
+  margin: 0 0 6px;
+}
+
+.modalSection p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #efe7fa;
+  margin: 0;
+}
+
+.modalList {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #efe7fa;
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .placementControls {
@@ -312,7 +719,12 @@ button.cell {
   min-height: 28px;
   border-radius: 4px;
   border: 1px solid #2a1b3d;
-  background: rgba(10, 6, 18, 0.6);
+  /* No `background` here on purpose: `button.cell` (element+class, specificity
+     0,1,1) would otherwise always beat the bare-class state selectors below
+     (.cell_empty/.cell_ship/.cell_hit/.cell_miss, specificity 0,1,0)
+     regardless of source order, silently hiding every ship/hit/miss tint.
+     BoardGrid always applies exactly one of those state classes, so the
+     background is fully owned by them instead. */
   padding: 0;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
@@ -456,6 +868,37 @@ button.cell:not(:disabled):hover {
   .roomCodeInput {
     width: 90px;
   }
+
+  .placementLayout {
+    flex-direction: column;
+  }
+
+  .trayColumn {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tray {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .boardStage {
+    max-width: 100%;
+  }
+
+  .difficultyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .budgetMeter {
+    gap: 10px;
+  }
+
+  .modalCard {
+    padding: 16px;
+    max-height: 88vh;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -465,12 +908,25 @@ button.cell:not(:disabled):hover {
   button.cell,
   button.modeCard,
   button.primaryButton,
+  a.primaryButton,
   button.secondaryButton,
+  a.secondaryButton,
+  button.difficultyCard,
+  button.catalogButton,
+  button.howToButton,
+  button.modalClose,
   a.backLink {
     transition: none;
   }
   button.cell:not(:disabled):hover,
-  button.modeCard:hover {
+  button.modeCard:hover,
+  button.difficultyCard:hover {
     transform: none;
+  }
+  .shake {
+    animation: none;
+  }
+  .modalBackdrop {
+    animation: none;
   }
 }

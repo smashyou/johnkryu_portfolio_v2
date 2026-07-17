@@ -17,7 +17,7 @@ interface UseGameRoomResult<TView> {
   view: TView | null;
   status: Status;
   error: string | null;
-  createRoom(): Promise<string | null>;
+  createRoom(options?: unknown): Promise<string | null>;
   joinRoom(roomId: string): Promise<boolean>;
   sendMove(payload: unknown): Promise<boolean>;
   inviteUrl: string | null;
@@ -205,14 +205,14 @@ export function useGameRoom<TView>(type: GameType): UseGameRoomResult<TView> {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
-  const createRoom = useCallback(async (): Promise<string | null> => {
+  const createRoom = useCallback(async (options?: unknown): Promise<string | null> => {
     setStatus("creating");
     setError(null);
     try {
       const r = await fetch("/api/games/room/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type }),
+        body: JSON.stringify(options === undefined ? { type } : { type, options }),
       });
       if (r.status === 503) {
         setStatus("offline");

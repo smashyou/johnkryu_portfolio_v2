@@ -3,7 +3,21 @@
 // the client (Math.random) and verification scripts (seeded PRNG) can drive
 // it deterministically.
 
-import { BOARD_SIZE, FLEET, cellKey, cellsForPlacement, parseCellKey, type Placement } from "./battleship";
+import {
+  BOARD_SIZE,
+  CATALOG,
+  FLEET,
+  FLEET_BUILDER_BUDGET,
+  FLEET_BUILDER_MAX_SHIPS,
+  FLEET_BUILDER_MIN_SHIPS,
+  cellKey,
+  cellsForPlacement,
+  nameForCatalogPick,
+  parseCellKey,
+  type Difficulty,
+  type FleetSpec,
+  type Placement,
+} from "./battleship";
 
 function inBounds(row: number, col: number): boolean {
   return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
@@ -11,13 +25,14 @@ function inBounds(row: number, col: number): boolean {
 
 /** Random full-fleet placement respecting classic Hasbro rules (in bounds,
  * no overlap, ships may touch). Retries per-ship until a non-overlapping
- * spot is found; 10x10 with only 17 total ship cells makes exhaustion
- * practically impossible within the attempt budget. */
-export function randomPlacement(rng: () => number): Placement[] {
+ * spot is found; 10x10 with only a handful of ship cells makes exhaustion
+ * practically impossible within the attempt budget. Defaults to the classic
+ * FLEET but accepts any fleet spec (Fleet Builder compositions included). */
+export function randomPlacement(rng: () => number, fleet: FleetSpec = FLEET): Placement[] {
   const placements: Placement[] = [];
   const occupied = new Set<string>();
 
-  for (const ship of FLEET) {
+  for (const ship of fleet) {
     let attempts = 0;
     while (attempts < 2000) {
       attempts++;
@@ -27,7 +42,7 @@ export function randomPlacement(rng: () => number): Placement[] {
       if (horizontal && col + ship.size > BOARD_SIZE) continue;
       if (!horizontal && row + ship.size > BOARD_SIZE) continue;
 
-      const candidate: Placement = { name: ship.name, row, col, horizontal };
+      const candidate: Placement = { name: ship.name, size: ship.size, row, col, horizontal };
       const cells = cellsForPlacement(candidate);
       if (cells.some((c) => occupied.has(c))) continue;
 
@@ -38,6 +53,48 @@ export function randomPlacement(rng: () => number): Placement[] {
   }
 
   return placements;
+}
+
+/**
+ * Build a random LEGAL fleet composition for the given difficulty (no board
+ * positions yet — pair with randomPlacement to get a full board). Easy
+ * always returns the classic fleet. Medium/Hard randomly draw from the
+ * catalog, respecting the 17-cell budget and 3-7 ship count, retrying picks
+ * that would bust the budget; falls back to topping up with the cheapest
+ * catalog entry (Sub, 1 cell) if the random walk undershoots the minimum
+ * ship count before its attempt budget runs out.
+ */
+export function buildRandomFleet(rng: () => number, difficulty: Difficulty): FleetSpec {
+  if (difficulty === "easy") return FLEET.map((s) => ({ ...s }));
+
+  const targetCount =
+    FLEET_BUILDER_MIN_SHIPS + Math.floor(rng() * (FLEET_BUILDER_MAX_SHIPS - FLEET_BUILDER_MIN_SHIPS + 1));
+  const nameCounts = new Map<string, number>();
+  const fleet: FleetSpec = [];
+  let budgetUsed = 0;
+  let attempts = 0;
+
+  while (fleet.length < targetCount && attempts < 500) {
+    attempts++;
+    const entry = CATALOG[Math.floor(rng() * CATALOG.length)];
+    if (budgetUsed + entry.size > FLEET_BUILDER_BUDGET) continue;
+    const count = nameCounts.get(entry.name) ?? 0;
+    fleet.push({ name: nameForCatalogPick(entry.name, count), size: entry.size });
+    nameCounts.set(entry.name, count + 1);
+    budgetUsed += entry.size;
+  }
+
+  // Top up with the cheapest catalog entry (Sub, 1 cell) if the random walk
+  // above didn't reach the minimum ship count before exhausting its budget.
+  const cheapest = CATALOG[0];
+  while (fleet.length < FLEET_BUILDER_MIN_SHIPS && budgetUsed + cheapest.size <= FLEET_BUILDER_BUDGET) {
+    const count = nameCounts.get(cheapest.name) ?? 0;
+    fleet.push({ name: nameForCatalogPick(cheapest.name, count), size: cheapest.size });
+    nameCounts.set(cheapest.name, count + 1);
+    budgetUsed += cheapest.size;
+  }
+
+  return fleet;
 }
 
 /**
