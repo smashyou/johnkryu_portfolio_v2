@@ -226,7 +226,7 @@ Each game page gets a "How to play" button opening an arcade-styled rules overla
 ## R4. Sudoku leaderboard (Upstash-persisted; no new database)
 - Boards: Daily (per-day ZSET, ~35-day TTL) + All-time top-100 per difficulty.
 - Entry on completion: name (≤20 chars, sanitized). Identity for dedupe: salted SHA-256 of client IP (raw IP never stored). Opt-out path: visitor declines IP tracking → provides city/state/zip (≤40 chars) and identity = hash(name+location).
-- One entry per identity per board; better time updates it (ZADD LT). Server sanity-checks times (reject implausibly fast/slow). Display top 10 (daily) / top 100 (all-time) + "your rank".
+- One entry per identity per board; better time updates it (ZADD LT). Server sanity-checks times (reject implausibly fast/slow). Display top 10 (daily) / top 25 displayed, top 100 stored (all-time) + "your rank".
 - API: app/api/sudoku/leaderboard/ GET (scope=daily|alltime) / POST (submit). 503 degradation like other Redis routes.
 
 ## R5. Invite-a-friend sharing (online rooms)

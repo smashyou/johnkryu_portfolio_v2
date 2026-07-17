@@ -2,27 +2,34 @@
 // (per difficulty) boards. No new database — reuses the same Redis
 // instance/env-var pattern as the multiplayer rooms backend.
 //
-// Identity/privacy: the default identity is a salted SHA-256 hash of the
-// submitter's client IP (`ipIdentity`) — the raw IP is NEVER stored, only
-// the hash. Visitors who decline IP-based tracking instead provide a
-// city/state/zip `location`, and their identity is a SHA-256 hash of their
-// normalized name+location (`nameLocationIdentity`) — no IP involved at
-// all for that path. Either way, one leaderboard entry exists per
-// identity per board; a worse time never overwrites a better one (Redis
-// `ZADD LT`).
+// Identity/privacy, for the WHOLE file (every Redis key this module
+// writes):
+//   - The default identity is a salted SHA-256 hash of the submitter's
+//     client IP (`ipIdentity`). The salt itself is never committed to
+//     source — see `getSalt` below — and the raw IP is NEVER stored
+//     anywhere, in any key, only the hash.
+//   - The per-IP submit rate-limit key is ALSO keyed by that same hashed
+//     identity (`checkSubmitRateLimit`), not the raw IP — there is no
+//     Redis key anywhere in this module that contains a raw IP address.
+//   - Visitors who decline IP-based tracking instead provide a
+//     city/state/zip `location`, and their identity is a SHA-256 hash of
+//     their normalized name+location (`nameLocationIdentity`) — no IP
+//     involved at all for that path. Because that hash is fully
+//     recomputable by anyone from the public leaderboard display (name +
+//     location are shown), opt-out identities are additionally protected
+//     by an entry-token ownership check (see `submitScore`) so a third
+//     party can't hijack an existing entry by resubmitting the same
+//     name+location with a fabricated fast time.
+//   - Either way, one leaderboard entry exists per identity per board; a
+//     worse time never overwrites a better one (Redis `ZADD LT`).
 
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
+import type { Redis } from "@upstash/redis";
 import { dailyNumber } from "../sudoku";
 import { getRedis } from "./rooms";
 
 export type LeaderboardDifficulty = "easy" | "medium" | "hard";
 export type LeaderboardScope = "daily" | "alltime";
-
-// Fixed, hardcoded pepper mixed into the IP hash. Deliberately not an env
-// var — per the spec this is a "fixed app salt constant"; rotating it
-// would just reset everyone's default identity, which is an acceptable
-// (rare, deliberate) event, not a secret that needs external management.
-const APP_SALT = "jkr-arcade-sudoku-leaderboard-v1::9f2c1a";
 
 export const DAILY_TOP_N = 10;
 export const ALLTIME_TOP_N = 25;
@@ -59,8 +66,49 @@ function profileKey(identity: string): string {
   return `sudoku:lb:profile:${identity}`;
 }
 
-function rateKey(ip: string): string {
-  return `sudoku:lb:ratelimit:${ip}`;
+/** Rate-limit key is namespaced by the HASHED ip identity, never the raw IP. */
+function rateKey(hashedIp: string): string {
+  return `sudoku:lb:ratelimit:${hashedIp}`;
+}
+
+const SALT_KEY = "sudoku:lb:salt";
+
+// Per-lambda-instance cache of the shared app salt, so a warm instance
+// only pays the Redis round-trip once. Every cold instance still
+// converges on the SAME salt via the SETNX below (first writer wins;
+// everyone else reads back what actually landed) — the cache is purely
+// an optimization, never a source of divergence.
+let cachedSalt: string | null = null;
+
+/**
+ * Returns the shared app-wide salt used by `ipIdentity`, creating it once
+ * in Redis (SETNX-style: `SET ... NX`) if it doesn't exist yet, using
+ * `crypto.randomBytes` as the bootstrap-value generator. This is
+ * deliberately NOT a source-committed constant: a salt baked into the
+ * repo is readable by anyone with source access and lets them
+ * brute-force `ipIdentity` offline for any candidate IP (e.g. their own,
+ * to find/spoof their own entry, or a known pool of IPs). Generating and
+ * storing the salt only in Redis raises that bar to "has Redis access" —
+ * a materially different (and, for this app, unreachable-without-
+ * already-owning-the-data) threat. Tradeoff: this protects against
+ * offline brute-force from the public source; it does NOT protect
+ * against an attacker who has already compromised Redis (at that point
+ * they have the raw ZSET/HSET leaderboard data directly and computing
+ * `ipIdentity` themselves adds nothing) — that threat is out of scope.
+ */
+async function getSalt(redis: Redis): Promise<string> {
+  if (cachedSalt) return cachedSalt;
+  const candidate = randomBytes(32).toString("hex");
+  const setResult = await redis.set(SALT_KEY, candidate, { nx: true });
+  if (setResult === "OK") {
+    cachedSalt = candidate;
+  } else {
+    // Another instance won the race — read back its value. Falls back to
+    // the locally generated candidate only in the practically-impossible
+    // case the key vanished between the failed SETNX and this GET.
+    cachedSalt = (await redis.get<string>(SALT_KEY)) ?? candidate;
+  }
+  return cachedSalt;
 }
 
 /** Strips ASCII control characters (incl. DEL) and trims surrounding whitespace. */
@@ -92,9 +140,17 @@ export function sha256Hex(input: string): string {
   return createHash("sha256").update(input).digest("hex");
 }
 
-/** Default identity path: salted hash of the client IP. Raw IP never stored. */
-export function ipIdentity(ip: string): string {
-  return sha256Hex(`${ip}::${APP_SALT}`);
+/**
+ * Default identity path: salted hash of the client IP. The raw IP is
+ * never stored anywhere — only this hash — and the salt itself lives
+ * only in Redis (see `getSalt`), never in source. Requires a live Redis
+ * client because the salt fetch is Redis-backed; both callers of this
+ * function (`submitScore`, `checkSubmitRateLimit`) only run once their
+ * caller has already confirmed Redis is configured.
+ */
+export async function ipIdentity(ip: string, redis: Redis): Promise<string> {
+  const salt = await getSalt(redis);
+  return sha256Hex(`${ip}::${salt}`);
 }
 
 /** Opt-out identity path: hash of normalized name+location, no IP involved. */
@@ -105,7 +161,8 @@ export function nameLocationIdentity(name: string, location: string): string {
 export async function checkSubmitRateLimit(ip: string): Promise<boolean> {
   const redis = getRedis();
   if (!redis) return true; // caller already 503s when redis is unconfigured
-  const key = rateKey(ip);
+  const hashedIp = await ipIdentity(ip, redis);
+  const key = rateKey(hashedIp);
   const count = await redis.incr(key);
   if (count === 1) {
     await redis.expire(key, SUBMIT_RATE_WINDOW_SECONDS);
@@ -121,11 +178,16 @@ export type SubmitParams = {
   timeMs: number;
   useIp: boolean;
   location?: string;
+  /**
+   * Required to update an EXISTING opt-out (name+location) identity;
+   * ignored for the useIp=true path. See the ownership check below.
+   */
+  entryToken?: string;
   ip: string;
 };
 
 export type SubmitResult =
-  | { identity: string; rank: number; total: number }
+  | { identity: string; rank: number; total: number; entryToken?: string }
   | { error: string; status: number };
 
 export async function submitScore(params: SubmitParams): Promise<SubmitResult> {
@@ -162,13 +224,34 @@ export async function submitScore(params: SubmitParams): Promise<SubmitResult> {
 
   let identity: string;
   let location: string | null = null;
+  let newEntryToken: string | null = null;
+
   if (params.useIp) {
-    identity = ipIdentity(params.ip);
+    identity = await ipIdentity(params.ip, redis);
   } else {
     const loc = params.location != null ? sanitizeLocation(params.location) : null;
     if (!loc) return { error: "bad location", status: 400 };
     location = loc;
     identity = nameLocationIdentity(name, loc);
+
+    // Ownership check: the opt-out identity hash is recomputable by
+    // anyone from the public leaderboard (name + location are both
+    // displayed), so unlike the IP path — where identity derives from
+    // something only the real requester possesses — it needs an explicit
+    // proof-of-ownership token to stop a third party from "claiming" an
+    // existing entry with a fabricated fast time. First submission for a
+    // brand new identity mints a random token and stores only its hash;
+    // every subsequent submission for that same identity must present
+    // the matching token.
+    const existingTokenHash = await redis.hget<string>(profileKey(identity), "tokenHash");
+    if (existingTokenHash) {
+      const providedHash = params.entryToken ? sha256Hex(params.entryToken) : null;
+      if (!providedHash || providedHash !== existingTokenHash) {
+        return { error: "name taken", status: 409 };
+      }
+    } else {
+      newEntryToken = randomBytes(16).toString("hex");
+    }
   }
 
   // LT: only ever improves an existing entry's score; always adds a brand
@@ -183,7 +266,9 @@ export async function submitScore(params: SubmitParams): Promise<SubmitResult> {
     await redis.zremrangebyrank(key, ALLTIME_CAP, -1);
   }
 
-  await redis.hset(profileKey(identity), { name, location: location ?? "" });
+  const profileFields: Record<string, string> = { name, location: location ?? "" };
+  if (newEntryToken) profileFields.tokenHash = sha256Hex(newEntryToken);
+  await redis.hset(profileKey(identity), profileFields);
   await redis.expire(profileKey(identity), PROFILE_TTL_SECONDS);
 
   const [rankRaw, total] = await Promise.all([
@@ -196,7 +281,9 @@ export async function submitScore(params: SubmitParams): Promise<SubmitResult> {
   // report it as "just past the cutoff" rather than crashing on null.
   const rank = rankRaw == null ? total + 1 : rankRaw + 1;
 
-  return { identity, rank, total };
+  return newEntryToken
+    ? { identity, rank, total, entryToken: newEntryToken }
+    : { identity, rank, total };
 }
 
 export type LeaderboardEntry = {

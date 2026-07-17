@@ -64,6 +64,11 @@ const IDENTITY_KEY = "jkr_sudoku_identity";
 const SUBMIT_NAME_KEY = "jkr_sudoku_name";
 const SUBMIT_USE_IP_KEY = "jkr_sudoku_use_ip";
 const SUBMIT_LOCATION_KEY = "jkr_sudoku_location";
+// Opt-out (name+location) identities are ownership-protected server-side:
+// the first submission for a given name+location mints this token and the
+// server only accepts later submissions for that same identity if they
+// present it back. Never used/needed for the useIp=true path.
+const ENTRY_TOKEN_KEY = "jkr_sudoku_entry_token";
 const HOWTO_KEY = "jkr_howto_sudoku";
 
 type FetchOutcome =
@@ -97,11 +102,12 @@ type SubmitBody = {
   timeMs: number;
   useIp: boolean;
   location?: string;
+  entryToken?: string;
 };
 
 type SubmitOutcome =
-  | { ok: true; identity: string; rank: number; total: number }
-  | { ok: false; warming: boolean };
+  | { ok: true; identity: string; rank: number; total: number; entryToken?: string }
+  | { ok: false; warming: boolean; nameTaken?: boolean };
 
 async function submitScore(body: SubmitBody): Promise<SubmitOutcome> {
   try {
@@ -111,8 +117,14 @@ async function submitScore(body: SubmitBody): Promise<SubmitOutcome> {
       body: JSON.stringify(body),
     });
     if (res.status === 503) return { ok: false, warming: true };
+    if (res.status === 409) return { ok: false, warming: false, nameTaken: true };
     if (!res.ok) return { ok: false, warming: false };
-    const data = (await res.json()) as { identity: string; rank: number; total: number };
+    const data = (await res.json()) as {
+      identity: string;
+      rank: number;
+      total: number;
+      entryToken?: string;
+    };
     return { ok: true, ...data };
   } catch {
     return { ok: false, warming: true };
@@ -217,11 +229,12 @@ export default function SudokuPage() {
 
   // Leaderboard submit form (R4), lives inside the completion overlay.
   const [identity, setIdentity] = useState<string | null>(null);
+  const [entryToken, setEntryToken] = useState<string | null>(null);
   const [submitName, setSubmitName] = useState("");
   const [submitUseIp, setSubmitUseIp] = useState(true);
   const [submitLocation, setSubmitLocation] = useState("");
   const [submitPhase, setSubmitPhase] = useState<
-    "form" | "submitting" | "success" | "warming" | "invalid"
+    "form" | "submitting" | "success" | "warming" | "invalid" | "taken"
   >("form");
   const [submitBoard, setSubmitBoard] = useState<LeaderboardResponse | null>(null);
 
@@ -270,6 +283,8 @@ export default function SudokuPage() {
       if (storedUseIp != null) setSubmitUseIp(storedUseIp !== "false");
       const storedLocation = localStorage.getItem(SUBMIT_LOCATION_KEY);
       if (storedLocation) setSubmitLocation(storedLocation);
+      const storedEntryToken = localStorage.getItem(ENTRY_TOKEN_KEY);
+      if (storedEntryToken) setEntryToken(storedEntryToken);
 
       if (!localStorage.getItem(HOWTO_KEY)) setHowtoOpen(true);
     } catch {
@@ -514,6 +529,9 @@ export default function SudokuPage() {
 
     setSubmitPhase("submitting");
 
+    // Opt-out (name+location) identities are ownership-protected server
+    // side — send back whatever entryToken we have on file for a matching
+    // resubmission; the useIp path ignores this field entirely.
     const body: SubmitBody =
       mode === "daily"
         ? {
@@ -523,6 +541,7 @@ export default function SudokuPage() {
             timeMs: cur.finalTime * 1000,
             useIp: submitUseIp,
             location: submitUseIp ? undefined : trimmedLocation,
+            entryToken: submitUseIp ? undefined : entryToken ?? undefined,
           }
         : {
             scope: "alltime",
@@ -531,11 +550,15 @@ export default function SudokuPage() {
             timeMs: cur.finalTime * 1000,
             useIp: submitUseIp,
             location: submitUseIp ? undefined : trimmedLocation,
+            entryToken: submitUseIp ? undefined : entryToken ?? undefined,
           };
 
     const result = await submitScore(body);
     if (!result.ok) {
-      setSubmitPhase("warming");
+      // A 409 means this name+location is already claimed by someone else
+      // (or by us, but on a device that doesn't have the saved token) —
+      // that's a distinct, actionable outcome from "leaderboard is down".
+      setSubmitPhase(result.nameTaken ? "taken" : "warming");
       return;
     }
 
@@ -544,6 +567,10 @@ export default function SudokuPage() {
       localStorage.setItem(SUBMIT_NAME_KEY, trimmedName);
       localStorage.setItem(SUBMIT_USE_IP_KEY, String(submitUseIp));
       if (!submitUseIp) localStorage.setItem(SUBMIT_LOCATION_KEY, trimmedLocation);
+      if (result.entryToken) {
+        localStorage.setItem(ENTRY_TOKEN_KEY, result.entryToken);
+        setEntryToken(result.entryToken);
+      }
     } catch {
       // localStorage unavailable — identity/prefs just won't persist.
     }
@@ -879,6 +906,12 @@ export default function SudokuPage() {
                         {submitUseIp
                           ? "Enter a name."
                           : "Enter a name and a city/state/zip (2+ characters)."}
+                      </p>
+                    )}
+                    {submitPhase === "taken" && (
+                      <p className={styles.submitError}>
+                        That name &amp; location is already ranked by someone else — tweak
+                        your name to distinguish yourself.
                       </p>
                     )}
                     <button

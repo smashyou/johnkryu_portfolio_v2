@@ -41,8 +41,10 @@ export async function GET(req: Request) {
 }
 
 // POST /api/sudoku/leaderboard/
-// { scope, day?, difficulty?, name, timeMs, useIp, location? }
-// -> { identity, rank, total }
+// { scope, day?, difficulty?, name, timeMs, useIp, location?, entryToken? }
+// -> { identity, rank, total, entryToken? } | 409 { error: "name taken" }
+//    when an opt-out (name+location) identity is already claimed and the
+//    entryToken doesn't match (or wasn't sent).
 export async function POST(req: Request) {
   if (!getRedis()) return NextResponse.json({ error: "not configured" }, { status: 503 });
 
@@ -61,6 +63,7 @@ export async function POST(req: Request) {
     timeMs?: unknown;
     useIp?: unknown;
     location?: unknown;
+    entryToken?: unknown;
   };
 
   if (!isScope(b.scope)) return NextResponse.json({ error: "bad scope" }, { status: 400 });
@@ -83,6 +86,7 @@ export async function POST(req: Request) {
     timeMs: b.timeMs,
     useIp: b.useIp,
     location: typeof b.location === "string" ? b.location : undefined,
+    entryToken: typeof b.entryToken === "string" ? b.entryToken : undefined,
     ip,
   });
 
