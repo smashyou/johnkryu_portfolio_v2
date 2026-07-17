@@ -185,43 +185,49 @@ export default function OperatorConsolePage() {
           <SwitchPill accent={ACCENT} />
         </div>
         <nav className={styles.statusNav}>
-          <a href="#boot" onClick={scrollTo("boot")} className={styles.statusLink}>
-            ~/boot
-          </a>
-          <a
-            href="#profile"
-            onClick={scrollTo("profile")}
-            className={styles.statusLink}
-          >
-            ~/profile
-          </a>
-          <a href="#log" onClick={scrollTo("log")} className={styles.statusLink}>
-            ~/log
-          </a>
-          <a href="#stack" onClick={scrollTo("stack")} className={styles.statusLink}>
-            ~/stack
-          </a>
-          <a
-            href="#services"
-            onClick={scrollTo("services")}
-            className={styles.statusLink}
-          >
-            ~/services
-          </a>
-          <a
-            href="#deploys"
-            onClick={scrollTo("deploys")}
-            className={styles.statusLink}
-          >
-            ~/deploys
-          </a>
-          <a
-            href="#uplink"
-            onClick={scrollTo("uplink")}
-            className={styles.statusLink}
-          >
-            ~/uplink
-          </a>
+          {/* Tilde links live in their own scrollable strip so on narrow
+              viewports this row can scroll horizontally instead of wrapping
+              onto multiple lines, while RESUME (below, a nav sibling) stays
+              pinned and always reachable without scrolling. */}
+          <div className={styles.statusNavScroll}>
+            <a href="#boot" onClick={scrollTo("boot")} className={styles.statusLink}>
+              ~/boot
+            </a>
+            <a
+              href="#profile"
+              onClick={scrollTo("profile")}
+              className={styles.statusLink}
+            >
+              ~/profile
+            </a>
+            <a href="#log" onClick={scrollTo("log")} className={styles.statusLink}>
+              ~/log
+            </a>
+            <a href="#stack" onClick={scrollTo("stack")} className={styles.statusLink}>
+              ~/stack
+            </a>
+            <a
+              href="#services"
+              onClick={scrollTo("services")}
+              className={styles.statusLink}
+            >
+              ~/services
+            </a>
+            <a
+              href="#deploys"
+              onClick={scrollTo("deploys")}
+              className={styles.statusLink}
+            >
+              ~/deploys
+            </a>
+            <a
+              href="#uplink"
+              onClick={scrollTo("uplink")}
+              className={styles.statusLink}
+            >
+              ~/uplink
+            </a>
+          </div>
           <button
             type="button"
             onClick={() => setResumeOpen(true)}
