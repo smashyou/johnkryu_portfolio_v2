@@ -27,13 +27,12 @@ return 1
 
 type RegistryEntry = {
   reducer: GameReducer<unknown, unknown>;
-  /** Battleship's reducer is a Task 7 stub — moves against it always 501. */
   implemented: boolean;
 };
 
 const registry: Record<GameType, RegistryEntry> = {
   baseball: { reducer: baseballGame as GameReducer<unknown, unknown>, implemented: true },
-  battleship: { reducer: battleshipGame as GameReducer<unknown, unknown>, implemented: false },
+  battleship: { reducer: battleshipGame as GameReducer<unknown, unknown>, implemented: true },
 };
 
 // ---------------------------------------------------------------------------

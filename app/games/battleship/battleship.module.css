@@ -1,0 +1,476 @@
+/* ARCADE TOKENS (copied from app/games/games.module.css):
+   bg #0a0612 · panel rgba(20,12,32,.75) · border #2a1b3d
+   magenta #ff4fd8 · cyan #4fd8ff · text #efe7fa · dim #9a8bb0
+   headings: var(--font-arcade) (small sizes, letter-spacing) */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0612;
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 55% 40% at 88% 0%, rgba(79, 216, 255, 0.14), transparent);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+a.backLink {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: #9a8bb0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a.backLink:hover {
+  color: #4fd8ff;
+}
+
+.brand {
+  font-family: var(--font-arcade), var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #4fd8ff;
+  text-shadow: 0 0 12px rgba(79, 216, 255, 0.5);
+}
+
+.heading {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: clamp(16px, 3vw, 22px);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin: 0 0 24px;
+  color: #efe7fa;
+  text-shadow: 0 0 16px rgba(79, 216, 255, 0.3);
+}
+
+/* ---------- Mode selection ---------- */
+
+.modeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+button.modeCard {
+  background: rgba(20, 12, 32, 0.75);
+  border: 1px solid #2a1b3d;
+  border-radius: 14px;
+  padding: 22px 16px;
+  color: #efe7fa;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 14.5px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+button.modeCard:hover {
+  border-color: #4fd8ff;
+  transform: translateY(-2px);
+}
+
+.modeCardEmoji {
+  display: block;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+/* ---------- Panels / cards ---------- */
+
+.panel {
+  background: rgba(20, 12, 32, 0.75);
+  border: 1px solid #2a1b3d;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.statusLine {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: #9a8bb0;
+  margin: 0 0 12px;
+}
+
+.statusLine strong {
+  color: #4fd8ff;
+}
+
+.errorText {
+  color: #ff4fd8;
+  font-size: 13px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  margin: 8px 0 0;
+}
+
+.offlineNotice {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #9a8bb0;
+}
+
+/* ---------- Room controls ---------- */
+
+.roomActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+button.primaryButton {
+  background: #4fd8ff;
+  color: #0a0612;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button.primaryButton:hover {
+  opacity: 0.88;
+}
+
+button.primaryButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.secondaryButton {
+  background: transparent;
+  color: #efe7fa;
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+button.secondaryButton:hover {
+  border-color: #4fd8ff;
+}
+
+button.secondaryButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.roomCodeInput {
+  background: #0a0612;
+  border: 1px solid #2a1b3d;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #efe7fa;
+  font-family: var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.12em;
+  font-size: 14px;
+  width: 110px;
+  text-transform: uppercase;
+}
+
+.roomCodeInput:focus {
+  outline: none;
+  border-color: #4fd8ff;
+}
+
+.roomCodeDisplay {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 22px;
+  letter-spacing: 0.2em;
+  color: #ff4fd8;
+  text-shadow: 0 0 14px rgba(255, 79, 216, 0.45);
+}
+
+.inviteRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.inviteLinkText {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12.5px;
+  color: #9a8bb0;
+  word-break: break-all;
+}
+
+/* ---------- Placement editor ---------- */
+
+.shipChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+button.shipChip {
+  background: rgba(79, 216, 255, 0.08);
+  border: 1px solid #2a1b3d;
+  border-radius: 999px;
+  padding: 7px 14px;
+  color: #efe7fa;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+button.shipChip:hover {
+  border-color: #4fd8ff;
+}
+
+.shipChipSelected {
+  border-color: #4fd8ff !important;
+  box-shadow: 0 0 10px rgba(79, 216, 255, 0.4);
+}
+
+.shipChipPlaced {
+  color: #9a8bb0;
+  text-decoration: line-through;
+}
+
+.placementControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+/* ---------- Boards ---------- */
+
+.boardsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.boardBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.boardLabel {
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #9a8bb0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(28px, 1fr));
+  gap: 3px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.boardRow {
+  display: contents;
+}
+
+button.cell {
+  aspect-ratio: 1 / 1;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 4px;
+  border: 1px solid #2a1b3d;
+  background: rgba(10, 6, 18, 0.6);
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+}
+
+button.cell:disabled {
+  cursor: default;
+}
+
+button.cell:not(:disabled):hover {
+  border-color: #4fd8ff;
+  transform: scale(1.05);
+}
+
+.cell_empty {
+  background: rgba(10, 6, 18, 0.6);
+}
+
+.cell_ship {
+  background: rgba(79, 216, 255, 0.35);
+  border-color: rgba(79, 216, 255, 0.6);
+}
+
+.cell_hit {
+  background: #ff4fd8;
+  border-color: #ff4fd8;
+  box-shadow: 0 0 10px rgba(255, 79, 216, 0.6);
+}
+
+.cell_miss {
+  background: rgba(154, 139, 176, 0.18);
+}
+
+.cell_miss::after {
+  content: "";
+  display: block;
+  width: 30%;
+  height: 30%;
+  margin: 35% auto 0;
+  border-radius: 50%;
+  background: #9a8bb0;
+}
+
+/* ---------- Fleet tray ---------- */
+
+.fleetTray {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fleetTrayLabel {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #9a8bb0;
+}
+
+.fleetChips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.fleetChip {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #2a1b3d;
+  color: #efe7fa;
+}
+
+.fleetChipSunk {
+  color: #ff4fd8;
+  border-color: #ff4fd8;
+  text-decoration: line-through;
+}
+
+/* ---------- Activity log ---------- */
+
+.log {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.log li {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 12px;
+  color: #9a8bb0;
+}
+
+.log li:last-child {
+  color: #4fd8ff;
+}
+
+/* ---------- Result banner ---------- */
+
+.resultBanner {
+  text-align: center;
+  font-family: var(--font-arcade), var(--font-space-grotesk), sans-serif;
+  font-size: 15px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #2a1b3d;
+}
+
+.resultWin {
+  color: #4fd8ff;
+  text-shadow: 0 0 14px rgba(79, 216, 255, 0.5);
+}
+
+.resultLose {
+  color: #ff4fd8;
+  text-shadow: 0 0 14px rgba(255, 79, 216, 0.5);
+}
+
+/* ---------- Responsive (phone) ---------- */
+@media (max-width: 480px) {
+  .content {
+    padding: 24px 16px 72px;
+  }
+
+  .modeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .board {
+    max-width: 100%;
+  }
+
+  .roomCodeInput {
+    width: 90px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+/* Placed last so it wins the cascade over the unconditional transition
+   declarations above (equal-specificity rules resolve by source order). */
+@media (prefers-reduced-motion: reduce) {
+  button.cell,
+  button.modeCard,
+  button.primaryButton,
+  button.secondaryButton,
+  a.backLink {
+    transition: none;
+  }
+  button.cell:not(:disabled):hover,
+  button.modeCard:hover {
+    transform: none;
+  }
+}
