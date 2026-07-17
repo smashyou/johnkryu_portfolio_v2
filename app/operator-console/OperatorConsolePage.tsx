@@ -12,6 +12,10 @@ import styles from "./console.module.css";
 
 const ACCENT = "#00ff9c";
 
+// Split for mobile: each role phrase gets its own nowrap span so the
+// tagline only wraps between phrases (never mid-phrase) on narrow screens.
+const roles = profile.title.split(" · ");
+
 type CommitEntry = { hash: string; years: string; title: string; desc: string };
 
 // Verbatim from the reference script's `commits` array (renderVals) in
@@ -246,7 +250,15 @@ export default function OperatorConsolePage() {
         <BootSequence>
           <h1 className={styles.heroTitle}>{profile.name}</h1>
           <div className={styles.heroTagline}>
-            &gt; {profile.title}
+            <span className={styles.taglinePrompt}>&gt; </span>
+            <span className={styles.taglineRoles}>
+              {roles.map((role, i) => (
+                <span className={styles.taglineRole} key={role}>
+                  {role}
+                  {i < roles.length - 1 ? " · " : ""}
+                </span>
+              ))}
+            </span>
             <span className={styles.caret}>_</span>
           </div>
           <div className={styles.heroCtas}>

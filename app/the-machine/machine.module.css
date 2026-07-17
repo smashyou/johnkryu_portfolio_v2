@@ -323,6 +323,25 @@ a.navItemCta:hover {
   .heroEyebrow {
     font-size: 9.5px;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .heroEyebrowName,
+  .heroEyebrowSub {
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .heroEyebrowSub {
+    animation-delay: 0.12s;
+  }
+
+  .heroEyebrowSep {
+    display: none;
   }
 
   .heroTitle {
@@ -1028,6 +1047,11 @@ a.socialLink:hover {
   }
   .heroScrollHint {
     animation: none;
+  }
+  .heroEyebrowName,
+  .heroEyebrowSub {
+    animation: none;
+    opacity: 1;
   }
   .badge {
     display: none;

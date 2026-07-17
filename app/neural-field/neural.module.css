@@ -372,6 +372,40 @@ a.ctaSecondary:hover {
   .scrollHint {
     bottom: 20px;
   }
+
+  /* Roles badge: each phrase gets a nowrap span so the line only wraps
+     between phrases (never mid-phrase), centered and lightly staggered. */
+  .heroBadge {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    animation: none;
+  }
+
+  .badgeRoles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px 6px;
+  }
+
+  .badgeRole {
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .badgeRole:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .badgeRole:nth-child(2) {
+    animation-delay: 0.14s;
+  }
+
+  .badgeRole:nth-child(3) {
+    animation-delay: 0.23s;
+  }
 }
 
 /* ---------- Section shell ---------- */
@@ -1152,6 +1186,10 @@ a.socialLink:hover {
     animation: none;
   }
   .badgeDot {
+    animation: none;
+    opacity: 1;
+  }
+  .badgeRole {
     animation: none;
     opacity: 1;
   }

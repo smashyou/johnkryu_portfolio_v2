@@ -19,6 +19,10 @@ import styles from "./neural.module.css";
 
 const ACCENT = "#22d3ee";
 
+// Split for mobile: each role phrase gets its own nowrap span so the hero
+// badge only wraps between phrases (never mid-phrase) on narrow screens.
+const roles = profile.title.split(" · ");
+
 // Verbatim from the componentDidMount typing loop in the reference script.
 const TYPED_PHRASES = [
   "> building agentic-AI platforms",
@@ -146,7 +150,14 @@ export default function NeuralFieldPage() {
       <section id="home" className={styles.hero}>
         <div className={styles.heroBadge}>
           <span className={styles.badgeDot} />
-          {profile.title}
+          <span className={styles.badgeRoles}>
+            {roles.map((role, i) => (
+              <span className={styles.badgeRole} key={role}>
+                {role}
+                {i < roles.length - 1 ? " · " : ""}
+              </span>
+            ))}
+          </span>
         </div>
         <h1 className={styles.heroTitle}>{profile.name}</h1>
         <p className={styles.heroLede}>

@@ -10,6 +10,11 @@ import styles from "./gateway.module.css";
 // rules defined in gateway.module.css (border-color / color: var(--accent)).
 type AccentVars = React.CSSProperties & { "--accent"?: string };
 
+// Split for mobile: each role phrase gets its own nowrap span so the
+// eyebrow line only wraps between phrases (never mid-phrase) on narrow
+// screens. Desktop keeps rendering the joined profile.title string.
+const roles = profile.title.split(" · ");
+
 export default function GatewayPage() {
   const { votes, votedFor, castVote } = useVotes();
 
@@ -37,8 +42,19 @@ export default function GatewayPage() {
         </div>
 
         <div className={styles.eyebrow}>
-          <span className={styles.dot} />
-          {profile.name} — {profile.title}
+          <span className={styles.eyebrowNameLine}>
+            <span className={styles.dot} />
+            {profile.name}
+          </span>
+          <span className={styles.eyebrowSep}>{" — "}</span>
+          <span className={styles.eyebrowRoles}>
+            {roles.map((role, i) => (
+              <span className={styles.eyebrowRole} key={role}>
+                {role}
+                {i < roles.length - 1 ? " · " : ""}
+              </span>
+            ))}
+          </span>
         </div>
 
         <h1 className={styles.headline}>Choose your experience.</h1>

@@ -378,6 +378,53 @@
     gap: 14px 22px;
     margin-top: 48px;
   }
+
+  /* Identity eyebrow: name on its own line, roles wrapped in nowrap
+     spans on the next line(s) so phrases never split mid-word, dash
+     separator hidden, everything centered to match the section. */
+  .eyebrow {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    animation: none;
+  }
+
+  .eyebrowNameLine {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .eyebrowSep {
+    display: none;
+  }
+
+  .eyebrowRoles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 6px;
+  }
+
+  .eyebrowRole {
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .eyebrowRole:nth-child(1) {
+    animation-delay: 0.12s;
+  }
+
+  .eyebrowRole:nth-child(2) {
+    animation-delay: 0.21s;
+  }
+
+  .eyebrowRole:nth-child(3) {
+    animation-delay: 0.3s;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -394,6 +441,11 @@
     animation: none;
   }
   .dot {
+    animation: none;
+    opacity: 1;
+  }
+  .eyebrowNameLine,
+  .eyebrowRole {
     animation: none;
     opacity: 1;
   }

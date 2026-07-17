@@ -160,7 +160,11 @@ export default function TheMachinePage() {
         <section id="hero" className={styles.heroSection}>
           <div className={styles.heroCard}>
             <div className={styles.heroEyebrow}>
-              JOHN K. RYU — TEARDOWN OF AN ENGINEER
+              <span className={styles.heroEyebrowName}>JOHN K. RYU</span>
+              <span className={styles.heroEyebrowSep}> — </span>
+              <span className={styles.heroEyebrowSub}>
+                TEARDOWN OF AN ENGINEER
+              </span>
             </div>
             <h1 className={styles.heroTitle}>
               Every machine
