@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { Redis } from "@upstash/redis";
 import { baseballGame } from "./baseballGame";
 import { battleshipGame } from "./battleshipGame";
@@ -127,15 +128,18 @@ export function clientIp(req: Request): string {
 }
 
 /**
- * Per-IP create throttle: `games:ratelimit:<ip>` INCR'd with a 10-minute
- * window, capped at 20 creates. Not part of the createRoom() interface
- * (which has no IP parameter) — call this from the room route before
- * invoking createRoom(). Returns true when the request is within budget.
+ * Per-IP create throttle: `games:ratelimit:<sha256(ip)>` INCR'd with a
+ * 10-minute window, capped at 20 creates. The IP is hashed before use as a
+ * key so raw addresses are never written to Redis (matching the leaderboard's
+ * privacy invariant). Not part of the createRoom() interface (which has no
+ * IP parameter) — call this from the room route before invoking
+ * createRoom(). Returns true when the request is within budget.
  */
 export async function checkCreateRateLimit(ip: string): Promise<boolean> {
   const redis = getRedis();
   if (!redis) return true; // caller already 503s when redis is unconfigured
-  const key = `games:ratelimit:${ip}`;
+  const hashedIp = createHash("sha256").update(`games-rl::${ip}`).digest("hex");
+  const key = `games:ratelimit:${hashedIp}`;
   const count = await redis.incr(key);
   if (count === 1) {
     await redis.expire(key, RATE_LIMIT_WINDOW_SECONDS);
