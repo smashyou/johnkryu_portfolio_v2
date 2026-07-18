@@ -30,7 +30,6 @@ import styles from "./battleship.module.css";
 
 type Mode = "computer" | "online" | null;
 type CellState = "empty" | "ship" | "hit" | "miss";
-type Highlight = "valid" | "invalid";
 
 const CLAIM_WIN_IDLE_MS = 180000;
 const DRAG_THRESHOLD_PX = 5;
@@ -105,9 +104,10 @@ function difficultyLabel(d: Difficulty): string {
 
 // ---------------------------------------------------------------------------
 // Board grid — shared read/interactive board rendering for placement,
-// "your fleet", and "enemy waters" boards alike. `highlightCells` overlays a
-// valid/invalid drag-preview on top of the normal cell states (used only by
-// the placement board while a ship is being dragged).
+// "your fleet", and "enemy waters" boards alike. The placement board's
+// drag preview is NOT rendered per-cell here — it's a single absolutely
+// positioned overlay (see PlacementEditor's `dragOverlay`) so the ghost and
+// the "which cells will this land on" preview can never disagree.
 // ---------------------------------------------------------------------------
 
 function BoardGrid({
@@ -115,13 +115,11 @@ function BoardGrid({
   onCellClick,
   interactive,
   ariaLabel,
-  highlightCells,
 }: {
   grid: CellState[][];
   onCellClick?: (row: number, col: number) => void;
   interactive: boolean;
   ariaLabel: string;
-  highlightCells?: Map<string, Highlight>;
 }) {
   return (
     <div className={styles.board} role="grid" aria-label={ariaLabel}>
@@ -137,9 +135,6 @@ function BoardGrid({
                   : cellState === "hit"
                     ? styles.cell_hit
                     : styles.cell_miss;
-            const highlight = highlightCells?.get(cellKey(r, c));
-            const highlightClass =
-              highlight === "valid" ? styles.cell_highlightValid : highlight === "invalid" ? styles.cell_highlightInvalid : "";
             return (
               <button
                 key={c}
@@ -149,7 +144,7 @@ function BoardGrid({
                 data-col={c}
                 data-state={cellState}
                 disabled={disabled}
-                className={`${styles.cell} ${stateClass} ${highlightClass}`}
+                className={`${styles.cell} ${stateClass}`}
                 onClick={() => onCellClick?.(r, c)}
                 aria-label={`row ${r + 1} column ${c + 1}: ${cellState}`}
               />
@@ -350,15 +345,84 @@ type DragSession = {
   moved: boolean;
 };
 
-type DragVisual = {
-  name: string;
+/** Single source of truth for the active drag's visuals. When `onBoard` is
+ * true, (row, col, size, horizontal) fully determine BOTH the snap-highlight
+ * AND the ghost fill — they're rendered as one element (`dragSnapOverlay`),
+ * so they can never disagree. When `onBoard` is false the pointer is off the
+ * board (e.g. still over the tray); only `size`/`horizontal` matter, for the
+ * small cursor-following badge (its pixel position is tracked via a ref, not
+ * state — see `badgeRef`). */
+type DragOverlayState = {
   size: number;
   horizontal: boolean;
-  x: number;
-  y: number;
-  hoverCell: { row: number; col: number } | null;
+  onBoard: boolean;
+  row: number;
+  col: number;
   valid: boolean;
 };
+
+/** Board cell centers captured once at drag-start from the live DOM (so the
+ * pointer→cell mapping is exact regardless of the grid's `gap`, container
+ * width, or any sub-pixel rounding the browser applies to the CSS grid —
+ * far more robust than assuming a uniform `boardWidth / BOARD_SIZE` pitch). */
+type BoardGeometry = {
+  xs: number[];
+  ys: number[];
+  colLeft: number[];
+  colRight: number[];
+  rowTop: number[];
+  rowBottom: number[];
+  rect: DOMRect;
+};
+
+function nearestIndex(centers: number[], value: number): number {
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < centers.length; i++) {
+    const d = Math.abs(centers[i] - value);
+    if (d < bestDist) {
+      bestDist = d;
+      bestIdx = i;
+    }
+  }
+  return bestIdx;
+}
+
+/** Keep a ship's placement anchor fully on the board given its length and
+ * orientation, so the drag preview is always exactly `size` contiguous
+ * cells — never clipped at the board edge. */
+function clampToBoard(row: number, col: number, size: number, horizontal: boolean): { row: number; col: number } {
+  return {
+    row: horizontal ? row : Math.min(row, BOARD_SIZE - size),
+    col: horizontal ? Math.min(col, BOARD_SIZE - size) : col,
+  };
+}
+
+/** Pixel-exact CSS for the drag snap overlay, derived from the SAME captured
+ * cell rects used to resolve pointer→cell (see `captureGeometry` /
+ * `cellFromPoint`) — not from a `col/BOARD_SIZE * 100%` approximation, which
+ * (like the old bug) would silently ignore the grid's `gap` and drift by a
+ * few px per column/row. Falls back to the percentage approximation only if
+ * geometry hasn't been captured yet (should not happen once a drag is over
+ * the board, since capture happens at drag-start). */
+function overlayPixelStyle(target: DragOverlayState, geo: BoardGeometry | null): React.CSSProperties {
+  if (!geo) {
+    return {
+      left: `${(target.col / BOARD_SIZE) * 100}%`,
+      top: `${(target.row / BOARD_SIZE) * 100}%`,
+      width: `${((target.horizontal ? target.size : 1) / BOARD_SIZE) * 100}%`,
+      height: `${((target.horizontal ? 1 : target.size) / BOARD_SIZE) * 100}%`,
+    };
+  }
+  const lastCol = target.horizontal ? target.col + target.size - 1 : target.col;
+  const lastRow = target.horizontal ? target.row : target.row + target.size - 1;
+  return {
+    left: geo.colLeft[target.col] - geo.rect.left,
+    top: geo.rowTop[target.row] - geo.rect.top,
+    width: geo.colRight[lastCol] - geo.colLeft[target.col],
+    height: geo.rowBottom[lastRow] - geo.rowTop[target.row],
+  };
+}
 
 function PlacementEditor({
   fleetSpec,
@@ -376,10 +440,23 @@ function PlacementEditor({
   difficulty: Difficulty;
 }) {
   const boardRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
   const sessionRef = useRef<DragSession | null>(null);
   const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [drag, setDrag] = useState<DragVisual | null>(null);
+  // rAF-throttled pointermove pipeline: only the latest pointer position is
+  // kept (`pendingPointRef`), at most one frame is scheduled at a time
+  // (`rafIdRef`), and `lastAppliedRef` lets `processPointerMove` skip the
+  // `setDragOverlay` call entirely when the computed target hasn't actually
+  // changed cell/orientation/validity — this is what keeps drag smooth: the
+  // 100-cell board only re-renders when the snapped target really moves,
+  // not on every pixel of pointer travel.
+  const rafIdRef = useRef<number | null>(null);
+  const pendingPointRef = useRef<{ clientX: number; clientY: number } | null>(null);
+  const lastAppliedRef = useRef<DragOverlayState | null>(null);
+  const geometryRef = useRef<BoardGeometry | null>(null);
+
+  const [dragOverlay, setDragOverlay] = useState<DragOverlayState | null>(null);
   const [draggingName, setDraggingName] = useState<string | null>(null);
   const [shakingShip, setShakingShip] = useState<string | null>(null);
   const [selectedShipName, setSelectedShipName] = useState<string | null>(null);
@@ -399,15 +476,46 @@ function PlacementEditor({
     shakeTimerRef.current = setTimeout(() => setShakingShip(null), SHAKE_DURATION_MS);
   }, []);
 
-  const cellFromPoint = useCallback((clientX: number, clientY: number): { row: number; col: number } | null => {
+  // Snapshot every cell's screen-space center from the live DOM. Captured
+  // once at drag-start (not per-move): the board's layout doesn't change
+  // mid-drag, so this is cheap to gather up front and then reused for every
+  // pointermove — no per-frame getBoundingClientRect() calls, no assumption
+  // about a uniform `width / BOARD_SIZE` pitch that would silently ignore
+  // the grid's `gap`.
+  const captureGeometry = useCallback(() => {
     const el = boardRef.current;
-    if (!el) return null;
-    const rect = el.getBoundingClientRect();
+    if (!el) return;
+    const xs = new Array<number>(BOARD_SIZE).fill(0);
+    const ys = new Array<number>(BOARD_SIZE).fill(0);
+    const colLeft = new Array<number>(BOARD_SIZE).fill(0);
+    const colRight = new Array<number>(BOARD_SIZE).fill(0);
+    const rowTop = new Array<number>(BOARD_SIZE).fill(0);
+    const rowBottom = new Array<number>(BOARD_SIZE).fill(0);
+    const cellEls = el.querySelectorAll<HTMLElement>("button[data-row][data-col]");
+    cellEls.forEach((cellEl) => {
+      const row = Number(cellEl.dataset.row);
+      const col = Number(cellEl.dataset.col);
+      const r = cellEl.getBoundingClientRect();
+      if (row === 0) {
+        xs[col] = r.left + r.width / 2;
+        colLeft[col] = r.left;
+        colRight[col] = r.right;
+      }
+      if (col === 0) {
+        ys[row] = r.top + r.height / 2;
+        rowTop[row] = r.top;
+        rowBottom[row] = r.bottom;
+      }
+    });
+    geometryRef.current = { xs, ys, colLeft, colRight, rowTop, rowBottom, rect: el.getBoundingClientRect() };
+  }, []);
+
+  const cellFromPoint = useCallback((clientX: number, clientY: number): { row: number; col: number } | null => {
+    const geo = geometryRef.current;
+    if (!geo) return null;
+    const { rect, xs, ys } = geo;
     if (clientX < rect.left || clientX >= rect.right || clientY < rect.top || clientY >= rect.bottom) return null;
-    const col = Math.floor(((clientX - rect.left) / rect.width) * BOARD_SIZE);
-    const row = Math.floor(((clientY - rect.top) / rect.height) * BOARD_SIZE);
-    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) return null;
-    return { row, col };
+    return { row: nearestIndex(ys, clientY), col: nearestIndex(xs, clientX) };
   }, []);
 
   const startDrag = useCallback(
@@ -422,32 +530,83 @@ function PlacementEditor({
         startY: e.clientY,
         moved: false,
       };
+      captureGeometry();
+      lastAppliedRef.current = null;
     },
-    []
+    [captureGeometry]
   );
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      const session = sessionRef.current;
-      if (!session || e.pointerId !== session.pointerId) return;
-      const dx = e.clientX - session.startX;
-      const dy = e.clientY - session.startY;
+  // Recompute the single-source-of-truth drag target for the latest pending
+  // pointer position. Runs at most once per animation frame (scheduled by
+  // `handlePointerMove` below), and only calls `setDragOverlay` — the state
+  // update that re-renders the board — when the computed target actually
+  // changed cell, orientation, or validity. The off-board badge's raw pixel
+  // position is written straight to the DOM via `badgeRef`, bypassing React
+  // state entirely, since that's pure cursor-following and never needs to
+  // trigger a component re-render.
+  const processPointerMove = useCallback(
+    (session: DragSession) => {
+      const point = pendingPointRef.current;
+      if (!point) return;
+      const dx = point.clientX - session.startX;
+      const dy = point.clientY - session.startY;
       if (!session.moved && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
         session.moved = true;
         if (session.source === "board") setDraggingName(session.name);
       }
       if (!session.moved) return;
 
-      const hoverCell = cellFromPoint(e.clientX, e.clientY);
+      const rawCell = cellFromPoint(point.clientX, point.clientY);
       const others = session.source === "board" ? placements.filter((p) => p.name !== session.name) : placements;
-      let valid = false;
-      if (hoverCell) {
-        const candidate: Placement = { name: session.name, size: session.size, row: hoverCell.row, col: hoverCell.col, horizontal: session.horizontal };
-        valid = candidateValid(candidate, others);
+
+      let next: DragOverlayState;
+      if (rawCell) {
+        const { row, col } = clampToBoard(rawCell.row, rawCell.col, session.size, session.horizontal);
+        const candidate: Placement = { name: session.name, size: session.size, row, col, horizontal: session.horizontal };
+        next = { size: session.size, horizontal: session.horizontal, onBoard: true, row, col, valid: candidateValid(candidate, others) };
+      } else {
+        next = { size: session.size, horizontal: session.horizontal, onBoard: false, row: 0, col: 0, valid: false };
       }
-      setDrag({ name: session.name, size: session.size, horizontal: session.horizontal, x: e.clientX, y: e.clientY, hoverCell, valid });
+
+      const last = lastAppliedRef.current;
+      const changed =
+        !last ||
+        last.onBoard !== next.onBoard ||
+        last.row !== next.row ||
+        last.col !== next.col ||
+        last.horizontal !== next.horizontal ||
+        last.valid !== next.valid;
+      if (changed) {
+        lastAppliedRef.current = next;
+        setDragOverlay(next);
+      }
+
+      const badge = badgeRef.current;
+      if (badge) {
+        if (rawCell) {
+          badge.style.display = "none";
+        } else {
+          badge.style.display = "block";
+          badge.style.transform = `translate3d(${point.clientX}px, ${point.clientY}px, 0) translate(-50%, -50%)`;
+        }
+      }
     },
     [cellFromPoint, placements]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      const session = sessionRef.current;
+      if (!session || e.pointerId !== session.pointerId) return;
+      pendingPointRef.current = { clientX: e.clientX, clientY: e.clientY };
+      if (rafIdRef.current != null) return;
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        const activeSession = sessionRef.current;
+        if (activeSession) processPointerMove(activeSession);
+      });
+    },
+    [processPointerMove]
   );
 
   const endDrag = useCallback(
@@ -455,9 +614,16 @@ function PlacementEditor({
       const session = sessionRef.current;
       if (!session || e.pointerId !== session.pointerId) return;
       sessionRef.current = null;
+      if (rafIdRef.current != null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      pendingPointRef.current = null;
+      lastAppliedRef.current = null;
       const wasMoved = session.moved;
-      setDrag(null);
+      setDragOverlay(null);
       setDraggingName(null);
+      if (badgeRef.current) badgeRef.current.style.display = "none";
 
       if (!wasMoved) {
         if (session.source === "tray") {
@@ -478,10 +644,15 @@ function PlacementEditor({
         return;
       }
 
-      const hoverCell = cellFromPoint(e.clientX, e.clientY);
+      // Recomputed fresh from the final pointer position (not read back from
+      // React state) so the commit can never lag a frame behind what was
+      // last rendered — it lands exactly on whatever cell the pointer is
+      // over right now, matching the snap overlay the player was looking at.
+      const rawCell = cellFromPoint(e.clientX, e.clientY);
       const others = placements.filter((p) => p.name !== session.name);
-      if (hoverCell) {
-        const candidate: Placement = { name: session.name, size: session.size, row: hoverCell.row, col: hoverCell.col, horizontal: session.horizontal };
+      if (rawCell) {
+        const { row, col } = clampToBoard(rawCell.row, rawCell.col, session.size, session.horizontal);
+        const candidate: Placement = { name: session.name, size: session.size, row, col, horizontal: session.horizontal };
         if (candidateValid(candidate, others)) {
           onChange([...others, candidate]);
           return;
@@ -501,15 +672,19 @@ function PlacementEditor({
       const session = sessionRef.current;
       if (session) {
         session.horizontal = !session.horizontal;
-        setDrag((prev) => {
+        setDragOverlay((prev) => {
           if (!prev) return prev;
-          const others = session.source === "board" ? placements.filter((p) => p.name !== session.name) : placements;
-          let valid = false;
-          if (prev.hoverCell) {
-            const candidate: Placement = { name: session.name, size: session.size, row: prev.hoverCell.row, col: prev.hoverCell.col, horizontal: session.horizontal };
-            valid = candidateValid(candidate, others);
+          let next: DragOverlayState;
+          if (!prev.onBoard) {
+            next = { ...prev, horizontal: session.horizontal };
+          } else {
+            const others = session.source === "board" ? placements.filter((p) => p.name !== session.name) : placements;
+            const { row, col } = clampToBoard(prev.row, prev.col, session.size, session.horizontal);
+            const candidate: Placement = { name: session.name, size: session.size, row, col, horizontal: session.horizontal };
+            next = { ...prev, horizontal: session.horizontal, row, col, valid: candidateValid(candidate, others) };
           }
-          return { ...prev, horizontal: session.horizontal, valid };
+          lastAppliedRef.current = next;
+          return next;
         });
         return;
       }
@@ -541,19 +716,7 @@ function PlacementEditor({
     setSelectedShipName(null);
   }
 
-  const grid = shipGrid(placements.filter((p) => p.name !== draggingName));
-  const highlightCells = useMemo(() => {
-    if (!drag || !drag.hoverCell) return undefined;
-    const candidate: Placement = { name: drag.name, size: drag.size, row: drag.hoverCell.row, col: drag.hoverCell.col, horizontal: drag.horizontal };
-    const map = new Map<string, Highlight>();
-    for (const cell of cellsForPlacement(candidate)) {
-      const [r, c] = parseCellKey(cell);
-      if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-        map.set(cell, drag.valid ? "valid" : "invalid");
-      }
-    }
-    return map;
-  }, [drag]);
+  const grid = useMemo(() => shipGrid(placements.filter((p) => p.name !== draggingName)), [placements, draggingName]);
 
   return (
     <div>
@@ -577,7 +740,13 @@ function PlacementEditor({
                     e.preventDefault();
                     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
                     startDrag(e, "tray", ship.name, ship.size, horizontal);
-                    setDrag({ name: ship.name, size: ship.size, horizontal, x: e.clientX, y: e.clientY, hoverCell: null, valid: false });
+                    const initial: DragOverlayState = { size: ship.size, horizontal, onBoard: false, row: 0, col: 0, valid: false };
+                    lastAppliedRef.current = initial;
+                    setDragOverlay(initial);
+                    if (badgeRef.current) {
+                      badgeRef.current.style.display = "block";
+                      badgeRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+                    }
                   }}
                   onPointerMove={handlePointerMove}
                   onPointerUp={endDrag}
@@ -600,7 +769,7 @@ function PlacementEditor({
 
         <div className={styles.boardColumn}>
           <div className={styles.boardStage} ref={boardRef}>
-            <BoardGrid grid={grid} interactive={false} ariaLabel="Fleet placement board" highlightCells={highlightCells} />
+            <BoardGrid grid={grid} interactive={false} ariaLabel="Fleet placement board" />
             {placements
               .filter((p) => p.name !== draggingName)
               .map((ship) => {
@@ -627,6 +796,27 @@ function PlacementEditor({
                   />
                 );
               })}
+            {/* Single source of truth for the live drag preview: one block
+                spanning (row, col, size, orientation), positioned from the
+                same captured cell rects the pointer→cell math uses (see
+                `overlayPixelStyle`), so the "ghost" fill and the "which
+                cells will this land on" preview are literally the same
+                element — they cannot disagree, and the run is always
+                exactly `size` contiguous cells. */}
+            {dragOverlay && dragOverlay.onBoard && (
+              <div
+                aria-hidden="true"
+                className={`${styles.dragSnapOverlay} ${dragOverlay.valid ? styles.dragSnapValid : styles.dragSnapInvalid}`}
+                style={{
+                  ...overlayPixelStyle(dragOverlay, geometryRef.current),
+                  flexDirection: dragOverlay.horizontal ? "row" : "column",
+                }}
+              >
+                {Array.from({ length: dragOverlay.size }).map((_, i) => (
+                  <span key={i} className={styles.dragSnapCell} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -645,15 +835,17 @@ function PlacementEditor({
         </button>
       </div>
 
-      {drag && (
-        <div className={styles.dragGhost} style={{ left: drag.x, top: drag.y }} aria-hidden="true">
-          <div className={styles.ghostCells} style={{ flexDirection: drag.horizontal ? "row" : "column" }}>
-            {Array.from({ length: drag.size }).map((_, i) => (
-              <span key={i} className={`${styles.ghostCell} ${drag.hoverCell ? (drag.valid ? styles.ghostCellValid : styles.ghostCellInvalid) : ""}`} />
-            ))}
-          </div>
+      {/* Small cursor-following badge — shown ONLY while the drag is off the
+          board (over the tray or elsewhere). Its position is written
+          directly to the DOM via `badgeRef` in the pointermove pipeline
+          above, not through React state, so pure cursor-following never
+          triggers a re-render. Never shown while hovering the board — there
+          the `dragSnapOverlay` above is the only ghost, snapped to the grid. */}
+      <div ref={badgeRef} className={styles.dragBadge} aria-hidden="true">
+        <div className={styles.badgeCells} style={{ flexDirection: dragOverlay?.horizontal ? "row" : "column" }}>
+          {dragOverlay && Array.from({ length: dragOverlay.size }).map((_, i) => <span key={i} className={styles.badgeCell} />)}
         </div>
-      )}
+      </div>
     </div>
   );
 }

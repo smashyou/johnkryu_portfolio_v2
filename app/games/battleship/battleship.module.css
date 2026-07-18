@@ -508,44 +508,61 @@ button.removeShipButton:hover {
   user-select: none;
 }
 
-.dragGhost {
-  position: fixed;
-  z-index: 200;
+/* Single source of truth for the drag preview while hovering the board: one
+   absolutely positioned block spanning the exact (row, col, size,
+   orientation) target cells, using the same percentage math as
+   .placedShipOverlay above — so the ghost fill and the "which cells will
+   this land on" highlight can never visually disagree, and the run is
+   always exactly `size` contiguous cells (never clipped/non-contiguous). */
+.dragSnapOverlay {
+  position: absolute;
+  display: flex;
+  gap: 3px;
   pointer-events: none;
-  transform: translate(-50%, -50%);
+  z-index: 6;
 }
 
-.ghostCells {
+.dragSnapCell {
+  flex: 1 1 0;
+  border-radius: 4px;
+}
+
+.dragSnapValid .dragSnapCell {
+  background: rgba(79, 216, 255, 0.55);
+  border: 2px solid #4fd8ff;
+  box-shadow: 0 0 10px rgba(79, 216, 255, 0.6);
+}
+
+.dragSnapInvalid .dragSnapCell {
+  background: rgba(255, 79, 79, 0.4);
+  border: 2px solid #ff4f4f;
+  box-shadow: 0 0 10px rgba(255, 79, 79, 0.5);
+}
+
+/* Small cursor-following badge — shown ONLY while a drag is off the board
+   (over the tray, etc). Position is updated via a ref'd transform in
+   BattleshipPage.tsx (not React state), so it never triggers a re-render. */
+.dragBadge {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 200;
+  pointer-events: none;
+  display: none;
+  will-change: transform;
+}
+
+.badgeCells {
   display: flex;
   gap: 2px;
 }
 
-.ghostCell {
+.badgeCell {
   width: 26px;
   height: 26px;
   border-radius: 4px;
   background: rgba(154, 139, 176, 0.35);
   border: 1px solid rgba(154, 139, 176, 0.6);
-}
-
-.ghostCellValid {
-  background: rgba(79, 216, 255, 0.55);
-  border-color: #4fd8ff;
-  box-shadow: 0 0 10px rgba(79, 216, 255, 0.6);
-}
-
-.ghostCellInvalid {
-  background: rgba(255, 79, 79, 0.4);
-  border-color: #ff4f4f;
-  box-shadow: 0 0 10px rgba(255, 79, 79, 0.5);
-}
-
-.cell_highlightValid {
-  box-shadow: inset 0 0 0 2px #4fd8ff;
-}
-
-.cell_highlightInvalid {
-  box-shadow: inset 0 0 0 2px #ff4f4f;
 }
 
 @keyframes shipShake {
