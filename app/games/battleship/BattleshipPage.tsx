@@ -330,9 +330,38 @@ function FleetBuilder({
 // ---------------------------------------------------------------------------
 // Placement editor — pointer-events-based drag & drop. Shared between
 // vs-computer and online setup. Works with mouse AND touch: pointer events
-// unify both, and setPointerCapture keeps drag/rotate gestures glued to the
-// element that started them even as the pointer leaves it.
+// unify both.
+//
+// Drag plumbing is deliberately "bulletproof" against two real-browser
+// failure modes that plagued an earlier version:
+//   1. Native text-selection/drag hijack — a real mouse drag over ordinary
+//      page text (or even the tray/board itself) can kick off the browser's
+//      native selection or HTML5 drag-and-drop gesture, which then competes
+//      with our pointer handling and can silently stop delivering pointer
+//      events. Fixed by suppressing `dragstart` for the drag's duration and
+//      forcing `user-select: none` on <body> while dragging (see
+//      `attachDragListeners` below).
+//   2. Element-scoped listeners/capture dying mid-drag — attaching
+//      pointermove/up/cancel (and setPointerCapture) to the piece element
+//      itself is fragile: if React re-renders and that specific element
+//      unmounts (e.g. the dragged ship's overlay is intentionally filtered
+//      out of the board while `draggingName` is set), the browser silently
+//      drops capture and our handlers, freezing the drag. Fixed by attaching
+//      pointermove/up/cancel to `window` for the duration of the drag —
+//      window-level listeners don't care which element is under the pointer
+//      or whether the original element still exists. All positional state
+//      lives in refs (`sessionRef`, `pendingPointRef`, etc.), not on the DOM
+//      element, so it survives any re-render.
 // ---------------------------------------------------------------------------
+
+/** Structural subset of PointerEvent shared by React's synthetic pointer
+ * events and native (window-level) PointerEvent objects, so the same
+ * handlers can be called from either. */
+type PointerLike = {
+  pointerId: number;
+  clientX: number;
+  clientY: number;
+};
 
 type DragSession = {
   pointerId: number;
@@ -456,6 +485,12 @@ function PlacementEditor({
   const lastAppliedRef = useRef<DragOverlayState | null>(null);
   const geometryRef = useRef<BoardGeometry | null>(null);
 
+  // Teardown for the window-level listeners + body style suppression
+  // attached for the duration of the active drag (see `attachDragListeners`).
+  // Idempotent-by-construction: it's only ever invoked once per drag, from
+  // whichever of pointerup/pointercancel/unmount fires first.
+  const dragCleanupRef = useRef<(() => void) | null>(null);
+
   const [dragOverlay, setDragOverlay] = useState<DragOverlayState | null>(null);
   const [draggingName, setDraggingName] = useState<string | null>(null);
   const [shakingShip, setShakingShip] = useState<string | null>(null);
@@ -530,7 +565,7 @@ function PlacementEditor({
   }, []);
 
   const startDrag = useCallback(
-    (e: { pointerId: number; clientX: number; clientY: number }, source: "tray" | "board", name: string, size: number, horizontal: boolean) => {
+    (e: PointerLike, source: "tray" | "board", name: string, size: number, horizontal: boolean) => {
       sessionRef.current = {
         pointerId: e.pointerId,
         source,
@@ -606,7 +641,7 @@ function PlacementEditor({
   );
 
   const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerLike) => {
       const session = sessionRef.current;
       if (!session || e.pointerId !== session.pointerId) return;
       pendingPointRef.current = { clientX: e.clientX, clientY: e.clientY };
@@ -621,7 +656,7 @@ function PlacementEditor({
   );
 
   const endDrag = useCallback(
-    (e: { pointerId: number; clientX: number; clientY: number }) => {
+    (e: PointerLike) => {
       const session = sessionRef.current;
       if (!session || e.pointerId !== session.pointerId) return;
       sessionRef.current = null;
@@ -673,6 +708,93 @@ function PlacementEditor({
     },
     [cellFromPoint, onChange, placements, triggerShake]
   );
+
+  // Abort the active drag without committing anything — used for
+  // `pointercancel` (browser/OS interrupted the gesture: e.g. a system
+  // gesture kicked in, the tab lost focus mid-drag, or WebKit's pointer
+  // capture misbehaved). Unlike `endDrag`, this never attempts a placement
+  // or triggers the "invalid drop" shake — the ship simply reverts to
+  // wherever it already was (still in the tray if it hadn't been placed
+  // yet, or unchanged on the board), because `onChange` is never called.
+  const cancelDrag = useCallback((e: PointerLike) => {
+    const session = sessionRef.current;
+    if (!session || e.pointerId !== session.pointerId) return;
+    sessionRef.current = null;
+    if (rafIdRef.current != null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    pendingPointRef.current = null;
+    lastAppliedRef.current = null;
+    setDragOverlay(null);
+    setDraggingName(null);
+    if (badgeRef.current) badgeRef.current.style.display = "none";
+  }, []);
+
+  // Attach window-level pointermove/pointerup/pointercancel listeners for
+  // the duration of one drag, and suppress the native interference that was
+  // hijacking real-browser drags: text selection (via `user-select: none`
+  // on <body>) and the HTML5 drag-and-drop gesture (via intercepting
+  // `dragstart`). Called once from each surface's `onPointerDown`, right
+  // after `startDrag`. Window-level attachment means these keep firing
+  // regardless of which element is under the pointer or whether the
+  // original drag-starting element has since unmounted — see the block
+  // comment above `DragSession` for why that matters.
+  const attachDragListeners = useCallback(() => {
+    // A previous drag's listeners should already be torn down (pointerup/
+    // pointercancel always clean up), but guard against a stray leftover
+    // rather than stacking a second set of window listeners.
+    dragCleanupRef.current?.();
+
+    const previousUserSelect = document.body.style.userSelect;
+    const previousWebkitUserSelect = (document.body.style as CSSStyleDeclaration & { webkitUserSelect?: string })
+      .webkitUserSelect;
+    const previousCursor = document.body.style.cursor;
+
+    function onMove(ev: PointerEvent) {
+      handlePointerMove(ev);
+    }
+    function onUp(ev: PointerEvent) {
+      endDrag(ev);
+      teardown();
+    }
+    function onCancel(ev: PointerEvent) {
+      cancelDrag(ev);
+      teardown();
+    }
+    // Belt-and-suspenders: if the browser still tries to start a native
+    // HTML5 drag (e.g. from a stray `draggable` ancestor) mid-gesture,
+    // swallow it so it can't compete with pointer-event handling.
+    function onNativeDragStart(ev: DragEvent) {
+      ev.preventDefault();
+    }
+
+    function teardown() {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+      window.removeEventListener("dragstart", onNativeDragStart);
+      document.body.style.userSelect = previousUserSelect;
+      (document.body.style as CSSStyleDeclaration & { webkitUserSelect?: string }).webkitUserSelect =
+        previousWebkitUserSelect;
+      document.body.style.cursor = previousCursor;
+      dragCleanupRef.current = null;
+    }
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
+    window.addEventListener("dragstart", onNativeDragStart);
+    document.body.style.userSelect = "none";
+    (document.body.style as CSSStyleDeclaration & { webkitUserSelect?: string }).webkitUserSelect = "none";
+    document.body.style.cursor = "grabbing";
+    dragCleanupRef.current = teardown;
+  }, [handlePointerMove, endDrag, cancelDrag]);
+
+  // Belt-and-suspenders unmount cleanup: if the component unmounts mid-drag
+  // (e.g. navigating away), make sure the window listeners and body style
+  // overrides don't leak past the component's lifetime.
+  useEffect(() => () => dragCleanupRef.current?.(), []);
 
   // Keyboard "R": rotate the active drag (live preview only) or the current
   // selection (a placed ship rotates in place; an unplaced tray ship just
@@ -744,12 +866,13 @@ function PlacementEditor({
               return (
                 <div
                   key={ship.name}
+                  draggable={false}
                   className={`${styles.trayPiece} ${selectedShipName === ship.name ? styles.trayPieceSelected : ""} ${
                     shakingShip === ship.name ? styles.shake : ""
                   }`}
                   onPointerDown={(e) => {
+                    if (sessionRef.current) return; // a drag is already in progress — ignore extra pointers
                     e.preventDefault();
-                    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
                     startDrag(e, "tray", ship.name, ship.size, horizontal);
                     const initial: DragOverlayState = { size: ship.size, horizontal, onBoard: false, row: 0, col: 0, valid: false };
                     lastAppliedRef.current = initial;
@@ -758,10 +881,8 @@ function PlacementEditor({
                       badgeRef.current.style.display = "block";
                       badgeRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
                     }
+                    attachDragListeners();
                   }}
-                  onPointerMove={handlePointerMove}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
                 >
                   <div className={styles.trayPieceCells} style={{ flexDirection: horizontal ? "row" : "column" }}>
                     {Array.from({ length: ship.size }).map((_, i) => (
@@ -793,17 +914,16 @@ function PlacementEditor({
                     key={ship.name}
                     role="button"
                     tabIndex={0}
+                    draggable={false}
                     aria-label={`${ship.name}, placed. Drag to move, tap or press R to rotate.`}
                     className={`${styles.placedShipOverlay} ${shakingShip === ship.name ? styles.shake : ""}`}
                     style={{ left: `${left}%`, top: `${top}%`, width: `${width}%`, height: `${height}%` }}
                     onPointerDown={(e) => {
+                      if (sessionRef.current) return; // a drag is already in progress — ignore extra pointers
                       e.preventDefault();
-                      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
                       startDrag(e, "board", ship.name, ship.size, ship.horizontal);
+                      attachDragListeners();
                     }}
-                    onPointerMove={handlePointerMove}
-                    onPointerUp={endDrag}
-                    onPointerCancel={endDrag}
                   />
                 );
               })}
