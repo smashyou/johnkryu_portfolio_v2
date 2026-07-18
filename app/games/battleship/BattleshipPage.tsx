@@ -513,8 +513,19 @@ function PlacementEditor({
   const cellFromPoint = useCallback((clientX: number, clientY: number): { row: number; col: number } | null => {
     const geo = geometryRef.current;
     if (!geo) return null;
-    const { rect, xs, ys } = geo;
-    if (clientX < rect.left || clientX >= rect.right || clientY < rect.top || clientY >= rect.bottom) return null;
+    const { rect, xs, ys, colLeft, colRight } = geo;
+    // Magnetic edges: treat a pointer within ~one cell outside the board as
+    // still targeting the nearest edge cells, so the snap preview doesn't
+    // abruptly flip to the free-floating carry ghost right at the boundary.
+    const margin = (colRight[0] - colLeft[0]) * 1.1;
+    if (
+      clientX < rect.left - margin ||
+      clientX >= rect.right + margin ||
+      clientY < rect.top - margin ||
+      clientY >= rect.bottom + margin
+    ) {
+      return null;
+    }
     return { row: nearestIndex(ys, clientY), col: nearestIndex(xs, clientX) };
   }, []);
 

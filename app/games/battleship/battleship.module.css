@@ -552,9 +552,14 @@ button.removeShipButton:hover {
   will-change: transform;
 }
 
+/* Compact + dimmed so the away-from-board state clearly reads as "carrying
+   a ship", visually distinct from the full-size on-board snap preview. */
 .badgeCells {
   display: flex;
   gap: 2px;
+  transform: scale(0.65);
+  transform-origin: center;
+  opacity: 0.6;
 }
 
 .badgeCell {
