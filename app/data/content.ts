@@ -34,7 +34,7 @@ export const projects: Project[] = [
     id: 8,
     title: "TecAce AI Agent Studio",
     subtitle:
-      "Governance-first, privacy-first enterprise agentic-AI platform — build AI agents with roles and goals, orchestrate them into automated multi-agent workflows, and ground them in your knowledge with governed RAG. A dedicated conversation-memory layer (short & long-term) makes agents self-improving across sessions, with guardrails, evaluation, Slack/Teams integrations, and a public developer API built in. Runs on hybrid infrastructure — cloud (AWS) or fully on-prem — so regulated teams keep sensitive data inside their own perimeter, including self-hosted/on-prem model serving. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
+      "Governance-first, privacy-first enterprise agentic-AI platform — build AI agents with roles and goals, orchestrate them into automated multi-agent workflows, and ground them in your knowledge with governed RAG. A dedicated conversation-memory layer (short & long-term) makes agents self-improving across sessions, with guardrails, a RAGAS/LLM-judge evaluation & quality system, Slack/Teams integrations, and a public developer API built in. Runs on hybrid infrastructure — cloud (AWS) or fully on-prem — so regulated teams keep sensitive data inside their own perimeter, including self-hosted/on-prem model serving. Built 80–90% of the platform including the complete UI/UX and full-stack implementation.",
     images: [
       "/images/projects/ai-studio-dark.png",
       "/images/projects/ai-studio-light.png",
@@ -302,7 +302,7 @@ export const timeline: TimelineEntry[] = [
     period: "2025 — PRESENT",
     title: "AI Engineer",
     org: "TecAce Software · Bellevue, WA",
-    desc: "Architecting a governance-first enterprise agentic-AI platform: RAG pipelines, LangGraph visual flow builder, Slack/Teams gateway, hybrid search with RRF + cross-encoder reranking, and a 500+ endpoint public API — deployable cloud or fully on-prem.",
+    desc: "Architecting a governance-first enterprise agentic-AI platform: RAG pipelines, LangGraph visual flow builder, Slack/Teams gateway, hybrid search with RRF + cross-encoder reranking, an end-to-end LLM evaluation system (RAGAS test sets, NDCG/MRR, LLM-as-judge), and a 500+ endpoint public API — deployable cloud or fully on-prem.",
   },
   {
     period: "2022 — PRESENT",
@@ -363,6 +363,8 @@ export const skills: SkillCategory[] = [
       "Hybrid Search (Sparse + Dense)",
       "Embeddings & Semantic Search",
       "Cross-encoder Reranking",
+      "LLM Evaluation (RAGAS · LLM-as-Judge)",
+      "Retrieval Metrics (NDCG · MRR)",
       "vLLM · AWS Bedrock",
       "PyTorch · Transformers",
       "LangChain · LangSmith",
