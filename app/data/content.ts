@@ -405,7 +405,7 @@ export const skills: SkillCategory[] = [
       "Hybrid Search (Sparse + Dense)",
       "Embeddings & Semantic Search",
       "Cross-encoder Reranking",
-      "LLM Evaluation (RAGAS · LLM-as-Judge)",
+      "LLM & Agent Evals (RAGAS · DeepEval · LLM-as-Judge)",
       "Retrieval Metrics (NDCG · MRR)",
       "vLLM · AWS Bedrock",
       "PyTorch · Transformers",
