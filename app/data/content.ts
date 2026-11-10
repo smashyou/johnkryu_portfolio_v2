@@ -31,6 +31,42 @@ export type ConceptMeta = {
 
 export const projects: Project[] = [
   {
+    id: 9,
+    title: "iKamper Business Compass",
+    subtitle:
+      "Bilingual (English/Korean) operating desk built as a Forward Deployed Engineer for iKamper's General Manager — sales, orders, inventory, PSI (purchase, sales and inventory) planning and market intelligence in one place, with an AI agent that cites every number, a knowledge brain, daily briefs and human approval before anything goes out. Next.js, TypeScript, PostgreSQL + pgvector, a Python worker and an MCP server on Google Cloud Run, connected to NetSuite, Shopify and Google Workspace. The public demo runs entirely on made-up data.",
+    images: [
+      "/images/projects/compass-landing.png",
+      "/images/projects/compass-home.png",
+      "/images/projects/compass-sales.png",
+      "/images/projects/compass-orders.png",
+      "/images/projects/compass-inventory.png",
+      "/images/projects/compass-psi.png",
+      "/images/projects/compass-market.png",
+      "/images/projects/compass-brain.png",
+      "/images/projects/compass-agents.png",
+    ],
+    demo: "https://dcdesk-web-838504868186.us-west1.run.app",
+    tags: ["Forward Deployed", "AI Agent", "ERP Integration", "Next.js", "Google Cloud"],
+  },
+  {
+    id: 10,
+    title: "Glaux — Personal AI Trading Desk",
+    subtitle:
+      "A personal AI trading desk — AI research agents, rule-based stock and options strategies, and a code-only risk engine where every trade passes 27 risk rules, with phone approval on Telegram and broker execution in paper mode, plus a backtester that runs the same code as live. Installable, passkey-secured dashboard (Command Center, positions, trades, strategies, research, risk) and a public demo on generated data. Python, PostgreSQL, Docker and the Claude API on a hardened VPS.",
+    images: [
+      "/images/projects/glaux-landing.png",
+      "/images/projects/glaux-command.png",
+      "/images/projects/glaux-positions.png",
+      "/images/projects/glaux-trades.png",
+      "/images/projects/glaux-strategies.png",
+      "/images/projects/glaux-research.png",
+      "/images/projects/glaux-risk.png",
+    ],
+    demo: "https://glaux.ryuco.tech",
+    tags: ["AI Agents", "Trading", "Python", "Risk Engine", "PWA"],
+  },
+  {
     id: 8,
     title: "TecAce AI Agent Studio",
     subtitle:
@@ -299,7 +335,13 @@ export const services: ServiceCategory[] = [
 // design_handoff_portfolio_redesign/Concept 1 - Neural Field.dc.html
 export const timeline: TimelineEntry[] = [
   {
-    period: "2025 — PRESENT",
+    period: "2026 — PRESENT",
+    title: "Forward Deployed Engineer",
+    org: "TecAce Software · Bellevue, WA",
+    desc: "Embedded on site with a multinational direct-to-consumer manufacturer (US, Canada, Korea) to lead its AI transformation: discovery with leadership, a Claude rollout and hands-on training program, hosted MCP servers for Shopify, Gmail and Drive, NetSuite/Shopify/Celigo integration audits, carrier and 3PL scoping, and an executive operating desk on Google Cloud.",
+  },
+  {
+    period: "2025 — 2026",
     title: "AI Engineer",
     org: "TecAce Software · Bellevue, WA",
     desc: "Architecting a governance-first enterprise agentic-AI platform: RAG pipelines, LangGraph visual flow builder, Slack/Teams gateway, hybrid search with RRF + cross-encoder reranking, an end-to-end LLM evaluation system (RAGAS test sets, NDCG/MRR, LLM-as-judge), and a 500+ endpoint public API — deployable cloud or fully on-prem.",
@@ -350,7 +392,7 @@ export const skills: SkillCategory[] = [
     skills: [
       "Claude Code · Codex",
       "Multi-Agent Orchestration",
-      "MCP (Model Context Protocol)",
+      "MCP (Model Context Protocol) Servers",
       "LangGraph Workflows",
       "Prompt Engineering",
       "Agent-Assisted SDLC",
@@ -393,6 +435,7 @@ export const skills: SkillCategory[] = [
       "GraphQL",
       "Microservices",
       "OpenAPI / Swagger",
+      "NetSuite · Shopify · Celigo Integration",
     ],
   },
   {
@@ -409,6 +452,7 @@ export const skills: SkillCategory[] = [
   {
     title: "Cloud / On-Prem / DevOps",
     skills: [
+      "Google Cloud (Cloud Run · Cloud SQL)",
       "Hybrid Cloud & On-Prem",
       "AI Governance & Data Privacy",
       "AWS (EC2·S3·Lambda·EKS·Bedrock)",
@@ -430,7 +474,7 @@ export const profile: {
   mantras: [string, string];
 } = {
   name: "John K. Ryu",
-  title: "AI Engineer · Full Stack · Entrepreneur",
+  title: "Forward Deployed Engineer · AI Engineer · Entrepreneur",
   location: "Bellevue, WA",
   email: "johnminryu@gmail.com",
   github: "https://github.com/smashyou",

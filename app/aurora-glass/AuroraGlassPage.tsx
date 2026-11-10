@@ -183,10 +183,12 @@ export default function AuroraGlassPage() {
               and a first venture at twenty. Four years at Comcast building
               Xfinity Flex — 1M+ subscriptions in six months, ten times the
               goal — and the cloud X1 Guide reaching 31 million customers.
-              Then founder mode again with Roem Ventures. Today: AI Engineer
-              at TecAce, architecting a governance-first enterprise
-              agentic-AI platform — RAG, LangGraph, hybrid cloud/on-prem —
-              built AI-natively with Claude Code. Anthropic CCA-F certified.
+              Then founder mode again with Roem Ventures. Today: Forward
+              Deployed Engineer at TecAce, embedded with a client to lead its
+              AI transformation, after architecting a governance-first
+              enterprise agentic-AI platform — RAG, LangGraph, hybrid
+              cloud/on-prem — built AI-natively with Claude Code. Anthropic
+              CCA-F certified.
             </p>
             <p className={`${styles.storyQuote} ${styles.serif}`}>
               &quot;{profile.mantras[0]}.&quot;

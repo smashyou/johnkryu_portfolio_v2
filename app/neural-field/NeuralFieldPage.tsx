@@ -211,10 +211,11 @@ export default function NeuralFieldPage() {
               cloud-based X1 Guide — software serving{" "}
               <span className={styles.heroLedeAccent}>31 million customers</span>.
               Flex passed 1M subscriptions in six months, 10× the target. Now
-              an AI Engineer at TecAce in Bellevue, architecting a
-              governance-first enterprise agentic-AI platform — RAG
-              pipelines, LangGraph workflows, hybrid cloud/on-prem — with
-              Claude Code at the center of an AI-native workflow.
+              a Forward Deployed Engineer at TecAce in Bellevue, embedded with
+              a client to lead its AI transformation and ERP/e-commerce
+              integration, after architecting a governance-first enterprise
+              agentic-AI platform — with Claude Code at the center of an
+              AI-native workflow.
             </p>
             <div className={styles.statGrid}>
               <div className={styles.statCard}>

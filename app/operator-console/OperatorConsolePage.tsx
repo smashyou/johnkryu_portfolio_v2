@@ -23,8 +23,14 @@ type CommitEntry = { hash: string; years: string; title: string; desc: string };
 // career history rendered as `git log --career`.
 const COMMITS: CommitEntry[] = [
   {
+    hash: "9e0d1c2",
+    years: "2026 — now",
+    title: "feat(tecace): Forward Deployed Engineer — client AI transformation",
+    desc: "On-site discovery · Claude rollout & training · MCP servers (Shopify, Gmail, Drive) · NetSuite/Shopify/Celigo integration audit · GM operating desk on Cloud Run",
+  },
+  {
     hash: "a1f2c3d",
-    years: "2025 — now",
+    years: "2025 — 2026",
     title: "feat(tecace): AI Engineer — enterprise agentic-AI platform",
     desc: "RAG pipelines · LangGraph flow builder · Slack/Teams gateway · RRF + cross-encoder reranking · 500+ endpoint public API · cloud or fully on-prem",
   },
@@ -293,9 +299,11 @@ export default function OperatorConsolePage() {
               from the ground up, 1M+ Flex subscriptions in 6 months (10×
               goal), cloud X1 Guide serving 31M customers → founder again
               (Roem Ventures) → AI Engineer @ TecAce, Bellevue:
-              governance-first enterprise agentic-AI platform. RAG,
-              LangGraph, MCP, hybrid cloud/on-prem, Claude Code as daily
-              driver. Anthropic CCA-F certified.
+              governance-first enterprise agentic-AI platform → Forward
+              Deployed Engineer @ TecAce: on-site client AI transformation,
+              MCP servers, ERP/e-commerce integration. RAG, LangGraph,
+              hybrid cloud/on-prem, Claude Code as daily driver. Anthropic
+              CCA-F certified.
             </p>
             <div className={styles.readmeMeta}>
               <span className={styles.readmeMetaLabel}>mantra:</span>

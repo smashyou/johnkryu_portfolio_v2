@@ -121,10 +121,12 @@ export default function KnowledgeGraphPage() {
               (Fatty Pocket at 20, Parkgorithm) and four years at Comcast,
               where the Xfinity Flex platform hit 1M+ subscriptions in six
               months — 10× target — and the cloud X1 Guide reached 31 million
-              customers. Today the densest cluster: AI Engineer at TecAce,
-              architecting a governance-first enterprise agentic-AI platform
-              — RAG, LangGraph workflows, hybrid cloud/on-prem — built
-              AI-natively with Claude Code. Anthropic CCA-F certified.
+              customers. Today the densest cluster: Forward Deployed Engineer
+              at TecAce, embedded with a client to lead its AI transformation
+              and ERP/e-commerce integration, after architecting a
+              governance-first enterprise agentic-AI platform — RAG, LangGraph
+              workflows, hybrid cloud/on-prem — built AI-natively with Claude
+              Code. Anthropic CCA-F certified.
             </p>
             <p className={styles.bodyText}>
               A &quot;student of life&quot; — consuming knowledge is the hobby.

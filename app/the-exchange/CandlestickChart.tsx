@@ -7,7 +7,7 @@ type Candle = { label: string; o: number; c: number; l: number; h: number };
 
 // Verbatim from the `drawChart()` method in the reference script (see
 // design_handoff_portfolio_redesign/Concept 6 - The Exchange.dc.html,
-// <script type="text/x-dc"> block) — 10 career candles, 2011 through the
+// <script type="text/x-dc"> block) — 11 career candles, 2011 through the
 // present, values are unitless "price" points used only to shape the chart.
 const CANDLES: Candle[] = [
   { label: "Fatty Pocket '11", o: 10, c: 18, l: 7, h: 21 },
@@ -20,6 +20,7 @@ const CANDLES: Candle[] = [
   { label: "Roem '22", o: 80, c: 86, l: 74, h: 90 },
   { label: "AI pivot '24", o: 86, c: 95, l: 82, h: 98 },
   { label: "TecAce '25", o: 95, c: 108, l: 92, h: 112 },
+  { label: "FDE '26", o: 108, c: 116, l: 104, h: 118 },
 ];
 
 const PAD = { l: 40, r: 16, t: 18, b: 34 };
@@ -35,7 +36,7 @@ const AXIS = "#5d6880";
  * Verbatim port of the candlestick chart script from
  * `design_handoff_portfolio_redesign/Concept 6 - The Exchange.dc.html`
  * (Component#drawChart / componentDidMount ref callback + componentWillUnmount
- * listener teardown implied by the class lifecycle): 10 career candles,
+ * listener teardown implied by the class lifecycle): 11 career candles,
  * hover hit-test on mousemove highlights the candle body amber and draws its
  * label above the wick.
  *

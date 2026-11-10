@@ -43,7 +43,7 @@ const THESIS = [
   {
     num: "γ",
     title: "AI-native operating model",
-    desc: "Builds with Claude Code, MCP, and multi-agent orchestration daily. Anthropic CCA-F certified. Architecting governance-first enterprise agentic-AI at TecAce.",
+    desc: "Builds with Claude Code, MCP, and multi-agent orchestration daily. Anthropic CCA-F certified. Forward Deployed Engineer at TecAce, leading client AI transformation.",
   },
 ];
 
