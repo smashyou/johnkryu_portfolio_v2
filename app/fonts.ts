@@ -1,6 +1,6 @@
+import localFont from "next/font/local";
 import {
   Space_Grotesk,
-  JetBrains_Mono,
   Sora,
   IBM_Plex_Mono,
   Instrument_Serif,
@@ -16,11 +16,14 @@ export const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
 });
 
-export const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
+// Self-hosted: Google Fonts now serves some JetBrains Mono subsets from
+// extensionless URLs, which crashes next/font/google in Next 14 at build time.
+// This is the Google Fonts latin variable file (weights 400 and 500).
+export const jetbrainsMono = localFont({
+  src: "./assets/fonts/JetBrainsMono-latin.woff2",
   variable: "--font-jetbrains-mono",
   display: "swap",
-  weight: ["400", "500"],
+  weight: "400 500",
 });
 
 export const sora = Sora({
