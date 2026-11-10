@@ -11,7 +11,11 @@ export type Project = {
   github?: string;
   demo: string;
   tags: string[];
+  /** The AI agents built for the project, each with its one job. */
+  agents?: ProjectAgent[];
 };
+
+export type ProjectAgent = { name: string; job: string };
 
 export type ServiceItem = { label: string; subitems: string[] };
 export type ServiceCategory = { title: string; items: ServiceItem[] };
@@ -34,7 +38,7 @@ export const projects: Project[] = [
     id: 9,
     title: "iKamper Business Compass",
     subtitle:
-      "Bilingual (English/Korean) operating desk built as a Forward Deployed Engineer for iKamper's General Manager — sales, orders, inventory, PSI (purchase, sales and inventory) planning and market intelligence in one place, with an AI agent that cites every number, a knowledge brain, daily briefs and human approval before anything goes out. Next.js, TypeScript, PostgreSQL + pgvector, a Python worker and an MCP server on Google Cloud Run, connected to NetSuite, Shopify and Google Workspace. The public demo runs entirely on made-up data.",
+      "Bilingual (English/Korean) operating desk built as a Forward Deployed Engineer for iKamper's General Manager — sales, orders, inventory, PSI (purchase, sales and inventory) planning and market intelligence in one place, with a team of 14 AI agents (an assistant that cites every number, market research, a demand analyst, an order planner, an operations watcher, briefs and meeting prep), a knowledge brain, daily briefs and human approval before anything goes out. Next.js, TypeScript, PostgreSQL + pgvector, a Python worker and an MCP server on Google Cloud Run, connected to NetSuite, Shopify and Google Workspace. The public demo runs entirely on made-up data.",
     images: [
       "/images/projects/compass-landing.png",
       "/images/projects/compass-home.png",
@@ -46,24 +50,61 @@ export const projects: Project[] = [
       "/images/projects/compass-brain.png",
       "/images/projects/compass-agents.png",
     ],
-    demo: "https://dcdesk-web-838504868186.us-west1.run.app",
+    demo: "https://dcdesk-demo-838504868186.us-west1.run.app",
+    agents: [
+      { name: "Assistant", job: "Answers questions on any screen with numbers from code and their sources, and hands work to the other agents." },
+      { name: "Market research", job: "Searches and reads the web for industry and market news each week and records each finding with its quote." },
+      { name: "Demand analyst", job: "Proposes changes to the demand forecast with reasons; code applies them and recomputes the order." },
+      { name: "Order planner", job: "Lays the order options side by side and drafts the memo to HQ." },
+      { name: "Operations watcher", job: "Flags backorders, arrivals with no receipt, plans with no open PO and stock heading below safety each weekday." },
+      { name: "Morning brief", job: "The day's numbers and each manager's own meetings, every morning." },
+      { name: "Weekly market brief", job: "Two paragraphs on the economy, traffic and sales, with every claim tied to a chart." },
+      { name: "PSI meeting pack", job: "The opening summary and the HQ memo for the monthly PSI meeting." },
+      { name: "Meeting prep", job: "Who is coming and the open items before meetings with HQ, the warehouse partner and dealers." },
+      { name: "Diff check", job: "Finds overdue arrivals still open in NetSuite and refreshes the request to the warehouse partner." },
+      { name: "PSI reminder", job: "Checks on the 1st that this month's PSI workbook is in." },
+      { name: "Brain distill", job: "Turns each person's day into notes in their own private second brain." },
+      { name: "Follow setup", job: "Classifies the companies and industries a person follows." },
+      { name: "Notion digest", job: "Brings the day's edited Notion pages into each reader's second brain." },
+    ],
     tags: ["Forward Deployed", "AI Agent", "ERP Integration", "Next.js", "Google Cloud"],
   },
   {
     id: 10,
     title: "Glaux — Personal AI Trading Desk",
     subtitle:
-      "A personal AI trading desk — AI research agents, rule-based stock and options strategies, and a code-only risk engine where every trade passes 27 risk rules, with phone approval on Telegram and broker execution in paper mode, plus a backtester that runs the same code as live. Installable, passkey-secured dashboard (Command Center, positions, trades, strategies, research, risk) and a public demo on generated data. Python, PostgreSQL, Docker and the Claude API on a hardened VPS.",
+      "A personal AI trading desk — AI research agents, rule-based stock and options strategies, and a code-only risk engine where every trade passes 27 risk rules, with phone approval on Telegram and broker execution in paper mode, plus a backtester that runs the same code as live. Installable, passkey-secured dashboard (Command Center, the desk, Morning Brief, positions, trades, strategies, research, risk and the Proof Lab) and a public demo on generated data. Python, PostgreSQL, Docker and the Claude API on a hardened VPS. 15 AI agents in all, from the Ask Glaux assistant to news, fundamentals, chart, smart-money, pre-mortem, evaluator and Wealth agents; none of them can place an order or invent a number.",
     images: [
       "/images/projects/glaux-landing.png",
+      "/images/projects/glaux-agents.png",
       "/images/projects/glaux-command.png",
+      "/images/projects/glaux-desk.png",
+      "/images/projects/glaux-brief.png",
       "/images/projects/glaux-positions.png",
       "/images/projects/glaux-trades.png",
       "/images/projects/glaux-strategies.png",
       "/images/projects/glaux-research.png",
       "/images/projects/glaux-risk.png",
+      "/images/projects/glaux-proof.png",
     ],
-    demo: "https://glaux.ryuco.tech",
+    demo: "https://preview.glaux.ryuco.tech",
+    agents: [
+      { name: "Ask Glaux", job: "The assistant on every page and in Telegram; every number comes from a tool, and changes are drafts you confirm." },
+      { name: "News & catalyst", job: "Flags earnings, offerings, guidance cuts, legal and merger news from headlines and SEC 8-K filings." },
+      { name: "Fundamental researcher", job: "Explains the quality score code computes from SEC filings and judges which way the business is heading." },
+      { name: "Chart analyst", job: "Explains each setup code detects in two plain sentences, using only the computed levels." },
+      { name: "Smart-money tracker", job: "Follows insider buying clusters, unusual options volume and congressional trades." },
+      { name: "Pre-mortem", job: "Writes the strongest case against every planned trade before it reaches you." },
+      { name: "Evaluator", job: "Grades every strategy after the close and proposes up to three rule changes a week." },
+      { name: "Risk advisor", job: "Turns how much risk you can live with, in plain English, into a risk preset." },
+      { name: "Research-card writer", job: "Writes the thesis on each research card around facts code computed." },
+      { name: "Morning Brief writer", job: "Explains what the day's facts mean for today's setups." },
+      { name: "Rules drafter", job: "Turns your trading rules in plain English into rules the risk engine enforces." },
+      { name: "Behavior coach", job: "Writes short notes on your own trading habits from statistics code computed." },
+      { name: "Strategy Studio drafter", job: "Turns a strategy described in plain English into Glaux's strategy language." },
+      { name: "Wealth idea picker", job: "Proposes up to five long-term picks from a shortlist code built; code sets every size." },
+      { name: "Wealth research writer", job: "Writes the thesis, main risks and what would prove it wrong for each long-term pick." },
+    ],
     tags: ["AI Agents", "Trading", "Python", "Risk Engine", "PWA"],
   },
   {

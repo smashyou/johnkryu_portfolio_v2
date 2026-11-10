@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useCallback, useEffect, useState } from "react";
 import { type Project } from "@/app/data/content";
+import ProjectAgents from "@/app/components/shared/ProjectAgents";
 
 const ProjectLightbox = ({
   project,
@@ -103,7 +104,7 @@ const ProjectLightbox = ({
             <img
               src={project.images[index]}
               alt={`${project.title} screenshot ${index + 1}`}
-              className="w-full max-h-[80vh] object-contain rounded-xl border border-dark-600 shadow-2xl"
+              className="w-full max-h-[70vh] object-contain rounded-xl border border-dark-600 shadow-2xl"
             />
             <div className="mt-4 flex items-center justify-between text-sm text-dark-300">
               <span className="font-medium text-white">{project.title}</span>
@@ -113,6 +114,10 @@ const ProjectLightbox = ({
                 </span>
               )}
             </div>
+            <ProjectAgents
+              agents={project.agents}
+              className="mt-3 rounded-xl border border-dark-600 bg-dark-900 px-4 py-3"
+            />
           </motion.div>
         </motion.div>
       )}

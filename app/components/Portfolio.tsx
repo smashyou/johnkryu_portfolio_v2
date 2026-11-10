@@ -6,6 +6,7 @@ import { FiExternalLink, FiGithub, FiMaximize2 } from "react-icons/fi";
 import { useState, useCallback } from "react";
 import { projects, type Project } from "@/app/data/content";
 import ProjectLightbox from "@/app/components/shared/ProjectLightbox";
+import ProjectAgents from "@/app/components/shared/ProjectAgents";
 
 const Portfolio = () => {
   const [ref, inView] = useInView({
@@ -140,6 +141,8 @@ const Portfolio = () => {
                       </span>
                     ))}
                   </div>
+
+                  <ProjectAgents agents={project.agents} className="mb-6" />
 
                   {/* Action buttons */}
                   <div className="flex gap-3">
