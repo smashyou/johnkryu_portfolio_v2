@@ -465,6 +465,8 @@ a.ctaSecondary:hover {
    more than Craft's (Social Media & Digital Marketing has 7 items vs. 4). */
 .servicesGrid {
   align-items: start;
+  /* four service categories read as a 2x2 grid rather than 3 + 1 */
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .craftCard {

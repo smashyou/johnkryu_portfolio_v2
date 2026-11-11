@@ -245,6 +245,51 @@ export const projects: Project[] = [
 
 export const services: ServiceCategory[] = [
   {
+    title: "AI & Agent Engineering",
+    items: [
+      {
+        label: "AI Agents & Agentic Workflows",
+        subitems: [
+          "Multi-agent systems with LangGraph and LangChain, tool calling and guardrails",
+          "Human approval before an agent writes to a business system",
+          "MCP servers that give Claude and other agents governed access to company tools",
+        ],
+      },
+      {
+        label: "AI Integration with Business Systems",
+        subitems: [
+          "Connecting LLMs to ERP, e-commerce and workspace tools (NetSuite, Shopify, Google Workspace)",
+          "Secure access with OAuth, SSO and per-user permissions",
+          "AI assistants inside Slack and Microsoft Teams",
+        ],
+      },
+      {
+        label: "RAG & Knowledge Systems",
+        subitems: [
+          "Retrieval pipelines with hybrid search, reranking and vector databases",
+          "Answers grounded in your own documents, with citations",
+          "Cloud or fully on-prem deployment for sensitive data",
+        ],
+      },
+      {
+        label: "AI/ML Evals & Model Work",
+        subitems: [
+          "RAG and agent evals with RAGAS, DeepEval and LLM-as-judge",
+          "Golden datasets, retrieval metrics and regression checks",
+          "ML model training and serving (PyTorch, XGBoost, vLLM, AWS Bedrock)",
+        ],
+      },
+      {
+        label: "AI Adoption & Enablement",
+        subitems: [
+          "Claude Team rollout and administration",
+          "Hands-on training in Claude, Claude Code and custom skills",
+          "AI roadmaps built from your team's real workflows",
+        ],
+      },
+    ],
+  },
+  {
     title: "Technical Consulting",
     items: [
       {

@@ -44,8 +44,8 @@ const CRAFTS: Craft[] = [
 ];
 
 // Continues the Craft section's roman-numeral motif (I–III) for the added
-// Services section (IV–VI), one numeral per `services` category.
-const SERVICE_NUMERALS = ["IV", "V", "VI"];
+// Services section (IV–VII), one numeral per `services` category.
+const SERVICE_NUMERALS = ["IV", "V", "VI", "VII"];
 
 export default function AuroraGlassPage() {
   const reducedMotion = usePrefersReducedMotion();
@@ -233,13 +233,13 @@ export default function AuroraGlassPage() {
         </div>
       </section>
 
-      {/* SERVICES (added — same glass-card language as Craft, IV–VI) */}
+      {/* SERVICES (added — same glass-card language as Craft, IV–VII) */}
       <section id="services" className={styles.servicesSection}>
         <div data-reveal className={styles.reveal}>
           <div className={styles.centerHead}>
             <div className={styles.eyebrow}>How I can help</div>
             <h2 className={`${styles.sectionHeading} ${styles.serif}`}>
-              Three more orbits.
+              Four more orbits.
             </h2>
           </div>
           <div className={`${styles.craftGrid} ${styles.servicesGrid}`}>

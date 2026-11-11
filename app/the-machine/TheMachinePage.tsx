@@ -69,6 +69,7 @@ const CHAPTERS: Chapter[] = [
 // Short tags continuing the "PART NN" motif for the added Services cards,
 // one per content.ts `services` category (in array order).
 const SERVICE_TAGS: Record<string, string> = {
+  "AI & Agent Engineering": "AI",
   "Technical Consulting": "CONSULT",
   "Software Development": "DEV",
   "Social Media & Digital Marketing": "GROWTH",
@@ -201,8 +202,8 @@ export default function TheMachinePage() {
           <div className={styles.addedEyebrow}>PART 05 — SERVICE MODULES</div>
           <h2 className={styles.addedTitle}>What else this machine runs.</h2>
           <p className={styles.addedLede}>
-            Consulting, full-stack builds, and growth — same rigor as the
-            platforms in the chapters above.
+            AI agents, consulting, full-stack builds, and growth — same rigor
+            as the platforms in the chapters above.
           </p>
           <div className={styles.servicesList}>
             {services.map((category) => (

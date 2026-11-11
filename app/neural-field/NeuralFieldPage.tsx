@@ -44,6 +44,7 @@ const SKILL_TAGS: Record<string, string> = {
 };
 
 const SERVICE_TAGS: Record<string, string> = {
+  "AI & Agent Engineering": "AI",
   "Technical Consulting": "CONSULT",
   "Software Development": "DEV",
   "Social Media & Digital Marketing": "GROWTH",
@@ -277,8 +278,8 @@ export default function NeuralFieldPage() {
         <div className={styles.sectionEyebrow}>03 / SERVICES</div>
         <h2 className={styles.sectionTitle}>How I can help.</h2>
         <p className={styles.sectionLede}>
-          Consulting, full-stack builds, and growth — same rigor as the
-          platforms above.
+          AI agents, consulting, full-stack builds, and growth — same rigor
+          as the platforms above.
         </p>
         <div className={styles.servicesList}>
           {services.map((category) => (
