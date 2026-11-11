@@ -515,7 +515,7 @@ export const profile: {
   mantras: [string, string];
 } = {
   name: "John K. Ryu",
-  title: "Forward Deployed Engineer · AI Engineer · Entrepreneur",
+  title: "AI/ML Forward Deployed Engineer · Entrepreneur · Student of life",
   location: "Bellevue, WA",
   email: "johnminryu@gmail.com",
   github: "https://github.com/smashyou",
